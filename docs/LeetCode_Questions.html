@@ -10,42 +10,36 @@
   <main class="page-shell">
     <header class="site-header">
       <div class="brand">
-        <p style="text-transform:uppercase; letter-spacing:0.18em; color:#64748b; font-size:0.85rem;">DSA roadmap</p>
-        <h1 class="brand-title">Staff / Principal DSA Roadmap</h1>
-        <p class="brand-subtitle">A modular documentation page with client-side filtering behavior implemented through shared package scripts.</p>
+        <h1 class="brand-title">LeetCode Questions</h1>
       </div>
-      <a class="button" href="index.html">Back to docs home</a>
+      <a class="button button-icon" href="index.html" aria-label="Go back to home" title="Back">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </a>
     </header>
 
     <div class="docs-layout">
       <aside class="sidebar">
-        <div class="logo">DSA Prep</div>
-        <h3>Categories</h3>
-        <a href="#Arrays">Arrays</a>
-        <a href="#Sliding Window">Sliding Window</a>
-        <a href="#Two Pointers">Two Pointers</a>
-        <a href="#Binary Search">Binary Search</a>
-        <a href="#Stack">Stack</a>
-        <a href="#Queue / Monotonic Queue">Queue</a>
-        <a href="#Linked List">Linked List</a>
-        <a href="#Hashing">Hashing</a>
-        <a href="#Recursion & Backtracking">Backtracking</a>
-        <a href="#Trees">Trees</a>
-        <a href="#Binary Search Trees">BST</a>
-        <a href="#Heaps / Priority Queue">Heaps</a>
-        <a href="#Graphs">Graphs</a>
-        <a href="#Dynamic Programming">Dynamic Programming</a>
-        <a href="#Greedy">Greedy</a>
+        <div class="logo">Categories</div>
+        <a href="#arrays">Arrays</a>
+        <a href="#sliding-window">Sliding Window</a>
+        <a href="#two-pointers">Two Pointers</a>
+        <a href="#binary-search">Binary Search</a>
+        <a href="#stack">Stack</a>
+        <a href="#queue-monotonic-queue">Queue</a>
+        <a href="#linked-list">Linked List</a>
+        <a href="#hashing">Hashing</a>
+        <a href="#recursion-backtracking">Backtracking</a>
+        <a href="#trees">Trees</a>
+        <a href="#binary-search-trees">BST</a>
+        <a href="#heaps-priority-queue">Heaps</a>
+        <a href="#graphs">Graphs</a>
+        <a href="#dynamic-programming">Dynamic Programming</a>
+        <a href="#greedy">Greedy</a>
       </aside>
 
       <section class="main">
-        <div class="topbar">
-          <div>
-            <h1>Problem set explorer</h1>
-            <p>Search, filter, and browse the shared LeetCode problem roadmap inside the docs package.</p>
-          </div>
-          <input class="search-box" id="searchInput" type="search" placeholder="Search problem, pattern, category…" aria-label="Search problems" />
-        </div>
 
         <div class="stats">
           <article class="card">
@@ -66,11 +60,14 @@
           </article>
         </div>
 
-        <div class="filters" role="group" aria-label="Filter questions by difficulty">
-          <button class="filter-chip active" data-difficulty="All" type="button">All</button>
-          <button class="filter-chip" data-difficulty="Easy" type="button">Easy</button>
-          <button class="filter-chip" data-difficulty="Medium" type="button">Medium</button>
-          <button class="filter-chip" data-difficulty="Hard" type="button">Hard</button>
+        <div class="topbar">
+          <div class="filters" role="group" aria-label="Filter questions by difficulty">
+            <button class="filter-chip active" data-difficulty="All" type="button">All</button>
+            <button class="filter-chip" data-difficulty="Easy" type="button">Easy</button>
+            <button class="filter-chip" data-difficulty="Medium" type="button">Medium</button>
+            <button class="filter-chip" data-difficulty="Hard" type="button">Hard</button>
+          </div>
+          <input class="search-box" id="searchInput" type="search" placeholder="Search problem, pattern, category…" aria-label="Search problems" />
         </div>
 
         <div id="content"></div>

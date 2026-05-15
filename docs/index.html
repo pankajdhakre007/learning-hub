@@ -7,49 +7,27 @@
   <link rel="stylesheet" href="assets/css/site.css" />
 </head>
 <body>
-  <main class="page-shell">
-    <header class="site-header">
-      <div class="brand">
-        <p style="text-transform:uppercase; letter-spacing:0.18em; color:#64748b; font-size:0.85rem;">Docs package</p>
-        <h1 class="brand-title">Learning repo docs home</h1>
-        <p class="brand-subtitle">This site is kept modular in the docs package. Shared styling and scripts live under <code>assets/</code>, and every static page references the same package-level CSS and JavaScript.</p>
+  <main class="page-shell page-home">
+    <section class="hero-panel">
+      <div>
+        <p class="eyebrow">Current pages</p>
+        <h1 class="brand-title">Top X categories, LeetCode questions</h1>
+        <p class="hero-copy">A clean dashboard launch pad for the current docs package. Only the essential entry points are shown here.</p>
       </div>
-      <a class="button" href="LeetCode_Questions.html">Open LeetCode Questions</a>
-    </header>
-
-    <section class="page-intro">
-      <div class="section-title">Modular static page architecture</div>
-      <p class="disclaimer">Use this index as the canonical entrypoint for the docs package. New pages should be added into the same folder structure and wired through this root package page so the experience remains consistent and easy to maintain.</p>
     </section>
 
-    <section class="nav-grid">
-      <article class="nav-card">
-        <div class="nav-card-title">DSA Roadmap</div>
-        <p class="nav-card-copy">The existing roadmap page is designed to be a central documentation page for coarse-grained learning and navigation.</p>
-        <div class="meta">Package path: <strong>docs/</strong></div>
-      </article>
-
+    <section class="nav-grid home-grid">
       <article class="nav-card">
         <div class="nav-card-title">LeetCode Questions</div>
-        <p class="nav-card-copy">A searchable problem set page with shared typography, layout, and interactive filter behavior coming from package scripts.</p>
-        <div class="meta">Page path: <strong>docs/LeetCode_Questions.html</strong></div>
+        <p class="nav-card-copy">A senior-track problem set focusing on top categories and selected LeetCode topics.</p>
+        <a class="button" href="LeetCode_Questions.html">Open LeetCode Questions</a>
+      </article>
+
+      <article class="nav-card">
+        <div class="nav-card-title">Many more to come</div>
+        <p class="nav-card-copy">This package is now minimal and ready for future expansion.</p>
       </article>
     </section>
-
-    <section class="section-panel">
-      <div class="section-title">How to extend this package</div>
-      <p class="disclaimer">Add each new static page into the docs folder and reuse <code>assets/css/site.css</code>. If you need page-specific client logic, add it under <code>assets/js/</code>, then include it with a script tag.</p>
-      <ul style="margin-top:16px; gap:10px; display:grid; list-style:disc inside; color:#334155;">
-        <li>Keep page structure consistent with the shared layout classes.</li>
-        <li>Reuse the same <code>.page-shell</code>, <code>.nav-card</code>, and <code>.button</code> patterns.</li>
-        <li>Place animation scripts in <code>assets/js/</code> to avoid duplication.</li>
-      </ul>
-    </section>
-
-    <footer class="site-footer">
-      <span>Docs package entrypoint</span>
-      <span>Designed for maintainable static page expansion</span>
-    </footer>
   </main>
 </body>
 </html>
