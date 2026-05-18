@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technology Issues & Resolutions — Learning Docs</title>
+  <link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body class="tech-issues-shell">
+  <div class="tech-container">
+    <header class="tech-header">
+      <div class="brand">
+        <p class="eyebrow">Technology Deep-Dives</p>
+        <h1>Issues &amp; Resolutions</h1>
+      </div>
+      <a class="button-icon" href="index.html" aria-label="Back to docs home" title="Back to home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </a>
+    </header>
+    
+    <aside class="tech-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">All Topics</div>
+        <ul class="nav-list" id="navList">
+          <li><a href="#" data-page="api-gateway-traffic.html" data-category="Gateway">
+            <span class="nav-item-title">API Gateway Traffic Management</span>
+            <span class="nav-item-tag">Gateway</span>
+          </a></li>
+          <li><a href="#" data-page="kubernetes-resources.html" data-category="Orchestration">
+            <span class="nav-item-title">Kubernetes Resource Exhaustion</span>
+            <span class="nav-item-tag">Orchestration</span>
+          </a></li>
+          <li><a href="#" data-page="kafka-partition.html" data-category="Messaging">
+            <span class="nav-item-title">Kafka Partitioning & Distribution</span>
+            <span class="nav-item-tag">Messaging</span>
+          </a></li>
+          <li><a href="#" data-page="kafka-storage.html" data-category="Messaging">
+            <span class="nav-item-title">Kafka Storage & Replication</span>
+            <span class="nav-item-tag">Messaging</span>
+          </a></li>
+          <li><a href="#" data-page="redis-memory.html" data-category="Cache">
+            <span class="nav-item-title">Redis Memory Pressure</span>
+            <span class="nav-item-tag">Cache</span>
+          </a></li>
+          <li><a href="#" data-page="elasticsearch-query.html" data-category="Search">
+            <span class="nav-item-title">Elasticsearch Query Pressure</span>
+            <span class="nav-item-tag">Search</span>
+          </a></li>
+          <li><a href="#" data-page="mongodb-query.html" data-category="Database">
+            <span class="nav-item-title">MongoDB Query Performance</span>
+            <span class="nav-item-tag">Database</span>
+          </a></li>
+          <li><a href="#" data-page="mongodb-distribution.html" data-category="Database">
+            <span class="nav-item-title">MongoDB Data Distribution</span>
+            <span class="nav-item-tag">Database</span>
+          </a></li>
+          <li><a href="#" data-page="mongodb-replication.html" data-category="Database">
+            <span class="nav-item-title">MongoDB Replication Delays</span>
+            <span class="nav-item-tag">Database</span>
+          </a></li>
+          <li><a href="#" data-page="cassandra-distribution.html" data-category="Database">
+            <span class="nav-item-title">Cassandra Data Distribution</span>
+            <span class="nav-item-tag">Database</span>
+          </a></li>
+        </ul>
+      </div>
+    </aside>
+    
+    <main class="tech-content">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <div>Loading...</div>
+      </div>
+      <iframe class="content-frame" id="contentFrame" title="Technology issue details"></iframe>
+    </main>
+  </div>
+  
+  <script>
+    const contentFrame = document.getElementById('contentFrame');
+    const loadingState = document.getElementById('loadingState');
+    const navLinks = document.querySelectorAll('.nav-list a');
+    
+    function loadPage(pageUrl) {
+      loadingState.classList.add('show');
+      contentFrame.style.opacity = '0';
+      contentFrame.src = `tech-issues/${pageUrl}`;
+      
+      // Update active state
+      navLinks.forEach(link => {
+        if (link.dataset.page === pageUrl) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      
+      // Store current page in URL hash
+      window.location.hash = pageUrl.replace('.html', '');
+    }
+    
+    contentFrame.addEventListener('load', () => {
+      loadingState.classList.remove('show');
+      contentFrame.style.opacity = '1';
+    });
+    
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        loadPage(link.dataset.page);
+      });
+    });
+    
+    // Handle browser back/forward
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        const pageUrl = `${hash}.html`;
+        const matchingLink = Array.from(navLinks).find(link => link.dataset.page === pageUrl);
+        if (matchingLink) {
+          loadPage(pageUrl);
+        }
+      }
+    });
+    
+    // Load initial page from hash or default to first topic
+    const initialHash = window.location.hash.substring(1);
+    const initialPage = initialHash ? `${initialHash}.html` : 'api-gateway-traffic.html';
+    
+    // Validate the page exists in nav
+    const validPage = Array.from(navLinks).some(link => link.dataset.page === initialPage);
+    loadPage(validPage ? initialPage : 'api-gateway-traffic.html');
+  </script>
+</body>
+</html>
