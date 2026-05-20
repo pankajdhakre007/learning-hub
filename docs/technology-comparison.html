@@ -371,16 +371,12 @@
         const headers = table.querySelectorAll('th');
         
         sortTableByColumn(table, 0, 'asc');
-        headers[0].classList.add('has-background-light');
         
         headers.forEach((header, index) => {
           header.title = 'Click to sort';
           let sortDirection = 'asc';
           
           header.addEventListener('click', () => {
-            headers.forEach(h => h.classList.remove('has-background-light'));
-            header.classList.add('has-background-light');
-            
             sortTableByColumn(table, index, sortDirection);
             sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
           });
