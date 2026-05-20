@@ -50,15 +50,17 @@
 
     <section class="section" id="main">
       <div class="container">
-        <div class="columns">
-          <aside class="column is-one-quarter">
-            <div class="box">
-              <p class="heading">Categories</p>
-              <div class="menu" id="categoryNav" aria-label="Problem categories"></div>
+        <div class="page-grid">
+          <aside class="sidebar">
+            <div class="panel panel--tight">
+              <div class="panel__body">
+                <p class="heading">Categories</p>
+                <div class="menu" id="categoryNav" aria-label="Problem categories"></div>
+              </div>
             </div>
           </aside>
 
-          <div class="column">
+          <div class="page-grid__content">
             <div class="columns is-multiline">
               <div class="column is-one-quarter">
                 <div class="box">
@@ -98,10 +100,10 @@
                 </div>
                 <div class="control">
                   <div class="buttons has-addons">
-                    <button class="button is-selected" data-difficulty="All" aria-pressed="true" type="button">All</button>
-                    <button class="button" data-difficulty="Easy" aria-pressed="false" type="button">Easy</button>
-                    <button class="button" data-difficulty="Medium" aria-pressed="false" type="button">Medium</button>
-                    <button class="button" data-difficulty="Hard" aria-pressed="false" type="button">Hard</button>
+                    <button class="button is-primary is-selected" data-difficulty="All" aria-pressed="true" type="button">All</button>
+                    <button class="button is-success" data-difficulty="Easy" aria-pressed="false" type="button">Easy</button>
+                    <button class="button is-warning" data-difficulty="Medium" aria-pressed="false" type="button">Medium</button>
+                    <button class="button is-danger" data-difficulty="Hard" aria-pressed="false" type="button">Hard</button>
                   </div>
                 </div>
               </div>
