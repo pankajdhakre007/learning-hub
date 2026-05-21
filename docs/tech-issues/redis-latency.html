@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Redis — Latency & Blocking Operations</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Redis — Latency &amp; Blocking Operations</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Redis — runtime behavior",
-        "title": "Latency and blocking operations",
-        "description": "Guide covering event-loop blocking, long-running commands, and latency spikes in single-threaded execution paths."
-    },
-    "synonyms": [
-        "Event loop blocking",
-        "Latency spikes",
-        "Slowlog pressure",
-        "Blocking commands",
-        "Main thread stalls",
-        "Tail latency",
-        "Long Lua execution",
-        "Command starvation"
-    ],
-    "questions": [
-        "Why does Redis p99 latency spike even at moderate CPU?",
-        "Which command patterns block Redis the most?",
-        "How do Lua scripts affect latency?",
-        "How can we reduce blocking without losing functionality?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Redis — runtime behavior",
+        title: "Latency and blocking operations",
+        description: "Guide covering event-loop blocking, long-running commands, and latency spikes in single-threaded execution paths."
+      },
+      synonyms: ["Event loop blocking","Latency spikes","Slowlog pressure","Blocking commands","Main thread stalls","Tail latency","Long Lua execution","Command starvation"],
+      questions: ["Why does Redis p99 latency spike even at moderate CPU?","Which command patterns block Redis the most?","How do Lua scripts affect latency?","How can we reduce blocking without losing functionality?"],
+      layers: [
         {
-            "name": "Commands",
-            "title": "High-complexity command impact",
-            "description": "Commands with O(n) behavior can block the event loop when run on large keys.",
-            "symptoms": [
-                "Slowlog fills with specific command types",
-                "Sudden tail latency spikes",
-                "Client timeouts during heavy operations"
-            ],
-            "causes": [
-                "Large set/hash/list operations",
-                "Unbounded scans in hot paths",
-                "Expensive key deletion patterns"
-            ],
-            "effects": [
-                "Command queueing",
-                "User-facing latency outliers",
-                "Cascade retries from clients"
-            ],
-            "mitigations": [
-                "Replace heavy commands with incremental patterns",
-                "Use key size limits",
-                "Move heavy maintenance off peak"
-            ],
-            "metrics": [
-                "Slowlog max time",
-                "Per-command latency",
-                "Timeout rate",
-                "Queue depth"
-            ],
-            "tradeoffs": [
-                "Incremental patterns increase code complexity",
-                "Background maintenance windows reduce flexibility"
-            ]
+          name: "Commands",
+          title: "High-complexity command impact",
+          description: "Commands with O(n) behavior can block the event loop when run on large keys.",
+          symptoms: ["Slowlog fills with specific command types","Sudden tail latency spikes","Client timeouts during heavy operations"],
+          causes: ["Large set/hash/list operations","Unbounded scans in hot paths","Expensive key deletion patterns"],
+          effects: ["Command queueing","User-facing latency outliers","Cascade retries from clients"],
+          mitigations: ["Replace heavy commands with incremental patterns","Use key size limits","Move heavy maintenance off peak"],
+          metrics: ["Slowlog max time","Per-command latency","Timeout rate","Queue depth"],
+          tradeoffs: ["Incremental patterns increase code complexity","Background maintenance windows reduce flexibility"]
         },
         {
-            "name": "Scripts",
-            "title": "Lua and transaction blocking behavior",
-            "description": "Long-running scripts or multi-key transactions can monopolize server time.",
-            "symptoms": [
-                "Latency spikes during script execution",
-                "Temporary throughput collapse",
-                "Blocked client growth"
-            ],
-            "causes": [
-                "Complex scripts over large datasets",
-                "Non-idempotent retries with scripts",
-                "Large multi-key atomic blocks"
-            ],
-            "effects": [
-                "Cluster instability under load",
-                "SLA misses",
-                "Operational unpredictability"
-            ],
-            "mitigations": [
-                "Bound script runtime and data scope",
-                "Precompute heavy logic outside Redis",
-                "Use safer script rollout and monitoring"
-            ],
-            "metrics": [
-                "Script execution duration",
-                "Blocked clients",
-                "Ops/sec drop during scripts",
-                "Timeout distribution"
-            ],
-            "tradeoffs": [
-                "Less in-Redis logic may increase network calls",
-                "Splitting transactions may weaken atomicity guarantees"
-            ]
+          name: "Scripts",
+          title: "Lua and transaction blocking behavior",
+          description: "Long-running scripts or multi-key transactions can monopolize server time.",
+          symptoms: ["Latency spikes during script execution","Temporary throughput collapse","Blocked client growth"],
+          causes: ["Complex scripts over large datasets","Non-idempotent retries with scripts","Large multi-key atomic blocks"],
+          effects: ["Cluster instability under load","SLA misses","Operational unpredictability"],
+          mitigations: ["Bound script runtime and data scope","Precompute heavy logic outside Redis","Use safer script rollout and monitoring"],
+          metrics: ["Script execution duration","Blocked clients","Ops/sec drop during scripts","Timeout distribution"],
+          tradeoffs: ["Less in-Redis logic may increase network calls","Splitting transactions may weaken atomicity guarantees"]
         },
         {
-            "name": "Network",
-            "title": "Client burst and connection pressure",
-            "description": "Burst traffic and poor client behavior can create server-side latency amplification.",
-            "symptoms": [
-                "Connection churn",
-                "Short bursts of command pile-up",
-                "Latency correlated with connection spikes"
-            ],
-            "causes": [
-                "No connection pooling",
-                "Aggressive retries",
-                "Synchronous fan-out request patterns"
-            ],
-            "effects": [
-                "Queue backpressure",
-                "Wasted server cycles",
-                "Upstream instability"
-            ],
-            "mitigations": [
-                "Use connection pooling",
-                "Apply client-side backoff/jitter",
-                "Set sane timeout and retry budgets"
-            ],
-            "metrics": [
-                "Connection count",
-                "New connections/sec",
-                "Retry rate",
-                "P99 latency"
-            ],
-            "tradeoffs": [
-                "Tighter retry budgets may increase visible errors",
-                "Pooling requires lifecycle management in clients"
-            ]
+          name: "Network",
+          title: "Client burst and connection pressure",
+          description: "Burst traffic and poor client behavior can create server-side latency amplification.",
+          symptoms: ["Connection churn","Short bursts of command pile-up","Latency correlated with connection spikes"],
+          causes: ["No connection pooling","Aggressive retries","Synchronous fan-out request patterns"],
+          effects: ["Queue backpressure","Wasted server cycles","Upstream instability"],
+          mitigations: ["Use connection pooling","Apply client-side backoff/jitter","Set sane timeout and retry budgets"],
+          metrics: ["Connection count","New connections/sec","Retry rate","P99 latency"],
+          tradeoffs: ["Tighter retry budgets may increase visible errors","Pooling requires lifecycle management in clients"]
         },
         {
-            "name": "Operations",
-            "title": "Operational guardrails for latency SLOs",
-            "description": "Operational discipline is required to prevent planned tasks from causing service stalls.",
-            "symptoms": [
-                "Latency incidents during maintenance windows",
-                "Unpredictable tails after config changes",
-                "SLO breaches without sustained load increase"
-            ],
-            "causes": [
-                "Unsafe maintenance commands in production",
-                "No canary for config changes",
-                "Inadequate latency alert thresholds"
-            ],
-            "effects": [
-                "Reliability regressions",
-                "Emergency rollback frequency",
-                "Reduced confidence in cache tier"
-            ],
-            "mitigations": [
-                "Canary config changes",
-                "Command allowlist/denylist for production",
-                "Latency SLO-driven alerting"
-            ],
-            "metrics": [
-                "SLO burn rate",
-                "Maintenance-related incidents",
-                "Rollback frequency",
-                "Latency before/after changes"
-            ],
-            "tradeoffs": [
-                "Stronger guardrails can slow operational changes",
-                "More observability raises telemetry costs"
-            ]
+          name: "Operations",
+          title: "Operational guardrails for latency SLOs",
+          description: "Operational discipline is required to prevent planned tasks from causing service stalls.",
+          symptoms: ["Latency incidents during maintenance windows","Unpredictable tails after config changes","SLO breaches without sustained load increase"],
+          causes: ["Unsafe maintenance commands in production","No canary for config changes","Inadequate latency alert thresholds"],
+          effects: ["Reliability regressions","Emergency rollback frequency","Reduced confidence in cache tier"],
+          mitigations: ["Canary config changes","Command allowlist/denylist for production","Latency SLO-driven alerting"],
+          metrics: ["SLO burn rate","Maintenance-related incidents","Rollback frequency","Latency before/after changes"],
+          tradeoffs: ["Stronger guardrails can slow operational changes","More observability raises telemetry costs"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Node.js",
-            "problem": "Event loop blocking"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Thread pool saturation"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Request queue backpressure"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Consumer processing stall"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Lock/contention latency tails"
-        }
-    ],
-    "insight": "Redis latency issues are often not capacity issues but fairness issues: one expensive operation can degrade every request on a node."
-};
+      ],
+      comparisons: [
+        { tech: "Node.js", problem: "Event loop blocking" },
+        { tech: "Elasticsearch", problem: "Thread pool saturation" },
+        { tech: "API Gateway", problem: "Request queue backpressure" },
+        { tech: "Kafka", problem: "Consumer processing stall" },
+        { tech: "MongoDB", problem: "Lock/contention latency tails" }
+      ],
+      insight: "Redis latency issues are often not capacity issues but fairness issues: one expensive operation can degrade every request on a node."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

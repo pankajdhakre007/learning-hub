@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>MongoDB — Resource Saturation</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>MongoDB — Resource Saturation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "MongoDB — database capacity",
-        "title": "Resource saturation",
-        "description": "Guide covering CPU, memory, and disk saturation in MongoDB and how bottlenecks cascade into latency and replication risk."
-    },
-    "synonyms": [
-        "Memory pressure",
-        "Disk pressure",
-        "CPU saturation",
-        "Working set overflow",
-        "Cache churn",
-        "IO bottleneck",
-        "Resource contention",
-        "Node saturation"
-    ],
-    "questions": [
-        "How do I identify whether MongoDB is CPU-bound, memory-bound, or IO-bound?",
-        "Why does latency spike when working set exceeds RAM?",
-        "How does resource pressure affect replica lag?",
-        "What is the fastest way to stabilize saturation events?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "MongoDB — database capacity",
+        title: "Resource saturation",
+        description: "Guide covering CPU, memory, and disk saturation in MongoDB and how bottlenecks cascade into latency and replication risk."
+      },
+      synonyms: ["Memory pressure","Disk pressure","CPU saturation","Working set overflow","Cache churn","IO bottleneck","Resource contention","Node saturation"],
+      questions: ["How do I identify whether MongoDB is CPU-bound, memory-bound, or IO-bound?","Why does latency spike when working set exceeds RAM?","How does resource pressure affect replica lag?","What is the fastest way to stabilize saturation events?"],
+      layers: [
         {
-            "name": "CPU",
-            "title": "CPU contention and query concurrency",
-            "description": "Expensive queries and high concurrency can saturate CPU and inflate tail latency.",
-            "symptoms": [
-                "High user CPU on primary",
-                "P99 query latency spikes",
-                "Slow query log growth"
-            ],
-            "causes": [
-                "Collection scans",
-                "Complex aggregations",
-                "Excessive concurrent operations"
-            ],
-            "effects": [
-                "Request queueing",
-                "Timeouts",
-                "Reduced throughput"
-            ],
-            "mitigations": [
-                "Fix worst queries first",
-                "Add/select indexes",
-                "Bound concurrency with connection pool discipline"
-            ],
-            "metrics": [
-                "CPU utilization",
-                "Run queue length",
-                "Slow queries per minute",
-                "P95/P99 latency"
-            ],
-            "tradeoffs": [
-                "More indexes help reads but raise write cost",
-                "Concurrency limits improve latency but cap throughput"
-            ]
+          name: "CPU",
+          title: "CPU contention and query concurrency",
+          description: "Expensive queries and high concurrency can saturate CPU and inflate tail latency.",
+          symptoms: ["High user CPU on primary","P99 query latency spikes","Slow query log growth"],
+          causes: ["Collection scans","Complex aggregations","Excessive concurrent operations"],
+          effects: ["Request queueing","Timeouts","Reduced throughput"],
+          mitigations: ["Fix worst queries first","Add/select indexes","Bound concurrency with connection pool discipline"],
+          metrics: ["CPU utilization","Run queue length","Slow queries per minute","P95/P99 latency"],
+          tradeoffs: ["More indexes help reads but raise write cost","Concurrency limits improve latency but cap throughput"]
         },
         {
-            "name": "Memory",
-            "title": "WiredTiger cache and working set pressure",
-            "description": "When active data exceeds memory, cache churn increases read amplification and latency variance.",
-            "symptoms": [
-                "Cache eviction pressure",
-                "Frequent page faults",
-                "Latency spikes under read load"
-            ],
-            "causes": [
-                "Working set larger than RAM",
-                "Poor locality in access patterns",
-                "Insufficient cache headroom"
-            ],
-            "effects": [
-                "Disk reads increase",
-                "Query latency instability",
-                "Secondary read performance drops"
-            ],
-            "mitigations": [
-                "Reduce hot working set",
-                "Archive cold data",
-                "Tune cache and schema access patterns"
-            ],
-            "metrics": [
-                "Cache used/dirty ratio",
-                "Page fault rate",
-                "Disk read IOPS",
-                "Latency jitter"
-            ],
-            "tradeoffs": [
-                "Aggressive caching improves reads but may starve writes",
-                "Archival lowers cost but increases data retrieval complexity"
-            ]
+          name: "Memory",
+          title: "WiredTiger cache and working set pressure",
+          description: "When active data exceeds memory, cache churn increases read amplification and latency variance.",
+          symptoms: ["Cache eviction pressure","Frequent page faults","Latency spikes under read load"],
+          causes: ["Working set larger than RAM","Poor locality in access patterns","Insufficient cache headroom"],
+          effects: ["Disk reads increase","Query latency instability","Secondary read performance drops"],
+          mitigations: ["Reduce hot working set","Archive cold data","Tune cache and schema access patterns"],
+          metrics: ["Cache used/dirty ratio","Page fault rate","Disk read IOPS","Latency jitter"],
+          tradeoffs: ["Aggressive caching improves reads but may starve writes","Archival lowers cost but increases data retrieval complexity"]
         },
         {
-            "name": "Disk",
-            "title": "Storage and checkpoint pressure",
-            "description": "Checkpointing, journaling, and heavy write bursts can saturate disks and impact durability latency.",
-            "symptoms": [
-                "High IO wait",
-                "Journal/flush latency rises",
-                "Write latency spikes"
-            ],
-            "causes": [
-                "Slow storage class",
-                "Write burst patterns",
-                "Competing background maintenance"
-            ],
-            "effects": [
-                "Replication lag increase",
-                "Write timeout risk",
-                "Failover vulnerability"
-            ],
-            "mitigations": [
-                "Upgrade storage throughput",
-                "Smooth write bursts with batching",
-                "Schedule maintenance off-peak"
-            ],
-            "metrics": [
-                "IO wait",
-                "Flush/checkpoint latency",
-                "Write concern latency",
-                "Disk queue depth"
-            ],
-            "tradeoffs": [
-                "Higher-end storage increases cost",
-                "Batching improves throughput but can add micro-burst latency"
-            ]
+          name: "Disk",
+          title: "Storage and checkpoint pressure",
+          description: "Checkpointing, journaling, and heavy write bursts can saturate disks and impact durability latency.",
+          symptoms: ["High IO wait","Journal/flush latency rises","Write latency spikes"],
+          causes: ["Slow storage class","Write burst patterns","Competing background maintenance"],
+          effects: ["Replication lag increase","Write timeout risk","Failover vulnerability"],
+          mitigations: ["Upgrade storage throughput","Smooth write bursts with batching","Schedule maintenance off-peak"],
+          metrics: ["IO wait","Flush/checkpoint latency","Write concern latency","Disk queue depth"],
+          tradeoffs: ["Higher-end storage increases cost","Batching improves throughput but can add micro-burst latency"]
         },
         {
-            "name": "Cluster",
-            "title": "Replica set impact under saturation",
-            "description": "Resource pressure on primary/secondaries affects replication health and failover readiness.",
-            "symptoms": [
-                "Secondary lag growth",
-                "Election sensitivity",
-                "Stale reads increase"
-            ],
-            "causes": [
-                "Primary saturation",
-                "Under-provisioned secondaries",
-                "Cross-AZ network + disk contention"
-            ],
-            "effects": [
-                "Wider inconsistency windows",
-                "Longer failover recovery",
-                "Data freshness SLA misses"
-            ],
-            "mitigations": [
-                "Capacity parity across replicas",
-                "Monitor replication lag SLOs",
-                "Tune read/write concern by criticality"
-            ],
-            "metrics": [
-                "Replication lag",
-                "Election frequency",
-                "Majority write latency",
-                "Secondary apply rate"
-            ],
-            "tradeoffs": [
-                "Stricter write concern improves correctness but increases latency",
-                "Read from secondaries improves scale but may return stale data"
-            ]
+          name: "Cluster",
+          title: "Replica set impact under saturation",
+          description: "Resource pressure on primary/secondaries affects replication health and failover readiness.",
+          symptoms: ["Secondary lag growth","Election sensitivity","Stale reads increase"],
+          causes: ["Primary saturation","Under-provisioned secondaries","Cross-AZ network + disk contention"],
+          effects: ["Wider inconsistency windows","Longer failover recovery","Data freshness SLA misses"],
+          mitigations: ["Capacity parity across replicas","Monitor replication lag SLOs","Tune read/write concern by criticality"],
+          metrics: ["Replication lag","Election frequency","Majority write latency","Secondary apply rate"],
+          tradeoffs: ["Stricter write concern improves correctness but increases latency","Read from secondaries improves scale but may return stale data"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "PostgreSQL",
-            "problem": "CPU/IO saturation under mixed workloads"
-        },
-        {
-            "tech": "Cassandra",
-            "problem": "Compaction and disk pressure"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Heap and IO contention"
-        },
-        {
-            "tech": "Redis",
-            "problem": "Memory ceiling and eviction pressure"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Broker IO saturation"
-        }
-    ],
-    "insight": "MongoDB incidents are often multi-resource: CPU, memory, and disk interact. The most reliable strategy is bottleneck isolation with targeted mitigation, not blanket scaling."
-};
+      ],
+      comparisons: [
+        { tech: "PostgreSQL", problem: "CPU/IO saturation under mixed workloads" },
+        { tech: "Cassandra", problem: "Compaction and disk pressure" },
+        { tech: "Elasticsearch", problem: "Heap and IO contention" },
+        { tech: "Redis", problem: "Memory ceiling and eviction pressure" },
+        { tech: "Kafka", problem: "Broker IO saturation" }
+      ],
+      insight: "MongoDB incidents are often multi-resource: CPU, memory, and disk interact. The most reliable strategy is bottleneck isolation with targeted mitigation, not blanket scaling."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

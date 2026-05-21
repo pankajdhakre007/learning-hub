@@ -3,108 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>Kafka — Partitioning & Data Distribution Imbalance</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kafka — Partitioning &amp; Data Distribution Imbalance</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
-    // Data configuration - reusable for different topics
     const pageData = {
       header: {
         eyebrow: "Kafka — distributed systems",
         title: "Partitioning & data distribution imbalance",
         description: "Staff+/Principal-level guide covering partition skew, broker hotspotting, consumer imbalance, and workload distribution failures across the Kafka stack."
       },
-      synonyms: [
-        "Hot partitions",
-        "Partition skew",
-        "Broker hotspotting",
-        "Uneven consumer load",
-        "Traffic skew",
-        "Data skew",
-        "Consumer skew",
-        "Uneven partition distribution"
-      ],
-      questions: [
-        "What happens if one Kafka partition becomes very hot?",
-        "How do you debug uneven Kafka consumer lag?",
-        "How would you handle partition skew in Kafka?",
-        "Why would one Kafka broker have significantly higher CPU usage?",
-        "How do bad partition keys affect Kafka scalability?",
-        "Why does adding more consumers not improve throughput sometimes?"
-      ],
+      synonyms: ["Hot partitions","Partition skew","Broker hotspotting","Uneven consumer load","Traffic skew","Data skew","Consumer skew","Uneven partition distribution"],
+      questions: ["What happens if one Kafka partition becomes very hot?","How do you debug uneven Kafka consumer lag?","How would you handle partition skew in Kafka?","Why would one Kafka broker have significantly higher CPU usage?","How do bad partition keys affect Kafka scalability?","Why does adding more consumers not improve throughput sometimes?"],
       layers: [
         {
           name: "Producer",
           title: "Producer layer distribution imbalance",
           description: "The producer determines which partition receives a message using partition keys and hashing logic. Poor partition key design is one of the most common causes of hotspotting.",
-          symptoms: ["One partition gets far higher traffic", "One broker CPU spikes disproportionately", "One consumer constantly lags", "Uneven network throughput across brokers"],
-          causes: ["Low-cardinality keys (e.g. country_code)", "Tenant hotspotting from one large customer", "Time-based burst traffic on specific keys", "Sticky partitioner batching behavior"],
-          effects: ["Localized broker saturation", "Consumer lag accumulation", "Reduced parallelism efficiency", "Increased replication pressure"],
-          mitigations: ["Use high-cardinality partition keys", "Apply composite partition keys", "Introduce key salting", "Increase partition count carefully"],
-          metrics: ["Partition-level throughput", "Bytes in/out per broker", "Consumer lag per partition", "Broker CPU utilization"],
-          tradeoffs: ["More partitions increase metadata overhead", "Key salting weakens strict ordering guarantees"]
+          symptoms: ["One partition gets far higher traffic","One broker CPU spikes disproportionately","One consumer constantly lags","Uneven network throughput across brokers"],
+          causes: ["Low-cardinality keys (e.g. country_code)","Tenant hotspotting from one large customer","Time-based burst traffic on specific keys","Sticky partitioner batching behavior"],
+          effects: ["Localized broker saturation","Consumer lag accumulation","Reduced parallelism efficiency","Increased replication pressure"],
+          mitigations: ["Use high-cardinality partition keys","Apply composite partition keys","Introduce key salting","Increase partition count carefully"],
+          metrics: ["Partition-level throughput","Bytes in/out per broker","Consumer lag per partition","Broker CPU utilization"],
+          tradeoffs: ["More partitions increase metadata overhead","Key salting weakens strict ordering guarantees"]
         },
         {
           name: "Broker",
           title: "Broker layer distribution imbalance",
           description: "Even logically balanced traffic can cause uneven broker load due to leadership concentration or operational partition movement.",
-          symptoms: ["One broker consistently hotter than others", "Uneven disk usage across cluster", "Localized broker throttling", "High network utilization on specific brokers"],
-          causes: ["Uneven partition reassignment", "Leadership imbalance", "Rack-awareness misconfiguration", "Hot partitions concentrated on few brokers"],
-          effects: ["Broker instability", "ISR shrink", "Leader election churn", "Cluster-wide throughput degradation"],
-          mitigations: ["Preferred leader election", "Partition reassignment balancing", "Rack-aware placement", "Broker scaling"],
-          metrics: ["Leader partition count", "Broker disk usage", "Broker network throughput", "Replication fetch latency"],
-          tradeoffs: ["Frequent reassignment may temporarily destabilize the cluster", "More brokers increase operational complexity"]
+          symptoms: ["One broker consistently hotter than others","Uneven disk usage across cluster","Localized broker throttling","High network utilization on specific brokers"],
+          causes: ["Uneven partition reassignment","Leadership imbalance","Rack-awareness misconfiguration","Hot partitions concentrated on few brokers"],
+          effects: ["Broker instability","ISR shrink","Leader election churn","Cluster-wide throughput degradation"],
+          mitigations: ["Preferred leader election","Partition reassignment balancing","Rack-aware placement","Broker scaling"],
+          metrics: ["Leader partition count","Broker disk usage","Broker network throughput","Replication fetch latency"],
+          tradeoffs: ["Frequent reassignment may temporarily destabilize the cluster","More brokers increase operational complexity"]
         },
         {
           name: "Consumer",
           title: "Consumer layer distribution imbalance",
           description: "Consumer groups rely on partition-to-consumer assignment. Hot partitions naturally create overloaded consumers even when the consumer group is large.",
-          symptoms: ["One consumer constantly lagging", "Other consumers mostly idle", "Uneven CPU utilization across group", "Slow dashboard freshness"],
-          causes: ["Hot partitions upstream", "Insufficient partition count", "Uneven batch sizes", "Blocking downstream dependencies"],
-          effects: ["Consumer lag growth", "Inefficient autoscaling", "Reduced processing throughput", "SLA degradation"],
-          mitigations: ["Increase partition count", "Improve partition key distribution", "Optimize downstream processing", "Adaptive consumer scaling"],
-          metrics: ["Lag per partition", "Consumer throughput", "Processing latency", "Consumer CPU usage"],
-          tradeoffs: ["More consumers do not help when partition count is low", "Over-scaling consumers may increase rebalance overhead"]
+          symptoms: ["One consumer constantly lagging","Other consumers mostly idle","Uneven CPU utilization across group","Slow dashboard freshness"],
+          causes: ["Hot partitions upstream","Insufficient partition count","Uneven batch sizes","Blocking downstream dependencies"],
+          effects: ["Consumer lag growth","Inefficient autoscaling","Reduced processing throughput","SLA degradation"],
+          mitigations: ["Increase partition count","Improve partition key distribution","Optimize downstream processing","Adaptive consumer scaling"],
+          metrics: ["Lag per partition","Consumer throughput","Processing latency","Consumer CPU usage"],
+          tradeoffs: ["More consumers do not help when partition count is low","Over-scaling consumers may increase rebalance overhead"]
         },
         {
           name: "Storage",
           title: "Storage layer distribution imbalance",
           description: "Hot partitions create uneven disk growth and storage IO pressure across brokers, which can cascade into replication and stability issues.",
-          symptoms: ["One broker disk nearly full", "Flush latency spikes", "Page cache pressure", "Replication slowdown"],
-          causes: ["Partition skew", "Uneven retention configuration", "Replication concentration", "Hot broker assignment"],
-          effects: ["Replication lag", "ISR shrink", "Broker instability", "Potential cascading cluster failures"],
-          mitigations: ["Partition rebalancing", "Tiered storage", "Retention tuning", "Broker scaling"],
-          metrics: ["Disk utilization", "IO wait", "Page cache hit ratio", "Replication lag"],
-          tradeoffs: ["Longer retention improves replay but amplifies storage pressure", "Tiered storage adds operational complexity"]
+          symptoms: ["One broker disk nearly full","Flush latency spikes","Page cache pressure","Replication slowdown"],
+          causes: ["Partition skew","Uneven retention configuration","Replication concentration","Hot broker assignment"],
+          effects: ["Replication lag","ISR shrink","Broker instability","Potential cascading cluster failures"],
+          mitigations: ["Partition rebalancing","Tiered storage","Retention tuning","Broker scaling"],
+          metrics: ["Disk utilization","IO wait","Page cache hit ratio","Replication lag"],
+          tradeoffs: ["Longer retention improves replay but amplifies storage pressure","Tiered storage adds operational complexity"]
         }
       ],
       comparisons: [
@@ -116,9 +77,7 @@
       ],
       insight: "Distributed systems scale efficiently only when workload distribution remains balanced across compute, storage, network, and coordination layers."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

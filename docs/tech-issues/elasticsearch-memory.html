@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Elasticsearch — Heap & Memory Pressure</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Elasticsearch — Heap &amp; Memory Pressure</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Elasticsearch — JVM memory behavior",
-        "title": "Heap and memory pressure",
-        "description": "Guide covering heap exhaustion, GC pressure, memory circuit breakers, and query-memory tradeoffs."
-    },
-    "synonyms": [
-        "GC pressure",
-        "Heap exhaustion",
-        "Old-gen saturation",
-        "Circuit breaker trips",
-        "Fielddata pressure",
-        "Heap thrashing",
-        "JVM memory pressure",
-        "GC pause spikes"
-    ],
-    "questions": [
-        "Why are Elasticsearch nodes spending too much time in GC?",
-        "What causes circuit breaker exceptions?",
-        "How do aggregations impact heap?",
-        "How should heap be sized relative to filesystem cache?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Elasticsearch — JVM memory behavior",
+        title: "Heap and memory pressure",
+        description: "Guide covering heap exhaustion, GC pressure, memory circuit breakers, and query-memory tradeoffs."
+      },
+      synonyms: ["GC pressure","Heap exhaustion","Old-gen saturation","Circuit breaker trips","Fielddata pressure","Heap thrashing","JVM memory pressure","GC pause spikes"],
+      questions: ["Why are Elasticsearch nodes spending too much time in GC?","What causes circuit breaker exceptions?","How do aggregations impact heap?","How should heap be sized relative to filesystem cache?"],
+      layers: [
         {
-            "name": "Queries",
-            "title": "Query and aggregation memory demand",
-            "description": "Search and aggregation workloads can consume heap quickly under concurrency.",
-            "symptoms": [
-                "GC pauses increase during heavy queries",
-                "Circuit breaker exceptions",
-                "Search latency spikes"
-            ],
-            "causes": [
-                "High-cardinality aggregations",
-                "Large result windows",
-                "Excessive concurrent heavy queries"
-            ],
-            "effects": [
-                "Request rejections",
-                "Tail-latency inflation",
-                "Node instability"
-            ],
-            "mitigations": [
-                "Constrain expensive query patterns",
-                "Use pagination/search_after wisely",
-                "Pre-aggregate where possible"
-            ],
-            "metrics": [
-                "Query memory usage",
-                "Breaker trip count",
-                "Search latency percentiles",
-                "Rejected requests"
-            ],
-            "tradeoffs": [
-                "Tighter limits improve stability but may block analytical queries",
-                "Richer query capability increases memory risk"
-            ]
+          name: "Queries",
+          title: "Query and aggregation memory demand",
+          description: "Search and aggregation workloads can consume heap quickly under concurrency.",
+          symptoms: ["GC pauses increase during heavy queries","Circuit breaker exceptions","Search latency spikes"],
+          causes: ["High-cardinality aggregations","Large result windows","Excessive concurrent heavy queries"],
+          effects: ["Request rejections","Tail-latency inflation","Node instability"],
+          mitigations: ["Constrain expensive query patterns","Use pagination/search_after wisely","Pre-aggregate where possible"],
+          metrics: ["Query memory usage","Breaker trip count","Search latency percentiles","Rejected requests"],
+          tradeoffs: ["Tighter limits improve stability but may block analytical queries","Richer query capability increases memory risk"]
         },
         {
-            "name": "Heap",
-            "title": "JVM heap occupancy and GC behavior",
-            "description": "Heap pressure and GC tuning directly affect latency and throughput stability.",
-            "symptoms": [
-                "Old-gen near full",
-                "Long stop-the-world pauses",
-                "Throughput drops during GC cycles"
-            ],
-            "causes": [
-                "Heap undersized for workload",
-                "Object churn from heavy query patterns",
-                "Poor GC tuning defaults for workload"
-            ],
-            "effects": [
-                "Latency outliers",
-                "Node eviction risk",
-                "Cluster rebalancing churn"
-            ],
-            "mitigations": [
-                "Right-size heap and workload limits",
-                "Tune GC with production data",
-                "Reduce allocation-heavy query patterns"
-            ],
-            "metrics": [
-                "Heap used percent",
-                "Old-gen occupancy",
-                "GC pause duration",
-                "GC frequency"
-            ],
-            "tradeoffs": [
-                "Larger heap reduces frequency but can increase pause duration",
-                "Smaller heap improves cache availability but raises GC pressure"
-            ]
+          name: "Heap",
+          title: "JVM heap occupancy and GC behavior",
+          description: "Heap pressure and GC tuning directly affect latency and throughput stability.",
+          symptoms: ["Old-gen near full","Long stop-the-world pauses","Throughput drops during GC cycles"],
+          causes: ["Heap undersized for workload","Object churn from heavy query patterns","Poor GC tuning defaults for workload"],
+          effects: ["Latency outliers","Node eviction risk","Cluster rebalancing churn"],
+          mitigations: ["Right-size heap and workload limits","Tune GC with production data","Reduce allocation-heavy query patterns"],
+          metrics: ["Heap used percent","Old-gen occupancy","GC pause duration","GC frequency"],
+          tradeoffs: ["Larger heap reduces frequency but can increase pause duration","Smaller heap improves cache availability but raises GC pressure"]
         },
         {
-            "name": "Data Structures",
-            "title": "Fielddata/doc values and cache pressure",
-            "description": "Fielddata and related structures can consume large memory unexpectedly.",
-            "symptoms": [
-                "Memory growth on specific fields",
-                "Frequent evictions from caches",
-                "Unpredictable node memory behavior"
-            ],
-            "causes": [
-                "Text field aggregations without keyword strategy",
-                "Overuse of fielddata",
-                "Broad query patterns with low selectivity"
-            ],
-            "effects": [
-                "Heap contention",
-                "Search slowdowns",
-                "Stability regressions"
-            ],
-            "mitigations": [
-                "Use keyword/doc_values appropriately",
-                "Restrict expensive field usage",
-                "Implement query linting for dangerous patterns"
-            ],
-            "metrics": [
-                "Fielddata memory",
-                "Query cache hit ratio",
-                "Eviction count",
-                "Field-level usage hotspots"
-            ],
-            "tradeoffs": [
-                "Restricting fields improves stability but limits ad-hoc analytics",
-                "More index fields improve flexibility but increase index cost"
-            ]
+          name: "Data Structures",
+          title: "Fielddata/doc values and cache pressure",
+          description: "Fielddata and related structures can consume large memory unexpectedly.",
+          symptoms: ["Memory growth on specific fields","Frequent evictions from caches","Unpredictable node memory behavior"],
+          causes: ["Text field aggregations without keyword strategy","Overuse of fielddata","Broad query patterns with low selectivity"],
+          effects: ["Heap contention","Search slowdowns","Stability regressions"],
+          mitigations: ["Use keyword/doc_values appropriately","Restrict expensive field usage","Implement query linting for dangerous patterns"],
+          metrics: ["Fielddata memory","Query cache hit ratio","Eviction count","Field-level usage hotspots"],
+          tradeoffs: ["Restricting fields improves stability but limits ad-hoc analytics","More index fields improve flexibility but increase index cost"]
         },
         {
-            "name": "Recovery",
-            "title": "Memory pressure impact on cluster recovery",
-            "description": "Memory-stressed nodes recover slowly and can trigger cascading reallocation.",
-            "symptoms": [
-                "Frequent node restarts",
-                "Shard relocation churn",
-                "Prolonged yellow/red states"
-            ],
-            "causes": [
-                "OOM events",
-                "Insufficient headroom during peak traffic",
-                "Heavy recovery traffic plus live load"
-            ],
-            "effects": [
-                "Extended degraded cluster state",
-                "Higher operational risk",
-                "SLO misses"
-            ],
-            "mitigations": [
-                "Reserve memory headroom for recovery",
-                "Throttle recovery if needed",
-                "Stage heavy operations away from peak windows"
-            ],
-            "metrics": [
-                "Node restart count",
-                "Recovery duration",
-                "Shard relocation events",
-                "Cluster health transitions"
-            ],
-            "tradeoffs": [
-                "More headroom improves resilience but lowers nominal utilization",
-                "Throttled recovery reduces pressure but extends convergence time"
-            ]
+          name: "Recovery",
+          title: "Memory pressure impact on cluster recovery",
+          description: "Memory-stressed nodes recover slowly and can trigger cascading reallocation.",
+          symptoms: ["Frequent node restarts","Shard relocation churn","Prolonged yellow/red states"],
+          causes: ["OOM events","Insufficient headroom during peak traffic","Heavy recovery traffic plus live load"],
+          effects: ["Extended degraded cluster state","Higher operational risk","SLO misses"],
+          mitigations: ["Reserve memory headroom for recovery","Throttle recovery if needed","Stage heavy operations away from peak windows"],
+          metrics: ["Node restart count","Recovery duration","Shard relocation events","Cluster health transitions"],
+          tradeoffs: ["More headroom improves resilience but lowers nominal utilization","Throttled recovery reduces pressure but extends convergence time"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "JVM services",
-            "problem": "GC pause amplification"
-        },
-        {
-            "tech": "Redis",
-            "problem": "Memory ceiling pressure"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Working set overflow"
-        },
-        {
-            "tech": "Cassandra",
-            "problem": "Heap/compaction contention"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Page cache pressure under IO load"
-        }
-    ],
-    "insight": "Elasticsearch memory incidents are frequently query-shape incidents. Capacity planning must include workload guardrails, not only bigger nodes."
-};
+      ],
+      comparisons: [
+        { tech: "JVM services", problem: "GC pause amplification" },
+        { tech: "Redis", problem: "Memory ceiling pressure" },
+        { tech: "MongoDB", problem: "Working set overflow" },
+        { tech: "Cassandra", problem: "Heap/compaction contention" },
+        { tech: "Kafka", problem: "Page cache pressure under IO load" }
+      ],
+      insight: "Elasticsearch memory incidents are frequently query-shape incidents. Capacity planning must include workload guardrails, not only bigger nodes."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

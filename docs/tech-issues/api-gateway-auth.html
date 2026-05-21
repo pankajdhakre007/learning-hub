@@ -3,38 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>API Gateway - Authentication &amp; Authorization Failures</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>API Gateway — Authentication &amp; Authorization Failures</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
       header: {
@@ -42,189 +20,63 @@
         title: "Authentication and authorization failures",
         description: "Guide covering token validation errors, policy mismatches, key rotation incidents, and auth dependency failures."
       },
-      synonyms: [
-        "Auth failures",
-        "Token validation errors",
-        "JWT verification failures",
-        "Policy mismatch",
-        "401 spikes",
-        "403 spikes",
-        "Signature errors",
-        "IdP dependency failures"
-      ],
-      questions: [
-        "Why are valid users suddenly receiving 401/403?",
-        "How does key rotation break token validation?",
-        "How do policy updates trigger authorization regressions?",
-        "What happens when identity provider latency increases?"
-      ],
+      synonyms: ["Auth failures","Token validation errors","JWT verification failures","Policy mismatch","401 spikes","403 spikes","Signature errors","IdP dependency failures"],
+      questions: ["Why are valid users suddenly receiving 401/403?","How does key rotation break token validation?","How do policy updates trigger authorization regressions?","What happens when identity provider latency increases?"],
       layers: [
         {
           name: "Tokens",
           title: "Token parsing and signature validation",
           description: "Token verification can fail due to key, clock, format, or algorithm mismatches.",
-          symptoms: [
-            "401 spikes for previously valid sessions",
-            "Signature verification errors",
-            "Clock skew related token rejects"
-          ],
-          causes: [
-            "Stale JWKS cache",
-            "Bad key rotation rollout",
-            "Invalid issuer/audience config"
-          ],
-          effects: [
-            "User login disruption",
-            "Revenue-impacting request failures",
-            "Support load spikes"
-          ],
-          mitigations: [
-            "Harden key rotation workflow",
-            "Use resilient JWKS cache strategy",
-            "Monitor token validation failure categories"
-          ],
-          metrics: [
-            "401 rate",
-            "Validation error breakdown",
-            "JWKS fetch latency/error",
-            "Clock skew incidents"
-          ],
-          tradeoffs: [
-            "Short key cache TTL improves freshness but raises dependency calls",
-            "Long TTL reduces dependency load but risks stale keys"
-          ]
+          symptoms: ["401 spikes for previously valid sessions","Signature verification errors","Clock skew related token rejects"],
+          causes: ["Stale JWKS cache","Bad key rotation rollout","Invalid issuer/audience config"],
+          effects: ["User login disruption","Revenue-impacting request failures","Support load spikes"],
+          mitigations: ["Harden key rotation workflow","Use resilient JWKS cache strategy","Monitor token validation failure categories"],
+          metrics: ["401 rate","Validation error breakdown","JWKS fetch latency/error","Clock skew incidents"],
+          tradeoffs: ["Short key cache TTL improves freshness but raises dependency calls","Long TTL reduces dependency load but risks stale keys"]
         },
         {
           name: "Policy",
           title: "Authorization policy evaluation drift",
           description: "Policy engines can deny valid traffic when rule updates are unsafe or inconsistent.",
-          symptoms: [
-            "403 increase after policy release",
-            "Role-based access anomalies",
-            "Environment-specific auth behavior"
-          ],
-          causes: [
-            "Rule regression",
-            "Inconsistent policy deployment",
-            "Missing exception paths"
-          ],
-          effects: [
-            "Blocked legitimate access",
-            "Operational rollbacks",
-            "Compliance risk if over-permissive fix applied"
-          ],
-          mitigations: [
-            "Policy canary + tests",
-            "Versioned rollout with rollback hooks",
-            "Audit logging for denied decisions"
-          ],
-          metrics: [
-            "403 rate by route",
-            "Policy evaluation latency",
-            "Denied decision reason code",
-            "Rollback frequency"
-          ],
-          tradeoffs: [
-            "More policy checks improve governance but add latency",
-            "Simpler policies reduce regressions but may reduce granularity"
-          ]
+          symptoms: ["403 increase after policy release","Role-based access anomalies","Environment-specific auth behavior"],
+          causes: ["Rule regression","Inconsistent policy deployment","Missing exception paths"],
+          effects: ["Blocked legitimate access","Operational rollbacks","Compliance risk if over-permissive fix applied"],
+          mitigations: ["Policy canary + tests","Versioned rollout with rollback hooks","Audit logging for denied decisions"],
+          metrics: ["403 rate by route","Policy evaluation latency","Denied decision reason code","Rollback frequency"],
+          tradeoffs: ["More policy checks improve governance but add latency","Simpler policies reduce regressions but may reduce granularity"]
         },
         {
           name: "Dependencies",
           title: "Identity provider and upstream auth dependencies",
           description: "Auth decisions often depend on external IdP, introspection, or entitlement services.",
-          symptoms: [
-            "Auth latency spikes without traffic increase",
-            "Intermittent auth timeouts",
-            "Increased gateway retry activity"
-          ],
-          causes: [
-            "IdP degradation",
-            "Introspection endpoint saturation",
-            "Network instability to auth backend"
-          ],
-          effects: [
-            "Widespread request failures",
-            "Cascading retries",
-            "Poor user experience"
-          ],
-          mitigations: [
-            "Fail-open/fail-closed policy by endpoint criticality",
-            "Caching of validated claims where safe",
-            "Circuit breakers for auth dependencies"
-          ],
-          metrics: [
-            "Auth backend latency",
-            "Auth timeout rate",
-            "Retry rate",
-            "Circuit breaker open events"
-          ],
-          tradeoffs: [
-            "Caching claims improves resilience but may use stale entitlements",
-            "Fail-open improves availability but increases security risk"
-          ]
+          symptoms: ["Auth latency spikes without traffic increase","Intermittent auth timeouts","Increased gateway retry activity"],
+          causes: ["IdP degradation","Introspection endpoint saturation","Network instability to auth backend"],
+          effects: ["Widespread request failures","Cascading retries","Poor user experience"],
+          mitigations: ["Fail-open/fail-closed policy by endpoint criticality","Caching of validated claims where safe","Circuit breakers for auth dependencies"],
+          metrics: ["Auth backend latency","Auth timeout rate","Retry rate","Circuit breaker open events"],
+          tradeoffs: ["Caching claims improves resilience but may use stale entitlements","Fail-open improves availability but increases security risk"]
         },
         {
           name: "Propagation",
           title: "Credential propagation and downstream trust",
           description: "Even validated requests fail when identity context is not propagated correctly downstream.",
-          symptoms: [
-            "Downstream services reject requests with missing identity",
-            "Inconsistent principal mapping",
-            "Audit trail gaps"
-          ],
-          causes: [
-            "Header stripping/transformation errors",
-            "Token exchange misconfiguration",
-            "Mixed trust models across services"
-          ],
-          effects: [
-            "Authorization bypass or false denies",
-            "Broken traceability",
-            "Complex incident diagnosis"
-          ],
-          mitigations: [
-            "Standardize identity propagation contract",
-            "Contract tests across gateway and services",
-            "Strong audit and tracing"
-          ],
-          metrics: [
-            "Propagation error count",
-            "Downstream auth reject rate",
-            "Missing principal incidents",
-            "Audit completeness score"
-          ],
-          tradeoffs: [
-            "Richer identity context improves downstream controls but increases payload size and complexity",
-            "Stricter propagation checks can block borderline requests"
-          ]
+          symptoms: ["Downstream services reject requests with missing identity","Inconsistent principal mapping","Audit trail gaps"],
+          causes: ["Header stripping/transformation errors","Token exchange misconfiguration","Mixed trust models across services"],
+          effects: ["Authorization bypass or false denies","Broken traceability","Complex incident diagnosis"],
+          mitigations: ["Standardize identity propagation contract","Contract tests across gateway and services","Strong audit and tracing"],
+          metrics: ["Propagation error count","Downstream auth reject rate","Missing principal incidents","Audit completeness score"],
+          tradeoffs: ["Richer identity context improves downstream controls but increases payload size and complexity","Stricter propagation checks can block borderline requests"]
         }
       ],
       comparisons: [
-        {
-          tech: "OAuth Gateway",
-          problem: "Token introspection failures"
-        },
-        {
-          tech: "Kubernetes",
-          problem: "RBAC policy regressions"
-        },
-        {
-          tech: "Zero Trust Proxy",
-          problem: "Identity assertion failures"
-        },
-        {
-          tech: "MongoDB",
-          problem: "Auth backend dependency lag"
-        },
-        {
-          tech: "Elasticsearch",
-          problem: "Security realm misconfiguration"
-        }
+        { tech: "OAuth Gateway", problem: "Token introspection failures" },
+        { tech: "Kubernetes", problem: "RBAC policy regressions" },
+        { tech: "Zero Trust Proxy", problem: "Identity assertion failures" },
+        { tech: "MongoDB", problem: "Auth backend dependency lag" },
+        { tech: "Elasticsearch", problem: "Security realm misconfiguration" }
       ],
       insight: "Gateway auth incidents are usually control-plane correctness problems. Secure systems need both availability discipline and policy-change safety."
     };
-
     renderTechIssuePage(pageData);
   </script>
 </body>

@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Elasticsearch — Shard Distribution Imbalance</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Elasticsearch — Shard Distribution Imbalance</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Elasticsearch — shard allocation health",
-        "title": "Shard distribution imbalance",
-        "description": "Guide covering hot shards, uneven allocation, relocation churn, and node-level skew effects."
-    },
-    "synonyms": [
-        "Hot shards",
-        "Uneven allocation",
-        "Shard skew",
-        "Node hotspotting",
-        "Allocation imbalance",
-        "Query hotspot shard",
-        "Primary skew",
-        "Relocation churn"
-    ],
-    "questions": [
-        "Why is one Elasticsearch node overloaded?",
-        "How does shard imbalance impact latency?",
-        "What causes allocation skew after scaling events?",
-        "How do you rebalance shards safely?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Elasticsearch — shard allocation health",
+        title: "Shard distribution imbalance",
+        description: "Guide covering hot shards, uneven allocation, relocation churn, and node-level skew effects."
+      },
+      synonyms: ["Hot shards","Uneven allocation","Shard skew","Node hotspotting","Allocation imbalance","Query hotspot shard","Primary skew","Relocation churn"],
+      questions: ["Why is one Elasticsearch node overloaded?","How does shard imbalance impact latency?","What causes allocation skew after scaling events?","How do you rebalance shards safely?"],
+      layers: [
         {
-            "name": "Allocation",
-            "title": "Shard placement and allocation deciders",
-            "description": "Allocation rules can concentrate load if shard count or constraints are poorly tuned.",
-            "symptoms": [
-                "Shards per node highly uneven",
-                "Node CPU skew",
-                "Frequent balancing events"
-            ],
-            "causes": [
-                "Unbalanced shard count strategy",
-                "Overly strict allocation rules",
-                "Recent topology changes"
-            ],
-            "effects": [
-                "Localized bottlenecks",
-                "Inefficient cluster capacity usage",
-                "Higher incident probability"
-            ],
-            "mitigations": [
-                "Review shard sizing and count",
-                "Tune allocation awareness pragmatically",
-                "Rebalance with controlled pace"
-            ],
-            "metrics": [
-                "Shards per node",
-                "CPU/heap variance",
-                "Relocation events",
-                "Allocation decision failures"
-            ],
-            "tradeoffs": [
-                "Aggressive balancing improves utilization but adds churn",
-                "Conservative balancing reduces churn but may keep hotspots longer"
-            ]
+          name: "Allocation",
+          title: "Shard placement and allocation deciders",
+          description: "Allocation rules can concentrate load if shard count or constraints are poorly tuned.",
+          symptoms: ["Shards per node highly uneven","Node CPU skew","Frequent balancing events"],
+          causes: ["Unbalanced shard count strategy","Overly strict allocation rules","Recent topology changes"],
+          effects: ["Localized bottlenecks","Inefficient cluster capacity usage","Higher incident probability"],
+          mitigations: ["Review shard sizing and count","Tune allocation awareness pragmatically","Rebalance with controlled pace"],
+          metrics: ["Shards per node","CPU/heap variance","Relocation events","Allocation decision failures"],
+          tradeoffs: ["Aggressive balancing improves utilization but adds churn","Conservative balancing reduces churn but may keep hotspots longer"]
         },
         {
-            "name": "Query Path",
-            "title": "Hot shard query concentration",
-            "description": "Traffic concentration on specific shards drives node hotspots even with balanced storage.",
-            "symptoms": [
-                "One shard dominates query time",
-                "Tail latency tied to shard subset",
-                "Replica nodes unevenly loaded"
-            ],
-            "causes": [
-                "Skewed tenant/data access",
-                "Query routing bias",
-                "Index strategy concentrating hot data"
-            ],
-            "effects": [
-                "P99 degradation",
-                "Reduced throughput",
-                "Localized failures under peak"
-            ],
-            "mitigations": [
-                "Adjust routing/index design",
-                "Use adaptive replica selection",
-                "Split or reindex hot datasets"
-            ],
-            "metrics": [
-                "Query rate per shard",
-                "Latency per shard",
-                "Hot shard hit ratio",
-                "Node request distribution"
-            ],
-            "tradeoffs": [
-                "Reindexing improves distribution but is operationally expensive",
-                "More shards increase parallelism but raise overhead"
-            ]
+          name: "Query Path",
+          title: "Hot shard query concentration",
+          description: "Traffic concentration on specific shards drives node hotspots even with balanced storage.",
+          symptoms: ["One shard dominates query time","Tail latency tied to shard subset","Replica nodes unevenly loaded"],
+          causes: ["Skewed tenant/data access","Query routing bias","Index strategy concentrating hot data"],
+          effects: ["P99 degradation","Reduced throughput","Localized failures under peak"],
+          mitigations: ["Adjust routing/index design","Use adaptive replica selection","Split or reindex hot datasets"],
+          metrics: ["Query rate per shard","Latency per shard","Hot shard hit ratio","Node request distribution"],
+          tradeoffs: ["Reindexing improves distribution but is operationally expensive","More shards increase parallelism but raise overhead"]
         },
         {
-            "name": "Topology",
-            "title": "Scaling events and relocation side effects",
-            "description": "Node adds/removes can induce temporary imbalance and performance volatility.",
-            "symptoms": [
-                "Latency spikes during relocation",
-                "Recovery traffic saturates nodes",
-                "Persistent skew after scale changes"
-            ],
-            "causes": [
-                "Too many concurrent relocations",
-                "Insufficient relocation throttling",
-                "Unbalanced node hardware profiles"
-            ],
-            "effects": [
-                "Transient SLO breaches",
-                "Long stabilization windows",
-                "Operator fatigue"
-            ],
-            "mitigations": [
-                "Throttle relocation during traffic peaks",
-                "Use hardware-consistent node groups",
-                "Verify post-scale balance checks"
-            ],
-            "metrics": [
-                "Relocation throughput",
-                "Recovery duration",
-                "Latency during topology changes",
-                "Post-change skew score"
-            ],
-            "tradeoffs": [
-                "Slow relocations improve stability but delay balance",
-                "Fast relocations recover quicker but risk user impact"
-            ]
+          name: "Topology",
+          title: "Scaling events and relocation side effects",
+          description: "Node adds/removes can induce temporary imbalance and performance volatility.",
+          symptoms: ["Latency spikes during relocation","Recovery traffic saturates nodes","Persistent skew after scale changes"],
+          causes: ["Too many concurrent relocations","Insufficient relocation throttling","Unbalanced node hardware profiles"],
+          effects: ["Transient SLO breaches","Long stabilization windows","Operator fatigue"],
+          mitigations: ["Throttle relocation during traffic peaks","Use hardware-consistent node groups","Verify post-scale balance checks"],
+          metrics: ["Relocation throughput","Recovery duration","Latency during topology changes","Post-change skew score"],
+          tradeoffs: ["Slow relocations improve stability but delay balance","Fast relocations recover quicker but risk user impact"]
         },
         {
-            "name": "Operations",
-            "title": "Continuous skew detection and controls",
-            "description": "Preventive controls catch emerging imbalance before it becomes incident-grade.",
-            "symptoms": [
-                "Hotspot incidents recur on same indices",
-                "Late detection after user-facing impact",
-                "Manual balancing becomes routine"
-            ],
-            "causes": [
-                "No shard-level SLOs",
-                "Weak anomaly detection",
-                "Reactive-only balancing process"
-            ],
-            "effects": [
-                "Repeat incidents",
-                "Higher toil",
-                "Unpredictable performance"
-            ],
-            "mitigations": [
-                "Establish shard skew alerts",
-                "Automate periodic balance checks",
-                "Define ownership for index lifecycle decisions"
-            ],
-            "metrics": [
-                "Skew incident frequency",
-                "Alert lead time",
-                "Manual rebalance count",
-                "SLO compliance by index"
-            ],
-            "tradeoffs": [
-                "More automation requires robust safeguards",
-                "More governance slows ad-hoc index changes"
-            ]
+          name: "Operations",
+          title: "Continuous skew detection and controls",
+          description: "Preventive controls catch emerging imbalance before it becomes incident-grade.",
+          symptoms: ["Hotspot incidents recur on same indices","Late detection after user-facing impact","Manual balancing becomes routine"],
+          causes: ["No shard-level SLOs","Weak anomaly detection","Reactive-only balancing process"],
+          effects: ["Repeat incidents","Higher toil","Unpredictable performance"],
+          mitigations: ["Establish shard skew alerts","Automate periodic balance checks","Define ownership for index lifecycle decisions"],
+          metrics: ["Skew incident frequency","Alert lead time","Manual rebalance count","SLO compliance by index"],
+          tradeoffs: ["More automation requires robust safeguards","More governance slows ad-hoc index changes"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Kafka",
-            "problem": "Hot partitions and broker skew"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Hot shards"
-        },
-        {
-            "tech": "Cassandra",
-            "problem": "Token imbalance"
-        },
-        {
-            "tech": "Kubernetes",
-            "problem": "Placement skew across nodes"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Route-level hotspotting"
-        }
-    ],
-    "insight": "Shard skew is not just a data-size issue; it is a traffic and topology issue. Healthy clusters balance both bytes and requests."
-};
+      ],
+      comparisons: [
+        { tech: "Kafka", problem: "Hot partitions and broker skew" },
+        { tech: "MongoDB", problem: "Hot shards" },
+        { tech: "Cassandra", problem: "Token imbalance" },
+        { tech: "Kubernetes", problem: "Placement skew across nodes" },
+        { tech: "API Gateway", problem: "Route-level hotspotting" }
+      ],
+      insight: "Shard skew is not just a data-size issue; it is a traffic and topology issue. Healthy clusters balance both bytes and requests."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

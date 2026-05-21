@@ -3,38 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <title>Cassandra — Data Distribution Imbalance</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
       header: {
@@ -42,70 +20,52 @@
         title: "Data distribution imbalance",
         description: "Staff+/Principal-level guide covering hot partitions, partition skew, shard imbalance, and uneven token distribution in Cassandra clusters."
       },
-      synonyms: [
-        "Hot partitions",
-        "Partition skew",
-        "Uneven token distribution",
-        "Hot shards",
-        "Uneven node utilization",
-        "Shard hotspotting",
-        "Uneven partition load",
-        "Token ring imbalance"
-      ],
-      questions: [
-        "Why is one Cassandra node consistently overloaded?",
-        "How do I detect hot partitions in Cassandra?",
-        "What causes uneven token distribution?",
-        "Why is partition read/write latency variable?",
-        "How does shard key design affect Cassandra performance?",
-        "What causes one node to have higher CPU than others?",
-        "How do I rebalance uneven data distribution?",
-        "Why is one node filling disk faster?"
-      ],
+      synonyms: ["Hot partitions","Partition skew","Uneven token distribution","Hot shards","Uneven node utilization","Shard hotspotting","Uneven partition load","Token ring imbalance"],
+      questions: ["Why is one Cassandra node consistently overloaded?","How do I detect hot partitions in Cassandra?","What causes uneven token distribution?","Why is partition read/write latency variable?","How does shard key design affect Cassandra performance?","What causes one node to have higher CPU than others?","How do I rebalance uneven data distribution?","Why is one node filling disk faster?"],
       layers: [
         {
           name: "Partition Key",
           title: "Partition key design & cardinality",
           description: "Cassandra distributes data using a hash ring where the partition key determines which node owns each row. Poor partition key design (low cardinality, skewed distributions) causes uneven data distribution and hotspotting.",
-          symptoms: ["One node has significantly more data", "One node receiving more requests", "Uneven CPU utilization across cluster", "One node disk filling faster"],
-          causes: ["Low-cardinality partition key (e.g., country_code)", "Tenant hotspotting where one customer dominates", "Time-based skew with time-series data", "Boolean flags as partition key"],
-          effects: ["Hotspot node becomes bottleneck", "Other nodes underutilized", "Uneven memory and storage pressure", "Cascading failures when hotspot overloaded"],
-          mitigations: ["Use high-cardinality partition key", "Composite partition key with tenant + ID", "Bucketing or salting strategy", "Redesign table schema", "Use secondary indexes for alternative access"],
-          metrics: ["Partition size distribution", "Request rate per node", "CPU utilization variance", "Disk usage per node", "P99 latency by node"],
-          tradeoffs: ["Composite keys increase query complexity", "Secondary indexes add write overhead", "Bucketing increases partition count"]
+          symptoms: ["One node has significantly more data","One node receiving more requests","Uneven CPU utilization across cluster","One node disk filling faster"],
+          causes: ["Low-cardinality partition key (e.g., country_code)","Tenant hotspotting where one customer dominates","Time-based skew with time-series data","Boolean flags as partition key"],
+          effects: ["Hotspot node becomes bottleneck","Other nodes underutilized","Uneven memory and storage pressure","Cascading failures when hotspot overloaded"],
+          mitigations: ["Use high-cardinality partition key","Composite partition key with tenant + ID","Bucketing or salting strategy","Redesign table schema","Use secondary indexes for alternative access"],
+          metrics: ["Partition size distribution","Request rate per node","CPU utilization variance","Disk usage per node","P99 latency by node"],
+          tradeoffs: ["Composite keys increase query complexity","Secondary indexes add write overhead","Bucketing increases partition count"]
         },
         {
           name: "Token",
           title: "Token assignment & ring imbalance",
           description: "Cassandra uses tokens to assign partitions to nodes. Uneven token assignment or node failures that aren't rebalanced cause some nodes to own more partition ranges than others.",
-          symptoms: ["Token ownership imbalanced across nodes", "Some nodes handling more replicas", "Uneven read repair traffic", "Compaction storms on specific nodes"],
-          causes: ["Manual token assignment without balancing", "Nodes not fully integrated after restart", "Uneven replica placement", "Rack awareness misconfiguration"],
-          effects: ["Uneven data and request distribution", "Some nodes overloaded while others idle", "Repair storms on unbalanced nodes", "Cascading failures from load imbalance"],
-          mitigations: ["Use virtual nodes (vnodes)", "Rebalance cluster after topology changes", "Monitor token distribution", "Implement proper rack awareness", "Run cleanup after node join"],
-          metrics: ["Tokens per node", "Partitions per node", "Token distribution skew", "Disk usage per node", "Request distribution"],
-          tradeoffs: ["Rebalancing causes data movement", "vnodes increase compaction load", "Cleanup reduces availability"]
+          symptoms: ["Token ownership imbalanced across nodes","Some nodes handling more replicas","Uneven read repair traffic","Compaction storms on specific nodes"],
+          causes: ["Manual token assignment without balancing","Nodes not fully integrated after restart","Uneven replica placement","Rack awareness misconfiguration"],
+          effects: ["Uneven data and request distribution","Some nodes overloaded while others idle","Repair storms on unbalanced nodes","Cascading failures from load imbalance"],
+          mitigations: ["Use virtual nodes (vnodes)","Rebalance cluster after topology changes","Monitor token distribution","Implement proper rack awareness","Run cleanup after node join"],
+          metrics: ["Tokens per node","Partitions per node","Token distribution skew","Disk usage per node","Request distribution"],
+          tradeoffs: ["Rebalancing causes data movement","vnodes increase compaction load","Cleanup reduces availability"]
         },
         {
           name: "Replica",
           title: "Replica placement & replication factor",
           description: "Cassandra replicates data to multiple nodes based on replication factor. Poor replica placement or replication factor mismatches can concentrate replicas on overloaded nodes.",
-          symptoms: ["All replicas concentrated on few nodes", "Some nodes receiving all replica writes", "Replication lag on specific nodes", "Uneven write load across cluster"],
-          causes: ["Replication factor too low for replication strategy", "Rack awareness not configured", "Data center topology misunderstood", "Replicas placed on same rack"],
-          effects: ["Write load concentrated on few nodes", "Replication bottleneck", "Lack of fault tolerance", "Coordinated failures possible"],
-          mitigations: ["Increase replication factor", "Configure rack awareness properly", "Tune replication strategy", "Monitor replica distribution", "Implement multi-DC replication"],
-          metrics: ["Replicas per node", "Replication latency", "Write load distribution", "Replica placement distribution", "Repair success rate"],
-          tradeoffs: ["Higher replication factor increases storage", "Cross-DC replication adds latency", "Complex topology is harder to manage"]
+          symptoms: ["All replicas concentrated on few nodes","Some nodes receiving all replica writes","Replication lag on specific nodes","Uneven write load across cluster"],
+          causes: ["Replication factor too low for replication strategy","Rack awareness not configured","Data center topology misunderstood","Replicas placed on same rack"],
+          effects: ["Write load concentrated on few nodes","Replication bottleneck","Lack of fault tolerance","Coordinated failures possible"],
+          mitigations: ["Increase replication factor","Configure rack awareness properly","Tune replication strategy","Monitor replica distribution","Implement multi-DC replication"],
+          metrics: ["Replicas per node","Replication latency","Write load distribution","Replica placement distribution","Repair success rate"],
+          tradeoffs: ["Higher replication factor increases storage","Cross-DC replication adds latency","Complex topology is harder to manage"]
         },
         {
           name: "Workload",
           title: "Uneven query workload distribution",
           description: "Even with balanced data distribution, queries can be uneven if clients are biased toward certain data ranges or if certain partitions are accessed much more frequently.",
-          symptoms: ["One node CPU spiking despite balanced data", "Read traffic not evenly distributed", "Specific partition requests dominating", "Node load varies by time of day"],
-          causes: ["Client-side key distribution bias", "Cache locality bias from application", "Popular data in few partitions", "Time-series access patterns"],
-          effects: ["Bottleneck node limits throughput", "Other nodes underutilized", "Tail latency from hotspot", "Cascading impact to application"],
-          mitigations: ["Implement client-side load balancing", "Cache hot partitions externally", "Denormalize data for access patterns", "Use caching layer", "Monitor and redistribute load"],
-          metrics: ["Requests per partition", "CPU per node", "Request latency distribution", "Cache hit ratio", "Hot partition detection"],
-          tradeoffs: ["Denormalization increases storage", "External caching adds complexity", "Load balancing adds latency"]
+          symptoms: ["One node CPU spiking despite balanced data","Read traffic not evenly distributed","Specific partition requests dominating","Node load varies by time of day"],
+          causes: ["Client-side key distribution bias","Cache locality bias from application","Popular data in few partitions","Time-series access patterns"],
+          effects: ["Bottleneck node limits throughput","Other nodes underutilized","Tail latency from hotspot","Cascading impact to application"],
+          mitigations: ["Implement client-side load balancing","Cache hot partitions externally","Denormalize data for access patterns","Use caching layer","Monitor and redistribute load"],
+          metrics: ["Requests per partition","CPU per node","Request latency distribution","Cache hit ratio","Hot partition detection"],
+          tradeoffs: ["Denormalization increases storage","External caching adds complexity","Load balancing adds latency"]
         }
       ],
       comparisons: [
@@ -115,11 +75,9 @@
         { tech: "Elasticsearch", problem: "Hot shards" },
         { tech: "HBase", problem: "Region hotspotting" }
       ],
-      insight: "Cassandra data distribution imbalance is fundamentally a schema and token design problem. Unlike some databases where queries drive optimization, Cassandra distributes data at write time based on partition keys. Poor partition key selection is irreversible without re-seeding the table. Strong Cassandra operators understand their access patterns during schema design, not after deployment. Understanding token ring topology, replication strategy, and partition key cardinality is essential for scalable Cassandra operations."
+      insight: "Cassandra data distribution imbalance is fundamentally a schema and token design problem. Poor partition key selection is irreversible without re-seeding the table. Understanding token ring topology, replication strategy, and partition key cardinality is essential for scalable Cassandra operations."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

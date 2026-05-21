@@ -3,108 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>System Design Interview Hub — Learning Docs</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="assets/css/tokens.css" />
-  <link rel="stylesheet" href="assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="assets/css/components.css" />
-  <link rel="stylesheet" href="assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>System Design Interview Hub</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
+
+  <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
-        <a class="navbar-item" href="index.html" aria-current="page">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
+        <a class="navbar-item" href="index.html" aria-current="page">✦ Learning Hub</a>
+        <button class="navbar-burger" aria-label="Open navigation menu" aria-expanded="false" data-target="docs-nav">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
       </div>
-      <div class="navbar-menu is-active">
+      <div id="docs-nav" class="navbar-menu">
         <div class="navbar-end">
-          <a class="navbar-item" href="leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="tech-issues.html">Tech Issues</a>
-          <a class="navbar-item" href="fulfillment-load-comparison.html">Fulfillment</a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link" href="#">Pages</a>
+            <div class="navbar-dropdown is-right">
+              <a class="navbar-item" href="leetcode.html">🧩 LeetCode</a>
+              <a class="navbar-item" href="benchmarks.html">📊 Benchmarks</a>
+              <a class="navbar-item" href="tech-issues.html">🔥 Tech Issues</a>
+              <a class="navbar-item" href="fulfillment.html">📦 Fulfillment</a>
+            </div>
+          </div>
+          <div class="navbar-item">
+            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+          </div>
         </div>
       </div>
     </div>
   </nav>
-  <main>
-    <header class="page-header">
-      <div class="container">
-        <div class="page-header__inner">
-          <div class="page-header__meta">
-            <p class="heading">Interview Preparation</p>
-            <h1 class="title">System Design Interview Hub</h1>
-            <p class="subtitle">Production failure playbooks, benchmark comparisons, algorithm drill-downs, and load reference data curated for senior engineering interviews.</p>
-          </div>
-        </div>
+
+  <div class="docs-page-header">
+    <div class="container">
+      <p class="docs-eyebrow">Interview Preparation</p>
+      <h1>System Design Interview Hub</h1>
+      <p class="docs-subtitle">Production failure playbooks, benchmark comparisons, algorithm drill-downs, and load reference data curated for senior engineering interviews.</p>
+    </div>
+  </div>
+
+  <main class="section" id="main">
+    <div class="container">
+      <div class="docs-metrics-row">
+
+        <a class="docs-metric-card" href="leetcode.html">
+          <p class="docs-metric-label">Algorithm Practice</p>
+          <p class="docs-metric-value">🧩</p>
+          <p class="docs-metric-note">LeetCode Questions</p>
+        </a>
+
+        <a class="docs-metric-card" href="benchmarks.html">
+          <p class="docs-metric-label">Infrastructure</p>
+          <p class="docs-metric-value">📊</p>
+          <p class="docs-metric-note">Technology Benchmarks</p>
+        </a>
+
+        <a class="docs-metric-card" href="tech-issues.html">
+          <p class="docs-metric-label">Deep-Dives</p>
+          <p class="docs-metric-value">🔥</p>
+          <p class="docs-metric-note">Tech Issues &amp; Resolutions</p>
+        </a>
+
+        <a class="docs-metric-card" href="fulfillment.html">
+          <p class="docs-metric-label">Operations</p>
+          <p class="docs-metric-value">📦</p>
+          <p class="docs-metric-note">Fulfillment Load</p>
+        </a>
+
       </div>
-    </header>
-
-    <section class="section" id="main">
-      <div class="container">
-        <div class="columns is-multiline">
-          <div class="column is-half-desktop is-full-tablet">
-            <div class="box">
-              <h2 class="hub-card__title">LeetCode Questions</h2>
-              <p class="hub-card__desc">Curated algorithm problems by category across arrays, trees, graphs, and dynamic programming with senior-track difficulty focus.</p>
-              <a class="button is-primary is-medium" href="leetcode-questions.html">Open LeetCode Questions</a>
-            </div>
-          </div>
-
-          <div class="column is-half-desktop is-full-tablet">
-            <div class="box">
-              <h2 class="hub-card__title">Technology Comparison</h2>
-              <p class="hub-card__desc">Reads, writes, and latency benchmarks across databases, caches, messaging, gateways, and infrastructure technologies.</p>
-              <a class="button is-primary is-medium" href="technology-comparison.html">View Comparison</a>
-            </div>
-          </div>
-
-          <div class="column is-half-desktop is-full-tablet">
-            <div class="box">
-              <h2 class="hub-card__title">Tech Issues &amp; Resolutions</h2>
-              <p class="hub-card__desc">Twenty-eight production failure domains across Kafka, MongoDB, Redis, Elasticsearch, Kubernetes, Cassandra, and API Gateway.</p>
-              <a class="button is-primary is-medium" href="tech-issues.html">Browse Topics</a>
-            </div>
-          </div>
-
-          <div class="column is-half-desktop is-full-tablet">
-            <div class="box">
-              <h2 class="hub-card__title">Fulfillment Load Comparison</h2>
-              <p class="hub-card__desc">Order volume, transaction counts, and load multipliers comparing a regular day to peak annual event demand.</p>
-              <a class="button is-primary is-medium" href="fulfillment-load-comparison.html">View Comparison</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div class="container">
-        <div class="columns">
-          <div class="column">
-            <p><strong>Learning Hub</strong></p>
-            <p class="u-text-xs u-text-muted">Curated system design and interview preparation resources.</p>
-          </div>
-          <div class="column">
-            <p class="u-text-xs u-text-muted u-mb-2">Sections</p>
-            <div class="buttons">
-              <a class="button is-light is-small" href="tech-issues.html">Tech Issues</a>
-              <a class="button is-light is-small" href="technology-comparison.html">Benchmarks</a>
-              <a class="button is-light is-small" href="leetcode-questions.html">LeetCode</a>
-              <a class="button is-light is-small" href="fulfillment-load-comparison.html">Fulfillment</a>
-            </div>
-          </div>
-          <div class="column u-text-right-desktop">
-            <p class="u-text-xs u-text-muted">Last updated May 2026</p>
-          </div>
-        </div>
-      </div>
-    </footer>
+    </div>
   </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-vcentered">
+        <div class="column">
+          <p style="font-weight:700;color:var(--text-primary);">✦ Learning Hub</p>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-top:0.2rem;">Curated system design and interview preparation resources.</p>
+        </div>
+        <div class="column has-text-right">
+          <p style="font-size:0.82rem;color:var(--text-muted);">Last updated May 2026</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/theme.js"></script>
 </body>
 </html>

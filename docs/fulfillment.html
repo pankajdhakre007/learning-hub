@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Fulfillment Load — Regular Day vs. Annual Event</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="index.html">✦ Learning Hub</a>
+        <button class="navbar-burger" aria-label="Open navigation menu" aria-expanded="false" data-target="docs-nav">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div id="docs-nav" class="navbar-menu">
+        <div class="navbar-end">
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link" href="#">Pages</a>
+            <div class="navbar-dropdown is-right">
+              <a class="navbar-item" href="leetcode.html">🧩 LeetCode</a>
+              <a class="navbar-item" href="benchmarks.html">📊 Benchmarks</a>
+              <a class="navbar-item" href="tech-issues.html">🔥 Tech Issues</a>
+              <a class="navbar-item is-active" href="fulfillment.html" aria-current="page">📦 Fulfillment</a>
+            </div>
+          </div>
+          <div class="navbar-item">
+            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-page-header">
+    <div class="container">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;">
+        <div>
+          <p class="docs-eyebrow">Operations Reference</p>
+          <h1>Fulfillment Load — Regular Day vs. Annual Event</h1>
+          <p class="docs-subtitle">Order volume, transaction counts, and event-day deltas for regular demand versus peak annual event load.</p>
+        </div>
+        <a class="button is-light" href="index.html" style="flex-shrink:0;margin-top:0.25rem;">← Back</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="section" id="main">
+    <div class="container">
+
+      <div class="docs-metrics-row">
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Annual Orders</p>
+          <p class="docs-metric-value">6.5M+</p>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">Peak event-day order volume</p>
+        </div>
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Actual Transactions</p>
+          <p class="docs-metric-value">390–450M</p>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">Operational event amplification</p>
+        </div>
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">GM Demand Spike</p>
+          <p class="docs-metric-value">+150%</p>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">Merchandise order growth</p>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="notification is-info is-light mb-5">
+          <strong>BF/CM</strong> = Black Friday / Cyber Monday. Change values show expected load increase on event days.
+        </div>
+        <div class="table-container">
+          <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+              <tr>
+                <th>Detail</th>
+                <th class="has-text-right">Regular Day</th>
+                <th class="has-text-right">Annual Event (BF/CM)</th>
+                <th class="has-text-right">Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Total Orders in a Day</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">4.0 Million</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">6.5 Million+</td>
+                <td class="has-text-right"><span class="tag is-primary is-light">+63%</span></td>
+              </tr>
+              <tr>
+                <td><strong>Total Lines Delivered (Items)</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">12.0 Million</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">15.0 – 18.9 Million</td>
+                <td class="has-text-right"><span class="tag is-primary is-light">+25–58%</span></td>
+              </tr>
+              <tr>
+                <td><strong>Grocery Orders (Count)</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">2.4 Million (60%)</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">2.5 Million (38%)</td>
+                <td class="has-text-right"><span class="tag is-light">+4%</span></td>
+              </tr>
+              <tr>
+                <td><strong>Gen. Merchandise (GM) Orders</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">1.6 Million (40%)</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">4.0 Million (62%)</td>
+                <td class="has-text-right"><span class="tag is-warning is-light">+150%</span></td>
+              </tr>
+              <tr>
+                <td><strong>Avg. Items / Order (Grocery)</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">4.6 Items</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">4.2 – 5.0 Items</td>
+                <td class="has-text-right"><span class="tag is-light">~flat</span></td>
+              </tr>
+              <tr>
+                <td><strong>Avg. Items / Order (GM)</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">0.6* (Calculated)</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">1.1 – 2.1 Items</td>
+                <td class="has-text-right"><span class="tag is-warning is-light">+83–250%</span></td>
+              </tr>
+              <tr><td colspan="4" style="padding:0.25rem 0;border:none;"></td></tr>
+              <tr>
+                <td><strong>High-Level Transactions</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">~40 – 48 Million</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">~65 – 78 Million</td>
+                <td class="has-text-right"><span class="tag is-primary is-light">+63%</span></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="font-size:0.78rem;color:var(--text-muted);padding-top:0.2rem;">(Picking, Staging, QC, Pack, Deliver) — ~10–12 per order on both days</td>
+              </tr>
+              <tr>
+                <td><strong>Total Actual Transactions</strong></td>
+                <td class="has-text-right" style="color:var(--text-muted);">~160 – 240 Million</td>
+                <td class="has-text-right" style="color:var(--accent);font-weight:600;">~390 – 450 Million</td>
+                <td class="has-text-right"><span class="tag is-success">+90–180%</span></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="font-size:0.78rem;color:var(--text-muted);padding-top:0.2rem;">(Kafka, Ingestion, Audit, Orchestration) — ~40–60 per order regular; ~60+ per order on event day (spike amplification)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p style="color:var(--text-secondary);">Annual-event fulfillment load reference</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <p style="font-size:0.82rem;color:var(--text-muted);">Last updated May 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/theme.js"></script>
+</body>
+</html>

@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Redis — Data Access Imbalance</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Redis — Data Access Imbalance</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Redis — access distribution",
-        "title": "Data access imbalance",
-        "description": "Guide covering hot keys, key skew, shard hotspotting, and tail-latency amplification in Redis deployments."
-    },
-    "synonyms": [
-        "Hot keys",
-        "Key skew",
-        "Uneven access patterns",
-        "Shard hotspotting",
-        "Access concentration",
-        "Read skew",
-        "Traffic skew",
-        "Key-level hotspots"
-    ],
-    "questions": [
-        "Why is one Redis shard overloaded while others are idle?",
-        "How do hot keys impact Redis p99 latency?",
-        "How can I detect skewed access quickly?",
-        "What mitigations work without breaking consistency?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Redis — access distribution",
+        title: "Data access imbalance",
+        description: "Guide covering hot keys, key skew, shard hotspotting, and tail-latency amplification in Redis deployments."
+      },
+      synonyms: ["Hot keys","Key skew","Uneven access patterns","Shard hotspotting","Access concentration","Read skew","Traffic skew","Key-level hotspots"],
+      questions: ["Why is one Redis shard overloaded while others are idle?","How do hot keys impact Redis p99 latency?","How can I detect skewed access quickly?","What mitigations work without breaking consistency?"],
+      layers: [
         {
-            "name": "Clients",
-            "title": "Client access pattern skew",
-            "description": "Application behavior often concentrates traffic on a small key set.",
-            "symptoms": [
-                "One key dominates command volume",
-                "Unbalanced shard CPU",
-                "Latency spikes on specific operations"
-            ],
-            "causes": [
-                "Popular entities with no spreading strategy",
-                "Read fan-out to same cache entry",
-                "Missing local cache layer"
-            ],
-            "effects": [
-                "Hot shard bottleneck",
-                "Lower effective cluster throughput",
-                "User-facing latency variance"
-            ],
-            "mitigations": [
-                "Shard-aware key design",
-                "Client-side request coalescing",
-                "Short-lived local cache for hot reads"
-            ],
-            "metrics": [
-                "Top-N key frequency",
-                "Ops/sec by key prefix",
-                "CPU by shard",
-                "Latency by key group"
-            ],
-            "tradeoffs": [
-                "Caching hot reads can serve stale data briefly",
-                "More key indirection increases code complexity"
-            ]
+          name: "Clients",
+          title: "Client access pattern skew",
+          description: "Application behavior often concentrates traffic on a small key set.",
+          symptoms: ["One key dominates command volume","Unbalanced shard CPU","Latency spikes on specific operations"],
+          causes: ["Popular entities with no spreading strategy","Read fan-out to same cache entry","Missing local cache layer"],
+          effects: ["Hot shard bottleneck","Lower effective cluster throughput","User-facing latency variance"],
+          mitigations: ["Shard-aware key design","Client-side request coalescing","Short-lived local cache for hot reads"],
+          metrics: ["Top-N key frequency","Ops/sec by key prefix","CPU by shard","Latency by key group"],
+          tradeoffs: ["Caching hot reads can serve stale data briefly","More key indirection increases code complexity"]
         },
         {
-            "name": "Server",
-            "title": "Single-thread hotspot behavior",
-            "description": "A hot command stream can monopolize Redis event loop time on one node.",
-            "symptoms": [
-                "Event loop delay on one node",
-                "Command queue growth",
-                "Tail latency jumps"
-            ],
-            "causes": [
-                "Burst traffic to same slot",
-                "High-cost commands on hot keys",
-                "Insufficient horizontal split"
-            ],
-            "effects": [
-                "Timeouts for otherwise cheap commands",
-                "Uneven cluster utilization",
-                "Backpressure to callers"
-            ],
-            "mitigations": [
-                "Avoid expensive commands on hot paths",
-                "Split hot datasets by key strategy",
-                "Use replicas for read-heavy hotspots"
-            ],
-            "metrics": [
-                "Instantaneous ops/sec",
-                "Command latency percentiles",
-                "Blocked clients",
-                "Node-level CPU"
-            ],
-            "tradeoffs": [
-                "More splitting may reduce locality",
-                "Read replicas add consistency lag concerns"
-            ]
+          name: "Server",
+          title: "Single-thread hotspot behavior",
+          description: "A hot command stream can monopolize Redis event loop time on one node.",
+          symptoms: ["Event loop delay on one node","Command queue growth","Tail latency jumps"],
+          causes: ["Burst traffic to same slot","High-cost commands on hot keys","Insufficient horizontal split"],
+          effects: ["Timeouts for otherwise cheap commands","Uneven cluster utilization","Backpressure to callers"],
+          mitigations: ["Avoid expensive commands on hot paths","Split hot datasets by key strategy","Use replicas for read-heavy hotspots"],
+          metrics: ["Instantaneous ops/sec","Command latency percentiles","Blocked clients","Node-level CPU"],
+          tradeoffs: ["More splitting may reduce locality","Read replicas add consistency lag concerns"]
         },
         {
-            "name": "Cluster",
-            "title": "Slot and shard distribution skew",
-            "description": "Even if key count is balanced, request distribution may remain imbalanced across slots.",
-            "symptoms": [
-                "Node CPU skew despite similar memory usage",
-                "One slot range receives most requests",
-                "Frequent throttling on single shard"
-            ],
-            "causes": [
-                "Hash tags concentrating traffic",
-                "Business key patterns with uneven popularity",
-                "Suboptimal cluster resharding decisions"
-            ],
-            "effects": [
-                "Capacity wasted on idle shards",
-                "Hotspot-led downtime risk",
-                "Operational firefighting"
-            ],
-            "mitigations": [
-                "Reshard based on traffic, not only data size",
-                "Remove harmful hash-tag patterns",
-                "Introduce traffic-aware key partitioning"
-            ],
-            "metrics": [
-                "Requests per slot range",
-                "Shard CPU variance",
-                "Resharding event impact",
-                "Error rate by node"
-            ],
-            "tradeoffs": [
-                "Resharding can cause transient latency",
-                "Traffic-based partitioning may complicate key lookup"
-            ]
+          name: "Cluster",
+          title: "Slot and shard distribution skew",
+          description: "Even if key count is balanced, request distribution may remain imbalanced across slots.",
+          symptoms: ["Node CPU skew despite similar memory usage","One slot range receives most requests","Frequent throttling on single shard"],
+          causes: ["Hash tags concentrating traffic","Business key patterns with uneven popularity","Suboptimal cluster resharding decisions"],
+          effects: ["Capacity wasted on idle shards","Hotspot-led downtime risk","Operational firefighting"],
+          mitigations: ["Reshard based on traffic, not only data size","Remove harmful hash-tag patterns","Introduce traffic-aware key partitioning"],
+          metrics: ["Requests per slot range","Shard CPU variance","Resharding event impact","Error rate by node"],
+          tradeoffs: ["Resharding can cause transient latency","Traffic-based partitioning may complicate key lookup"]
         },
         {
-            "name": "App",
-            "title": "Application-level imbalance controls",
-            "description": "Application design often determines whether hot key behavior is amplified or dampened.",
-            "symptoms": [
-                "Repeated cache stampedes",
-                "Same key misses across many workers",
-                "Burst retries against hot key"
-            ],
-            "causes": [
-                "No jittered TTL",
-                "No stampede protection",
-                "Aggressive retry logic"
-            ],
-            "effects": [
-                "Amplified load spikes",
-                "Backend overload",
-                "Volatile user latency"
-            ],
-            "mitigations": [
-                "Use jittered expirations",
-                "Implement single-flight/stampede guards",
-                "Bound retries and apply backoff"
-            ],
-            "metrics": [
-                "Miss burst amplitude",
-                "Retry rate",
-                "Stampede incidents",
-                "Backend fallback latency"
-            ],
-            "tradeoffs": [
-                "Stronger controls may serve stale values briefly",
-                "Retry limits can fail requests earlier"
-            ]
+          name: "App",
+          title: "Application-level imbalance controls",
+          description: "Application design often determines whether hot key behavior is amplified or dampened.",
+          symptoms: ["Repeated cache stampedes","Same key misses across many workers","Burst retries against hot key"],
+          causes: ["No jittered TTL","No stampede protection","Aggressive retry logic"],
+          effects: ["Amplified load spikes","Backend overload","Volatile user latency"],
+          mitigations: ["Use jittered expirations","Implement single-flight/stampede guards","Bound retries and apply backoff"],
+          metrics: ["Miss burst amplitude","Retry rate","Stampede incidents","Backend fallback latency"],
+          tradeoffs: ["Stronger controls may serve stale values briefly","Retry limits can fail requests earlier"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Kafka",
-            "problem": "Hot partitions"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Hot shards"
-        },
-        {
-            "tech": "Cassandra",
-            "problem": "Partition hotspotting"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Hot shard queries"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Route-level traffic concentration"
-        }
-    ],
-    "insight": "In Redis, hotspot problems are throughput-allocation problems. Capacity exists, but access distribution prevents you from using it effectively."
-};
+      ],
+      comparisons: [
+        { tech: "Kafka", problem: "Hot partitions" },
+        { tech: "MongoDB", problem: "Hot shards" },
+        { tech: "Cassandra", problem: "Partition hotspotting" },
+        { tech: "Elasticsearch", problem: "Hot shard queries" },
+        { tech: "API Gateway", problem: "Route-level traffic concentration" }
+      ],
+      insight: "In Redis, hotspot problems are throughput-allocation problems. Capacity exists, but access distribution prevents you from using it effectively."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

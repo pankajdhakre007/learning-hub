@@ -3,38 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <title>Kubernetes — Resource Exhaustion</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
-  <script src="../assets/js/tech-issue-renderer.js"></script>
+  <div id="root"></div>
+  <script src="../../js/theme.js"></script>
+  <script src="../js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
       header: {
@@ -42,70 +20,52 @@
         title: "Resource exhaustion & OOMKills",
         description: "Staff+/Principal-level guide covering memory pressure, CPU throttling, resource starvation, noisy neighbors, and pod crash loops in Kubernetes clusters."
       },
-      synonyms: [
-        "OOMKills",
-        "CPU throttling",
-        "Resource starvation",
-        "Memory pressure",
-        "Pod eviction",
-        "Noisy neighbors",
-        "Resource contention",
-        "Pod restart storms"
-      ],
-      questions: [
-        "Why are my pods getting OOMKilled?",
-        "How do I detect memory leaks in Kubernetes?",
-        "Why is my pod CPU-throttled despite having capacity?",
-        "What causes noisy neighbor problems?",
-        "How do I set appropriate memory requests/limits?",
-        "Why is pod restart latency increasing?",
-        "How do I debug resource pressure?",
-        "What's the right strategy for resource quotas?"
-      ],
+      synonyms: ["OOMKills","CPU throttling","Resource starvation","Memory pressure","Pod eviction","Noisy neighbors","Resource contention","Pod restart storms"],
+      questions: ["Why are my pods getting OOMKilled?","How do I detect memory leaks in Kubernetes?","Why is my pod CPU-throttled despite having capacity?","What causes noisy neighbor problems?","How do I set appropriate memory requests/limits?","Why is pod restart latency increasing?","How do I debug resource pressure?","What's the right strategy for resource quotas?"],
       layers: [
         {
           name: "Memory",
           title: "Memory exhaustion & OOMKill",
           description: "Kubernetes kills (OOMKills) pods when memory usage exceeds the configured limit. Memory leaks, unbounded growth, or misconfigured limits cause OOMKills that interrupt service and trigger restarts.",
-          symptoms: ["Pods getting OOMKilled frequently", "Restart count increasing", "Memory usage growing over time", "Pod eviction visible in events"],
-          causes: ["Memory leaks in application code", "Limit set too low for workload", "Cache growth without bounds", "Memory inefficiency in dependencies"],
-          effects: ["Service interruption from pod restarts", "Loss of in-flight requests", "Loss of cached state", "Cascading failures from restart storms"],
-          mitigations: ["Increase memory limit (temporary)", "Fix memory leak in application", "Implement memory monitoring", "Use memory limits correctly", "Implement circuit breakers"],
-          metrics: ["Memory usage per pod", "OOMKill count", "Restart count", "Memory limit utilization", "Heap size trends"],
-          tradeoffs: ["Higher limits increase node cost", "Memory profiling adds overhead", "Fixing leaks takes development time"]
+          symptoms: ["Pods getting OOMKilled frequently","Restart count increasing","Memory usage growing over time","Pod eviction visible in events"],
+          causes: ["Memory leaks in application code","Limit set too low for workload","Cache growth without bounds","Memory inefficiency in dependencies"],
+          effects: ["Service interruption from pod restarts","Loss of in-flight requests","Loss of cached state","Cascading failures from restart storms"],
+          mitigations: ["Increase memory limit (temporary)","Fix memory leak in application","Implement memory monitoring","Use memory limits correctly","Implement circuit breakers"],
+          metrics: ["Memory usage per pod","OOMKill count","Restart count","Memory limit utilization","Heap size trends"],
+          tradeoffs: ["Higher limits increase node cost","Memory profiling adds overhead","Fixing leaks takes development time"]
         },
         {
           name: "CPU",
           title: "CPU throttling & scheduling contention",
           description: "Kubernetes throttles CPU when pod usage exceeds limits. Over-committed nodes cause all pods to experience CPU throttling, reducing performance even if individual pods request reasonable CPU.",
-          symptoms: ["P99 latency spikes intermittently", "CPU throttling metrics increasing", "Pod latency increasing under load", "Queue buildup from slow processing"],
-          causes: ["CPU limit set too low", "Node over-committed with too many pods", "Burst traffic overwhelming CPU allocation", "Inefficient CPU usage in application"],
-          effects: ["Latency tail increases from throttling", "Throughput reduction", "Cascading impact to dependent services", "SLA violations"],
-          mitigations: ["Increase CPU limit", "Reduce pods per node", "Optimize application CPU efficiency", "Implement auto-scaling", "Use burst detection"],
-          metrics: ["CPU throttling percentage", "P99 latency", "CPU utilization", "Throttling event count", "Burst CPU requests"],
-          tradeoffs: ["Higher CPU limits increase cost", "Fewer pods per node reduces density", "Optimization takes development effort"]
+          symptoms: ["P99 latency spikes intermittently","CPU throttling metrics increasing","Pod latency increasing under load","Queue buildup from slow processing"],
+          causes: ["CPU limit set too low","Node over-committed with too many pods","Burst traffic overwhelming CPU allocation","Inefficient CPU usage in application"],
+          effects: ["Latency tail increases from throttling","Throughput reduction","Cascading impact to dependent services","SLA violations"],
+          mitigations: ["Increase CPU limit","Reduce pods per node","Optimize application CPU efficiency","Implement auto-scaling","Use burst detection"],
+          metrics: ["CPU throttling percentage","P99 latency","CPU utilization","Throttling event count","Burst CPU requests"],
+          tradeoffs: ["Higher CPU limits increase cost","Fewer pods per node reduces density","Optimization takes development effort"]
         },
         {
           name: "Requests",
           title: "Misconfigured requests & limits",
           description: "Incorrectly set resource requests/limits cause scheduling failures, under-utilization, or over-commitment. Requests too high prevent scheduling, requests too low cause contention.",
-          symptoms: ["Pods in Pending state for scheduling", "Uneven node utilization", "Some nodes fully allocated", "Resource quota exhausted"],
-          causes: ["Requests set too high for cluster capacity", "Requests not reflecting actual usage", "Limits not properly set", "Quota misconfiguration"],
-          effects: ["New pods fail to schedule", "Cluster can't scale workload", "Wasted resources from over-provisioning", "Cascading scheduling failures"],
-          mitigations: ["Right-size requests based on actual usage", "Use Vertical Pod Autoscaler (VPA)", "Implement resource quotas correctly", "Monitor utilization vs limits", "Implement bin-packing"],
-          metrics: ["Pod scheduling wait time", "Node utilization", "Request vs actual usage", "Quota utilization", "Pending pod count"],
-          tradeoffs: ["VPA adds complexity and latency", "Tight limits risk OOMKills", "Over-provisioning wastes money"]
+          symptoms: ["Pods in Pending state for scheduling","Uneven node utilization","Some nodes fully allocated","Resource quota exhausted"],
+          causes: ["Requests set too high for cluster capacity","Requests not reflecting actual usage","Limits not properly set","Quota misconfiguration"],
+          effects: ["New pods fail to schedule","Cluster can't scale workload","Wasted resources from over-provisioning","Cascading scheduling failures"],
+          mitigations: ["Right-size requests based on actual usage","Use Vertical Pod Autoscaler (VPA)","Implement resource quotas correctly","Monitor utilization vs limits","Implement bin-packing"],
+          metrics: ["Pod scheduling wait time","Node utilization","Request vs actual usage","Quota utilization","Pending pod count"],
+          tradeoffs: ["VPA adds complexity and latency","Tight limits risk OOMKills","Over-provisioning wastes money"]
         },
         {
           name: "Node",
           title: "Node-level resource pressure",
           description: "Node-level resource exhaustion (memory or disk) causes kubelet to evict pods based on priority. Node pressure cascades to multiple pods simultaneously.",
-          symptoms: ["Multiple pods evicted from same node", "Node NotReady status", "Disk full on node", "Node kubelet unstable"],
-          causes: ["Node under-provisioned for workload", "Disk space filled by logs or containers", "Too many pods on single node", "Node drift from updates"],
-          effects: ["Cascading pod evictions", "Multiple service disruptions", "Leader election if node had critical pods", "Cluster stability impact"],
-          mitigations: ["Monitor node resources proactively", "Implement pod disruption budgets", "Scale nodes horizontally", "Implement cluster autoscaling", "Proper log rotation"],
-          metrics: ["Node allocatable resources", "Node available resources", "Pod eviction rate", "Node condition status", "Disk usage per node"],
-          tradeoffs: ["More nodes increase operational complexity", "Pod disruption budgets reduce pack efficiency", "Autoscaling adds latency"]
+          symptoms: ["Multiple pods evicted from same node","Node NotReady status","Disk full on node","Node kubelet unstable"],
+          causes: ["Node under-provisioned for workload","Disk space filled by logs or containers","Too many pods on single node","Node drift from updates"],
+          effects: ["Cascading pod evictions","Multiple service disruptions","Leader election if node had critical pods","Cluster stability impact"],
+          mitigations: ["Monitor node resources proactively","Implement pod disruption budgets","Scale nodes horizontally","Implement cluster autoscaling","Proper log rotation"],
+          metrics: ["Node allocatable resources","Node available resources","Pod eviction rate","Node condition status","Disk usage per node"],
+          tradeoffs: ["More nodes increase operational complexity","Pod disruption budgets reduce pack efficiency","Autoscaling adds latency"]
         }
       ],
       comparisons: [
@@ -115,11 +75,9 @@
         { tech: "MongoDB", problem: "Cache pressure" },
         { tech: "Cassandra", problem: "Heap exhaustion" }
       ],
-      insight: "Kubernetes resource management requires understanding both the scheduler's perspective and the kubelet's perspective. The scheduler makes placement decisions based on requests, while the kubelet enforces limits and evicts based on actual usage. Misalignment between these two layers causes either scheduling failures or runtime OOMKills. Strong operators understand this duality: request/limit pairs must reflect both cluster capacity and application requirements."
+      insight: "Kubernetes resource management requires understanding both the scheduler's perspective and the kubelet's perspective. Misalignment between requests/limits causes either scheduling failures or runtime OOMKills. Request/limit pairs must reflect both cluster capacity and application requirements."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>
