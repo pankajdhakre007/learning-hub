@@ -199,26 +199,44 @@
 .table {
   background: var(--fill-surface);
   color: var(--text-default);
+  forced-color-adjust: none;
 }
 
 .table thead th {
   background: var(--fill-primary-soft);
   color: var(--text-default);
   border-color: var(--stroke-soft);
+  forced-color-adjust: none;
 }
 
 .table td,
 .table th {
   border-color: var(--stroke-soft);
   vertical-align: middle;
+  color: var(--text-default) !important;
+  background-color: transparent !important;
+  forced-color-adjust: none;
+}
+
+.table tbody tr,
+.table tbody tr td,
+.table tbody tr th,
+.table tbody tr td strong,
+.table tbody tr td span,
+.table tbody tr td p {
+  color: var(--text-default) !important;
+  background-color: transparent !important;
+  forced-color-adjust: none;
 }
 
 .table.is-striped tbody tr:not(.is-selected):nth-child(even) {
-  background: rgba(232, 244, 253, 0.6) !important;
+  background-color: rgba(232, 244, 253, 0.6) !important;
+  forced-color-adjust: none;
 }
 
 .table.is-hoverable tbody tr:not(.is-selected):hover {
-  background: rgba(232, 244, 253, 0.6) !important;
+  background-color: rgba(232, 244, 253, 0.6) !important;
+  forced-color-adjust: none;
 }
 
 .table-container {
@@ -247,22 +265,56 @@
 }
 
 /* Menu (anchors) */
-.menu-list a {
+.menu-list,
+.menu-list a,
+.menu-list a:visited {
   border-radius: var(--radius-1);
-  color: var(--text-default);
+  color: var(--text-default) !important;
+  background-color: transparent !important;
+  text-decoration: none;
+  forced-color-adjust: none;
 }
 
-.menu-list a:hover {
-  background: var(--fill-primary-soft);
-  color: var(--text-link);
+.menu-list a:hover,
+.menu-list a:focus {
+  background: var(--fill-primary-soft) !important;
+  color: var(--text-link) !important;
+  forced-color-adjust: none;
 }
 
 .menu-list a.is-active,
-.menu-list a[aria-current="page"] {
-  background: var(--fill-primary-soft);
-  border-left: 3px solid var(--fill-primary);
-  color: var(--text-link);
+.menu-list a[aria-current="page"],
+.menu-list a.is-active:visited,
+.menu-list a[aria-current="page"]:visited {
+  background: var(--fill-primary-soft) !important;
+  border-left: 3px solid var(--fill-primary) !important;
+  color: var(--text-link) !important;
   padding-left: 0.75rem;
+  forced-color-adjust: none;
+}
+
+/* Tech Issues sidebar text */
+.sidebar,
+.sidebar strong,
+.sidebar .level-item,
+.sidebar .menu,
+.sidebar .menu-list,
+.sidebar .menu-list li,
+.sidebar .menu-list a,
+.sidebar .menu-list a:visited,
+.sidebar .menu-list a:hover,
+.sidebar .menu-list a:focus,
+.sidebar .block,
+.sidebar .block .mb-2 {
+  color: var(--text-default) !important;
+  background-color: transparent !important;
+  forced-color-adjust: none;
+}
+
+.sidebar .tag.is-light {
+  background: var(--semantic-info-bg) !important;
+  color: var(--text-default) !important;
+  border-color: transparent !important;
 }
 
 /* Footer */
@@ -429,6 +481,7 @@ iframe {
 
 .page-grid__content {
   min-width: 0;
+  overflow: visible;
 }
 
 .sidebar {
@@ -504,11 +557,15 @@ details.panel > summary.panel__body {
   min-height: min(72vh, 860px);
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .iframe-shell iframe {
-  flex: 1;
+  width: 100%;
+  height: auto;
   min-height: 0;
+  border: 0;
+  overflow: visible;
 }
 
 /* === Legend + Swatches === */

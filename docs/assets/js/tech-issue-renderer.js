@@ -1,3 +1,8 @@
+if (window.self !== window.top) {
+  const topNavbar = document.querySelector('.navbar.topbar');
+  if (topNavbar) topNavbar.style.display = 'none';
+}
+
 function renderTechIssuePage(pageData) {
   const root = document.getElementById('root');
   if (!root) return;
@@ -191,5 +196,42 @@ function renderTechIssuePage(pageData) {
   }
 
   root.appendChild(doc);
+}
+
+// If this script is running inside an iframe, send the document height to the parent
+function postHeightToParent() {
+  try {
+    const body = document.body;
+    const html = document.documentElement;
+    const height = Math.max(
+      body.scrollHeight, body.offsetHeight,
+      html.clientHeight, html.scrollHeight, html.offsetHeight
+    );
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'tech-issue-height', height }, '*');
+    }
+  } catch (err) {
+    // ignore
+  }
+}
+
+if (window.self !== window.top) {
+  // Send an initial height and then a few updates while content stabilizes
+  postHeightToParent();
+  let stable = 0;
+  const interval = setInterval(() => {
+    postHeightToParent();
+    stable += 1;
+    if (stable > 10) clearInterval(interval);
+  }, 120);
+
+  // Observe for DOM size changes and post updates
+  try {
+    const ro = new ResizeObserver(() => postHeightToParent());
+    ro.observe(document.documentElement);
+    ro.observe(document.body);
+  } catch (err) {
+    // ResizeObserver may not be available in some older environments
+  }
 }
 

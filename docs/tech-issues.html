@@ -267,10 +267,67 @@
 
     // Stop loading indicator when iframe loads; handle missing pages with a timeout.
     let loadTimeout = null;
+    const resizeContentFrame = () => {
+      try {
+        const doc = contentFrame.contentDocument || contentFrame.contentWindow.document;
+        if (!doc) return;
+        const body = doc.body;
+        const html = doc.documentElement;
+        const height = Math.max(
+          body.scrollHeight, body.offsetHeight,
+          html.clientHeight, html.scrollHeight, html.offsetHeight
+        );
+        contentFrame.style.height = `${height}px`;
+        contentFrame.style.display = 'block';
+        contentFrame.style.overflow = 'visible';
+      } catch (err) {
+        // Cross-origin restrictions do not apply to local file content.
+      }
+    };
+
     contentFrame.addEventListener('load', () => {
       if (loadTimeout) window.clearTimeout(loadTimeout);
       loadingState.textContent = '';
+      // One immediate resize, then poll briefly until the document height stabilizes
+      resizeContentFrame();
+      let lastHeight = null;
+      let stableCount = 0;
+      const poll = setInterval(() => {
+        try {
+          const doc = contentFrame.contentDocument || contentFrame.contentWindow.document;
+          if (!doc) return;
+          const body = doc.body;
+          const html = doc.documentElement;
+          const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          if (h !== lastHeight) {
+            contentFrame.style.height = `${h}px`;
+            lastHeight = h;
+            stableCount = 0;
+          } else {
+            stableCount += 1;
+            if (stableCount >= 4) {
+              clearInterval(poll);
+            }
+          }
+        } catch (err) {
+          clearInterval(poll);
+        }
+      }, 120);
     });
+
+    window.addEventListener('resize', resizeContentFrame);
+
+    // Listen for postMessage height updates from the iframe (works for file:// in Chrome)
+    window.addEventListener('message', (e) => {
+      try {
+        if (!e.data || e.data.type !== 'tech-issue-height') return;
+        const h = Number(e.data.height);
+        if (!Number.isFinite(h)) return;
+        contentFrame.style.height = `${h}px`;
+      } catch (err) {
+        // ignore
+      }
+    }, false);
 
     function safeLoad(pageUrl) {
       loadPage(pageUrl, { pushHash: false });
