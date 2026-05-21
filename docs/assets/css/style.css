@@ -1317,6 +1317,62 @@ body {
   overflow: hidden;
 }
 
+.company-popularity {
+  position: relative;
+  min-width: 8rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.company-popularity__bar {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: transparent;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.company-popularity--none .company-popularity__bar {
+  background: transparent;
+}
+
+.company-popularity--low .company-popularity__bar {
+  background: #f8d7da;
+}
+
+.company-popularity--mid .company-popularity__bar {
+  background: #ffdfb5;
+}
+
+.company-popularity--high .company-popularity__bar {
+  background: #fff3bf;
+}
+
+.company-popularity--top .company-popularity__bar {
+  background: #b8e994;
+}
+
+.company-popularity__label {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.company-popularity:hover {
+  filter: brightness(0.95);
+}
+
 /* ─── Bulma Tags (dark-mode aware) ───────────────────────────────────────── */
 .tag {
   transition:

@@ -75,6 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let hard = 0;
 
     const categories = Object.keys(roadmap);
+    const allProblems = categories.reduce((acc, category) => {
+      const problems = roadmap[category] || [];
+      return acc.concat(problems);
+    }, []);
+    const maxPopularity = Math.max(
+      1,
+      ...allProblems.map(problem => Number(problem[4] || 0))
+    );
 
     categories.forEach((category) => {
       const problems = roadmap[category];
@@ -119,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <th>Problem</th>
                 <th>Difficulty</th>
                 <th>Why It Matters</th>
+                <th>Popularity</th>
                 <th>Link</th>
               </tr>
             </thead>
@@ -155,6 +164,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const tdReason = document.createElement('td');
         tdReason.textContent = reason;
 
+        const companyCount = problem.length > 4 ? Number(problem[4]) : 0;
+        const companyList = problem.length > 5 && Array.isArray(problem[5]) ? problem[5] : [];
+        const popularityPct = maxPopularity > 0 ? Math.round((companyCount / maxPopularity) * 100) : 0;
+        const tooltipText = companyCount > 0
+          ? (() => {
+              const visibleItems = companyList.slice(0, 5);
+              const remaining = Math.max(0, companyList.length - visibleItems.length);
+              return remaining > 0
+                ? `This question appeared in ${visibleItems.join(', ')}, and other ${remaining} companies`
+                : `This question appeared in ${visibleItems.join(', ')}`;
+            })()
+          : 'No company match found';
+
+        let popularityClass = 'company-popularity--none';
+        if (companyCount > 0) {
+          if (popularityPct <= 25) popularityClass = 'company-popularity--low';
+          else if (popularityPct <= 50) popularityClass = 'company-popularity--mid';
+          else if (popularityPct <= 75) popularityClass = 'company-popularity--high';
+          else popularityClass = 'company-popularity--top';
+        }
+
+        const tdCompanyCount = document.createElement('td');
+        tdCompanyCount.title = tooltipText;
+
+        const popularity = document.createElement('div');
+        popularity.className = `company-popularity ${popularityClass}`;
+        popularity.title = tooltipText;
+        popularity.setAttribute('aria-label', tooltipText);
+
+        const popularityBar = document.createElement('div');
+        popularityBar.className = 'company-popularity__bar';
+        popularityBar.style.width = `${popularityPct}%`;
+
+        const popularityLabel = document.createElement('span');
+        popularityLabel.className = 'company-popularity__label';
+        popularityLabel.textContent = String(companyCount);
+
+        popularity.appendChild(popularityBar);
+        popularity.appendChild(popularityLabel);
+        tdCompanyCount.appendChild(popularity);
+
         const tdLink = document.createElement('td');
         const a = document.createElement('a');
         a.className = 'button is-primary is-small';
@@ -168,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tr.appendChild(tdTitle);
         tr.appendChild(tdDifficulty);
         tr.appendChild(tdReason);
+        tr.appendChild(tdCompanyCount);
         tr.appendChild(tdLink);
         tbody.appendChild(tr);
       });
@@ -199,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const debouncedRender = debounce(render, 200);
+  const debouncedRender = debounce(render, 250);
   searchInput.addEventListener('input', debouncedRender);
 
   render();
