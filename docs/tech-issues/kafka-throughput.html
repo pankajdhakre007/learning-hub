@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kafka — Throughput Imbalance</title>
-  <link rel="stylesheet" href="../assets/css/site.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kafka — Throughput Imbalance</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="doc-page">
-  <div class="page-inner" id="root"></div>
+<body>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "hero": {
+    "header": {
         "eyebrow": "Kafka — streaming infrastructure",
         "title": "Throughput imbalance",
         "description": "Guide covering producer-consumer rate mismatch, lag growth, backpressure propagation, and throughput collapse patterns."
@@ -175,26 +179,11 @@
         }
     ],
     "comparisons": [
-        {
-            "tech": "API Gateway",
-            "problem": "Request queue buildup"
-        },
-        {
-            "tech": "Redis",
-            "problem": "Event loop saturation"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Search queue pressure"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Query backlog under load"
-        },
-        {
-            "tech": "Kubernetes",
-            "problem": "Autoscaling lag vs demand spikes"
-        }
+        { "tech": "API Gateway", "problem": "Request queue buildup" },
+        { "tech": "Redis", "problem": "Event loop saturation" },
+        { "tech": "Elasticsearch", "problem": "Search queue pressure" },
+        { "tech": "MongoDB", "problem": "Query backlog under load" },
+        { "tech": "Kubernetes", "problem": "Autoscaling lag vs demand spikes" }
     ],
     "insight": "Kafka throughput stability is about sustained rate matching: ingestion, replication, processing, and sink throughput must remain balanced under normal and spike traffic."
 };

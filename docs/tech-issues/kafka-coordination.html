@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kafka — Cluster Coordination Instability</title>
-  <link rel="stylesheet" href="../assets/css/site.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kafka — Cluster Coordination Instability</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="doc-page">
-  <div class="page-inner" id="root"></div>
+<body>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "hero": {
+    "header": {
         "eyebrow": "Kafka — cluster coordination",
         "title": "Cluster coordination instability",
         "description": "Guide covering rebalance storms, group churn, heartbeat failures, and unstable partition assignment behavior."
@@ -175,26 +179,11 @@
         }
     ],
     "comparisons": [
-        {
-            "tech": "Kubernetes",
-            "problem": "Control-plane scheduling churn"
-        },
-        {
-            "tech": "Zookeeper/etcd",
-            "problem": "Coordination hot spots"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Config rollout instability"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Replica state flapping"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Shard relocation churn"
-        }
+        { "tech": "Kubernetes", "problem": "Control-plane scheduling churn" },
+        { "tech": "Zookeeper/etcd", "problem": "Coordination hot spots" },
+        { "tech": "API Gateway", "problem": "Config rollout instability" },
+        { "tech": "MongoDB", "problem": "Replica state flapping" },
+        { "tech": "Elasticsearch", "problem": "Shard relocation churn" }
     ],
     "insight": "Kafka coordination issues are usually churn problems, not raw capacity problems. Reducing membership and topology volatility is often the fastest path to stability."
 };

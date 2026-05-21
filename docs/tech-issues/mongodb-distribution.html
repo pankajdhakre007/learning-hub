@@ -3,83 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <title>MongoDB — Data Distribution Imbalance</title>
-  <link rel="stylesheet" href="../assets/css/site.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="doc-page">
-  <div class="page-inner" id="root"></div>
+<body>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-      hero: {
+      header: {
         eyebrow: "MongoDB — sharded distributed database",
         title: "Data distribution imbalance",
         description: "Staff+/Principal-level guide covering hot shards, shard skew, uneven partition distribution, and shard key imbalance in MongoDB sharded clusters."
       },
-      synonyms: [
-        "Hot shards",
-        "Shard skew",
-        "Uneven data distribution",
-        "Shard hotspotting",
-        "Uneven shard load",
-        "Low-cardinality shard key",
-        "Tenant hotspotting",
-        "Shard imbalance"
-      ],
-      questions: [
-        "Why is one shard consistently overloaded in my cluster?",
-        "How do I detect shard imbalance?",
-        "What causes one shard to have much more data?",
-        "Why is shard write latency variable?",
-        "How does shard key selection affect performance?",
-        "What causes tenant hotspotting in multi-tenant systems?",
-        "How do I rebalance uneven shard distribution?",
-        "Why is one shard disk filling faster?"
-      ],
+      synonyms: ["Hot shards","Shard skew","Uneven data distribution","Shard hotspotting","Uneven shard load","Low-cardinality shard key","Tenant hotspotting","Shard imbalance"],
+      questions: ["Why is one shard consistently overloaded in my cluster?","How do I detect shard imbalance?","What causes one shard to have much more data?","Why is shard write latency variable?","How does shard key selection affect performance?","What causes tenant hotspotting in multi-tenant systems?","How do I rebalance uneven shard distribution?","Why is one shard disk filling faster?"],
       layers: [
         {
           name: "Shard Key",
           title: "Shard key design & cardinality",
           description: "MongoDB distributes data based on the shard key. Poor shard key design (low cardinality, skewed values, monotonic sequences) causes some shards to contain disproportionately more data and requests.",
-          symptoms: ["One shard significantly larger than others", "One shard receiving more writes", "Uneven CPU across shards", "Chunks not splitting evenly"],
-          causes: ["Low-cardinality shard key (boolean, status)", "Monotonically increasing shard key (timestamps)", "Tenant hotspotting (one customer dominates)", "Poor cardinality estimation"],
-          effects: ["Hotspot shard becomes bottleneck", "Other shards underutilized", "Uneven resource distribution", "Cascading failures when hotspot overloaded"],
-          mitigations: ["Use compound shard key (tenant + ID)", "Add random prefix (salting) for hot keys", "Hash-based shard keys for distribution", "Redesign schema", "Use field-level sharding"],
-          metrics: ["Shard size distribution", "Document count per shard", "Write rate per shard", "Chunk count per shard", "P99 latency by shard"],
-          tradeoffs: ["Compound keys complicate queries", "Hashing makes range queries inefficient", "Salting increases key complexity"]
+          symptoms: ["One shard significantly larger than others","One shard receiving more writes","Uneven CPU across shards","Chunks not splitting evenly"],
+          causes: ["Low-cardinality shard key (boolean, status)","Monotonically increasing shard key (timestamps)","Tenant hotspotting (one customer dominates)","Poor cardinality estimation"],
+          effects: ["Hotspot shard becomes bottleneck","Other shards underutilized","Uneven resource distribution","Cascading failures when hotspot overloaded"],
+          mitigations: ["Use compound shard key (tenant + ID)","Add random prefix (salting) for hot keys","Hash-based shard keys for distribution","Redesign schema","Use field-level sharding"],
+          metrics: ["Shard size distribution","Document count per shard","Write rate per shard","Chunk count per shard","P99 latency by shard"],
+          tradeoffs: ["Compound keys complicate queries","Hashing makes range queries inefficient","Salting increases key complexity"]
         },
         {
           name: "Chunks",
           title: "Chunk management & migration",
           description: "MongoDB splits data into chunks and distributes across shards. Uneven chunk distribution or migration failures cause imbalance. Balancer oversees chunk movement.",
-          symptoms: ["Chunk count imbalanced", "Balancer not migrating chunks", "Chunks stuck on wrong shard", "Migrations failing"],
-          causes: ["Balancer disabled during growth", "Chunk size too large for rebalancing", "Network issues preventing migration", "Auto-split failures"],
-          effects: ["Chunks concentrated on few shards", "Rebalancing stalls", "Permanent imbalance", "Performance degradation"],
-          mitigations: ["Enable balancer during off-peak", "Tune chunk size appropriately", "Monitor balancer activity", "Implement manual rebalancing", "Fix network issues"],
-          metrics: ["Chunk distribution by shard", "Balancer activity rate", "Migration success rate", "Chunk size", "Rebalance time"],
-          tradeoffs: ["Rebalancing causes I/O overhead", "Smaller chunks increase move overhead", "Manual balancing requires expertise"]
+          symptoms: ["Chunk count imbalanced","Balancer not migrating chunks","Chunks stuck on wrong shard","Migrations failing"],
+          causes: ["Balancer disabled during growth","Chunk size too large for rebalancing","Network issues preventing migration","Auto-split failures"],
+          effects: ["Chunks concentrated on few shards","Rebalancing stalls","Permanent imbalance","Performance degradation"],
+          mitigations: ["Enable balancer during off-peak","Tune chunk size appropriately","Monitor balancer activity","Implement manual rebalancing","Fix network issues"],
+          metrics: ["Chunk distribution by shard","Balancer activity rate","Migration success rate","Chunk size","Rebalance time"],
+          tradeoffs: ["Rebalancing causes I/O overhead","Smaller chunks increase move overhead","Manual balancing requires expertise"]
         },
         {
           name: "Zones",
           title: "Zone sharding & replica placement",
           description: "Zone sharding allows controlling which chunks live on which shards based on shard key ranges. Misconfigured zones cause imbalance by concentrating ranges on few shards.",
-          symptoms: ["All write traffic on one zone", "Uneven zone allocation", "Replica placement imbalanced", "Zone enforcement not working"],
-          causes: ["Zone configuration too narrow", "Zone tags not properly assigned", "Range-based sharding creating skew", "Replica set imbalance"],
-          effects: ["Zone becomes bottleneck", "Other zones underutilized", "Replication imbalance", "Cascading zone failure"],
-          mitigations: ["Rebalance zone boundaries", "Assign tags correctly", "Monitor zone metrics", "Implement multi-zone writes", "Spread ranges evenly"],
-          metrics: ["Chunk distribution by zone", "Request rate per zone", "Latency by zone", "Replication lag", "Zone utilization"],
-          tradeoffs: ["Zone rebalancing causes migration", "Frequent zone changes disrupt queries", "Complex zone logic is hard to debug"]
+          symptoms: ["All write traffic on one zone","Uneven zone allocation","Replica placement imbalanced","Zone enforcement not working"],
+          causes: ["Zone configuration too narrow","Zone tags not properly assigned","Range-based sharding creating skew","Replica set imbalance"],
+          effects: ["Zone becomes bottleneck","Other zones underutilized","Replication imbalance","Cascading zone failure"],
+          mitigations: ["Rebalance zone boundaries","Assign tags correctly","Monitor zone metrics","Implement multi-zone writes","Spread ranges evenly"],
+          metrics: ["Chunk distribution by zone","Request rate per zone","Latency by zone","Replication lag","Zone utilization"],
+          tradeoffs: ["Zone rebalancing causes migration","Frequent zone changes disrupt queries","Complex zone logic is hard to debug"]
         },
         {
           name: "Workload",
           title: "Uneven query workload distribution",
           description: "Even with balanced data, queries can be uneven if applications query certain shard key ranges more frequently. Query patterns matter as much as data distribution.",
-          symptoms: ["One shard CPU high despite balanced data", "Query latency variable by shard", "Specific documents accessed frequently", "Hot document list visible"],
-          causes: ["Application query pattern bias", "Cache locality from application", "Popular data concentrated in ranges", "Time-series workload skew"],
-          effects: ["Hotspot shard limits throughput", "Other shards underutilized", "Tail latency from hotspot", "Cascading application impact"],
-          mitigations: ["Cache hot data externally", "Denormalize for access patterns", "Implement application-level sharding", "Use read preference", "Monitor query patterns"],
-          metrics: ["Query rate per shard", "CPU per shard", "Memory per shard", "Hot key detection", "Query distribution"],
-          tradeoffs: ["External caching adds latency", "Denormalization increases storage", "Application sharding adds complexity"]
+          symptoms: ["One shard CPU high despite balanced data","Query latency variable by shard","Specific documents accessed frequently","Hot document list visible"],
+          causes: ["Application query pattern bias","Cache locality from application","Popular data concentrated in ranges","Time-series workload skew"],
+          effects: ["Hotspot shard limits throughput","Other shards underutilized","Tail latency from hotspot","Cascading application impact"],
+          mitigations: ["Cache hot data externally","Denormalize for access patterns","Implement application-level sharding","Use read preference","Monitor query patterns"],
+          metrics: ["Query rate per shard","CPU per shard","Memory per shard","Hot key detection","Query distribution"],
+          tradeoffs: ["External caching adds latency","Denormalization increases storage","Application sharding adds complexity"]
         }
       ],
       comparisons: [
@@ -89,11 +75,9 @@
         { tech: "PostgreSQL", problem: "Uneven partition distribution" },
         { tech: "Kafka", problem: "Uneven partition load" }
       ],
-      insight: "MongoDB shard distribution imbalance is fundamentally a shard key problem. Unlike query optimization which can improve performance incrementally, a poor shard key causes structural imbalance that no amount of tuning can fix. Strong engineers understand shard key design before deployment, considering cardinality, monotonicity, and query patterns. The mantra: the shard key is chosen once and never changed easily. Get it right the first time."
+      insight: "MongoDB shard distribution imbalance is fundamentally a shard key problem. Unlike query optimization which can improve performance incrementally, a poor shard key causes structural imbalance that no amount of tuning can fix. Get it right the first time."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

@@ -3,83 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <title>Elasticsearch — Query Execution Pressure</title>
-  <link rel="stylesheet" href="../assets/css/site.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="doc-page">
-  <div class="page-inner" id="root"></div>
+<body>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-      hero: {
+      header: {
         eyebrow: "Elasticsearch — distributed search & analytics",
         title: "Query execution pressure",
         description: "Staff+/Principal-level guide covering slow searches, aggregation bottlenecks, query execution backpressure, and concurrent search pressure in Elasticsearch clusters."
       },
-      synonyms: [
-        "Slow searches",
-        "Aggregation pressure",
-        "Query backpressure",
-        "Search thread pool saturation",
-        "Query latency explosion",
-        "Expensive searches",
-        "Bulk query pressure",
-        "Search queue buildup"
-      ],
-      questions: [
-        "Why is my Elasticsearch search latency increasing?",
-        "How do I optimize slow aggregations?",
-        "What causes query backpressure in Elasticsearch?",
-        "Why is the search thread pool saturated?",
-        "How do I detect expensive queries?",
-        "Why are some nodes handling more search load?",
-        "What causes query queue buildup?",
-        "How do I scale Elasticsearch for high query volume?"
-      ],
+      synonyms: ["Slow searches","Aggregation pressure","Query backpressure","Search thread pool saturation","Query latency explosion","Expensive searches","Bulk query pressure","Search queue buildup"],
+      questions: ["Why is my Elasticsearch search latency increasing?","How do I optimize slow aggregations?","What causes query backpressure in Elasticsearch?","Why is the search thread pool saturated?","How do I detect expensive queries?","Why are some nodes handling more search load?","What causes query queue buildup?","How do I scale Elasticsearch for high query volume?"],
       layers: [
         {
           name: "Query",
           title: "Slow searches & inefficient queries",
           description: "Elasticsearch searches can be slow due to inefficient query logic, missing optimizations, or expensive filtering. Each slow query consumes thread pool resources, reducing capacity for other queries.",
-          symptoms: ["Search latency increasing", "High query per second consuming resources", "Thread pool queue building up", "Some shards taking much longer"],
-          causes: ["Inefficient query DSL (nested queries)", "Missing filters that could reduce search space", "Complex wildcard searches", "Script-based scoring"],
-          effects: ["Latency tail increase from slow queries", "Thread pool exhaustion", "Other queries queued waiting", "Complete search timeout"],
-          mitigations: ["Optimize query DSL", "Use filters instead of queries where possible", "Implement query caching", "Add appropriate indexes", "Profile slow queries"],
-          metrics: ["Query latency percentiles", "Queries per second", "Slow query log entries", "Thread pool usage", "Query cache hit ratio"],
-          tradeoffs: ["Query optimization takes analysis time", "More indexes increase write overhead", "Query caching has memory cost"]
+          symptoms: ["Search latency increasing","High query per second consuming resources","Thread pool queue building up","Some shards taking much longer"],
+          causes: ["Inefficient query DSL (nested queries)","Missing filters that could reduce search space","Complex wildcard searches","Script-based scoring"],
+          effects: ["Latency tail increase from slow queries","Thread pool exhaustion","Other queries queued waiting","Complete search timeout"],
+          mitigations: ["Optimize query DSL","Use filters instead of queries where possible","Implement query caching","Add appropriate indexes","Profile slow queries"],
+          metrics: ["Query latency percentiles","Queries per second","Slow query log entries","Thread pool usage","Query cache hit ratio"],
+          tradeoffs: ["Query optimization takes analysis time","More indexes increase write overhead","Query caching has memory cost"]
         },
         {
           name: "Aggregation",
           title: "Aggregation pipeline bottlenecks",
           description: "Aggregations (facets, histograms, cardinality) scan many documents and build in-memory structures. Complex nested aggregations can become severe bottlenecks.",
-          symptoms: ["Aggregation latency much higher than search", "Memory pressure during aggregations", "Concurrent aggregations blocking", "Aggregation timeouts"],
-          causes: ["High cardinality aggregations (unique users)", "Nested aggregations on large datasets", "Cardinality estimation on unbounded fields", "Aggregation on non-indexed fields"],
-          effects: ["Latency explosion from aggregations", "Memory exhaustion", "Other queries blocked", "Complete service degradation"],
-          mitigations: ["Use approximate cardinality (HyperLogLog)", "Implement pre-aggregation", "Reduce aggregation scope", "Use keyword instead of text fields", "Sample large datasets"],
-          metrics: ["Aggregation latency", "Memory per aggregation", "Aggregation throughput", "Cardinality estimation error", "Pre-aggregation hit rate"],
-          tradeoffs: ["Approximate cardinality reduces accuracy", "Pre-aggregation adds latency to indexing", "Sampling reduces result accuracy"]
+          symptoms: ["Aggregation latency much higher than search","Memory pressure during aggregations","Concurrent aggregations blocking","Aggregation timeouts"],
+          causes: ["High cardinality aggregations (unique users)","Nested aggregations on large datasets","Cardinality estimation on unbounded fields","Aggregation on non-indexed fields"],
+          effects: ["Latency explosion from aggregations","Memory exhaustion","Other queries blocked","Complete service degradation"],
+          mitigations: ["Use approximate cardinality (HyperLogLog)","Implement pre-aggregation","Reduce aggregation scope","Use keyword instead of text fields","Sample large datasets"],
+          metrics: ["Aggregation latency","Memory per aggregation","Aggregation throughput","Cardinality estimation error","Pre-aggregation hit rate"],
+          tradeoffs: ["Approximate cardinality reduces accuracy","Pre-aggregation adds latency to indexing","Sampling reduces result accuracy"]
         },
         {
           name: "Concurrency",
           title: "Search thread pool saturation",
           description: "Elasticsearch uses fixed-size thread pools for search. When concurrent queries exceed thread pool size, new queries queue and wait. Thread pool saturation causes latency explosion.",
-          symptoms: ["Search thread pool at max queue", "Requests being rejected", "Latency increasing with concurrent queries", "Search timeout errors"],
-          causes: ["Slow queries consuming all threads", "Too many concurrent requests for cluster", "Thread pool size too small", "Uneven query distribution"],
-          effects: ["New queries queued and delayed", "Latency increases quadratically", "Cascading timeouts", "Service unavailability"],
-          mitigations: ["Increase thread pool size", "Reduce per-query latency", "Implement circuit breakers", "Scale cluster nodes", "Add request deduplication"],
-          metrics: ["Search thread pool active", "Search thread pool queue length", "Request rejection rate", "Queue wait latency", "Thread pool utilization"],
-          tradeoffs: ["Larger thread pools increase memory", "Optimizing queries takes effort", "Scaling adds cost"]
+          symptoms: ["Search thread pool at max queue","Requests being rejected","Latency increasing with concurrent queries","Search timeout errors"],
+          causes: ["Slow queries consuming all threads","Too many concurrent requests for cluster","Thread pool size too small","Uneven query distribution"],
+          effects: ["New queries queued and delayed","Latency increases quadratically","Cascading timeouts","Service unavailability"],
+          mitigations: ["Increase thread pool size","Reduce per-query latency","Implement circuit breakers","Scale cluster nodes","Add request deduplication"],
+          metrics: ["Search thread pool active","Search thread pool queue length","Request rejection rate","Queue wait latency","Thread pool utilization"],
+          tradeoffs: ["Larger thread pools increase memory","Optimizing queries takes effort","Scaling adds cost"]
         },
         {
           name: "Distribution",
           title: "Uneven query load distribution",
           description: "Some shards or nodes can receive disproportionate query load, becoming bottlenecks while other nodes sit idle. Query load imbalance limits effective throughput.",
-          symptoms: ["One shard much slower than others", "One node CPU high", "Shard query latency variable", "Scatter-gather very uneven"],
-          causes: ["Hot shard receiving more requests", "Uneven data distribution", "Replica imbalance", "Client-side routing issues"],
-          effects: ["Slowest shard limits query latency", "Other shards underutilized", "Effective throughput limited", "Tail latency from slowest shard"],
-          mitigations: ["Rebalance shard distribution", "Implement client-side request routing", "Use preferred nodes", "Monitor shard metrics", "Implement hot shard detection"],
-          metrics: ["Query latency per shard", "Query rate per shard", "CPU per shard", "GC pressure per node", "Scatter-gather latency"],
-          tradeoffs: ["Rebalancing causes cluster churn", "Client-side routing increases complexity", "Hot shard mitigation requires code changes"]
+          symptoms: ["One shard much slower than others","One node CPU high","Shard query latency variable","Scatter-gather very uneven"],
+          causes: ["Hot shard receiving more requests","Uneven data distribution","Replica imbalance","Client-side routing issues"],
+          effects: ["Slowest shard limits query latency","Other shards underutilized","Effective throughput limited","Tail latency from slowest shard"],
+          mitigations: ["Rebalance shard distribution","Implement client-side request routing","Use preferred nodes","Monitor shard metrics","Implement hot shard detection"],
+          metrics: ["Query latency per shard","Query rate per shard","CPU per shard","GC pressure per node","Scatter-gather latency"],
+          tradeoffs: ["Rebalancing causes cluster churn","Client-side routing increases complexity","Hot shard mitigation requires code changes"]
         }
       ],
       comparisons: [
@@ -91,9 +77,7 @@
       ],
       insight: "Elasticsearch query execution pressure is fundamentally about matching query complexity to cluster capacity. Unlike databases where slow queries are individual incidents, in Elasticsearch, slow queries have systemic effects by consuming shared thread pool resources. Strong Elasticsearch operators understand this multiplier effect: each slow query degrades service for other queries. Query optimization is not optional; it's essential for cluster stability."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

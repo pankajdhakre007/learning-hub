@@ -3,201 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cassandra — Consistency & Repair Problems</title>
-  <link rel="stylesheet" href="../assets/css/site.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Cassandra — Consistency &amp; Repair Problems</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="doc-page">
-  <div class="page-inner" id="root"></div>
+<body>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "hero": {
-        "eyebrow": "Cassandra — correctness operations",
-        "title": "Consistency and repair problems",
-        "description": "Guide covering replica drift, delayed repair, and consistency-level tradeoffs under real failure conditions."
-    },
-    "synonyms": [
-        "Replica drift",
-        "Read repair issues",
-        "Repair backlog",
-        "Anti-entropy lag",
-        "Digest mismatch",
-        "Replica divergence",
-        "Consistency debt",
-        "Quorum mismatch"
-    ],
-    "questions": [
-        "Why do Cassandra replicas return different values?",
-        "How does delayed repair affect correctness?",
-        "When does read repair become too expensive?",
-        "How should consistency level be selected per workload?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Cassandra — correctness operations",
+        title: "Consistency and repair problems",
+        description: "Guide covering replica drift, delayed repair, and consistency-level tradeoffs under real failure conditions."
+      },
+      synonyms: ["Replica drift","Read repair issues","Repair backlog","Anti-entropy lag","Digest mismatch","Replica divergence","Consistency debt","Quorum mismatch"],
+      questions: ["Why do Cassandra replicas return different values?","How does delayed repair affect correctness?","When does read repair become too expensive?","How should consistency level be selected per workload?"],
+      layers: [
         {
-            "name": "Writes",
-            "title": "Write path and hinted handoff behavior",
-            "description": "Replica availability during writes determines how much inconsistency debt is created.",
-            "symptoms": [
-                "Hints accumulate",
-                "Intermittent stale reads",
-                "Cross-node value mismatch after failures"
-            ],
-            "causes": [
-                "Node outages during writes",
-                "Low consistency writes under partition events",
-                "Hints not replayed promptly"
-            ],
-            "effects": [
-                "Replica divergence",
-                "Correctness uncertainty",
-                "Higher repair burden"
-            ],
-            "mitigations": [
-                "Set consistency by data criticality",
-                "Monitor hint backlog",
-                "Reduce prolonged node unavailability"
-            ],
-            "metrics": [
-                "Hints in queue",
-                "Write CL distribution",
-                "Replica ack failure rate",
-                "Stale read incidents"
-            ],
-            "tradeoffs": [
-                "Lower write CL improves latency but increases inconsistency risk",
-                "Higher write CL improves correctness but reduces availability"
-            ]
+          name: "Writes",
+          title: "Write path and hinted handoff behavior",
+          description: "Replica availability during writes determines how much inconsistency debt is created.",
+          symptoms: ["Hints accumulate","Intermittent stale reads","Cross-node value mismatch after failures"],
+          causes: ["Node outages during writes","Low consistency writes under partition events","Hints not replayed promptly"],
+          effects: ["Replica divergence","Correctness uncertainty","Higher repair burden"],
+          mitigations: ["Set consistency by data criticality","Monitor hint backlog","Reduce prolonged node unavailability"],
+          metrics: ["Hints in queue","Write CL distribution","Replica ack failure rate","Stale read incidents"],
+          tradeoffs: ["Lower write CL improves latency but increases inconsistency risk","Higher write CL improves correctness but reduces availability"]
         },
         {
-            "name": "Reads",
-            "title": "Read path and read-repair overhead",
-            "description": "Reads can detect divergence but may incur latency and additional write traffic.",
-            "symptoms": [
-                "Read latency spikes at stronger CL",
-                "Digest mismatches observed",
-                "Read repair traffic bursts"
-            ],
-            "causes": [
-                "Diverged replicas",
-                "Uneven data freshness",
-                "Aggressive read repair settings"
-            ],
-            "effects": [
-                "Tail latency growth",
-                "Extra network/storage load",
-                "User-facing inconsistency during convergence"
-            ],
-            "mitigations": [
-                "Use targeted CL policies",
-                "Tune read repair configuration",
-                "Reduce divergence via timely repair"
-            ],
-            "metrics": [
-                "Digest mismatch rate",
-                "Read repair rate",
-                "Read latency by CL",
-                "Cross-node read variance"
-            ],
-            "tradeoffs": [
-                "More read repair improves correctness but increases latency",
-                "Weaker CL lowers latency but can return stale data"
-            ]
+          name: "Reads",
+          title: "Read path and read-repair overhead",
+          description: "Reads can detect divergence but may incur latency and additional write traffic.",
+          symptoms: ["Read latency spikes at stronger CL","Digest mismatches observed","Read repair traffic bursts"],
+          causes: ["Diverged replicas","Uneven data freshness","Aggressive read repair settings"],
+          effects: ["Tail latency growth","Extra network/storage load","User-facing inconsistency during convergence"],
+          mitigations: ["Use targeted CL policies","Tune read repair configuration","Reduce divergence via timely repair"],
+          metrics: ["Digest mismatch rate","Read repair rate","Read latency by CL","Cross-node read variance"],
+          tradeoffs: ["More read repair improves correctness but increases latency","Weaker CL lowers latency but can return stale data"]
         },
         {
-            "name": "Repair",
-            "title": "Anti-entropy repair scheduling and debt",
-            "description": "Repair is essential for long-term consistency and tombstone cleanup safety.",
-            "symptoms": [
-                "Repair windows exceed schedule",
-                "Backlog grows after incidents",
-                "Inconsistency events repeat"
-            ],
-            "causes": [
-                "Large datasets with slow repair cadence",
-                "Insufficient maintenance capacity",
-                "Competing compaction/repair IO"
-            ],
-            "effects": [
-                "Persistent drift",
-                "Operational fragility",
-                "Increased chance of correctness incidents"
-            ],
-            "mitigations": [
-                "Run incremental repairs with strict cadence",
-                "Prioritize critical keyspaces",
-                "Allocate maintenance headroom"
-            ],
-            "metrics": [
-                "Repair duration",
-                "Repair backlog age",
-                "Segments repaired per cycle",
-                "Consistency incident count"
-            ],
-            "tradeoffs": [
-                "Frequent repair consumes resources",
-                "Infrequent repair increases correctness risk"
-            ]
+          name: "Repair",
+          title: "Anti-entropy repair scheduling and debt",
+          description: "Repair is essential for long-term consistency and tombstone cleanup safety.",
+          symptoms: ["Repair windows exceed schedule","Backlog grows after incidents","Inconsistency events repeat"],
+          causes: ["Large datasets with slow repair cadence","Insufficient maintenance capacity","Competing compaction/repair IO"],
+          effects: ["Persistent drift","Operational fragility","Increased chance of correctness incidents"],
+          mitigations: ["Run incremental repairs with strict cadence","Prioritize critical keyspaces","Allocate maintenance headroom"],
+          metrics: ["Repair duration","Repair backlog age","Segments repaired per cycle","Consistency incident count"],
+          tradeoffs: ["Frequent repair consumes resources","Infrequent repair increases correctness risk"]
         },
         {
-            "name": "Failure",
-            "title": "Topology changes and failure recovery",
-            "description": "Node replacement, DC events, and network partitions can amplify consistency risk if procedures are weak.",
-            "symptoms": [
-                "Post-recovery stale reads",
-                "Inconsistent behavior by region",
-                "Long convergence periods"
-            ],
-            "causes": [
-                "Incomplete bootstrap/decommission processes",
-                "Cross-DC instability",
-                "Lack of validated recovery runbooks"
-            ],
-            "effects": [
-                "Extended correctness uncertainty",
-                "Service-level trust erosion",
-                "Manual intervention burden"
-            ],
-            "mitigations": [
-                "Use hardened topology-change runbooks",
-                "Test partition/failover scenarios",
-                "Validate convergence before traffic normalization"
-            ],
-            "metrics": [
-                "Convergence time",
-                "Post-event mismatch count",
-                "Runbook success rate",
-                "Recovery error rate"
-            ],
-            "tradeoffs": [
-                "Safer recovery steps can increase maintenance duration",
-                "Faster cutovers may carry residual consistency debt"
-            ]
+          name: "Failure",
+          title: "Topology changes and failure recovery",
+          description: "Node replacement, DC events, and network partitions can amplify consistency risk if procedures are weak.",
+          symptoms: ["Post-recovery stale reads","Inconsistent behavior by region","Long convergence periods"],
+          causes: ["Incomplete bootstrap/decommission processes","Cross-DC instability","Lack of validated recovery runbooks"],
+          effects: ["Extended correctness uncertainty","Service-level trust erosion","Manual intervention burden"],
+          mitigations: ["Use hardened topology-change runbooks","Test partition/failover scenarios","Validate convergence before traffic normalization"],
+          metrics: ["Convergence time","Post-event mismatch count","Runbook success rate","Recovery error rate"],
+          tradeoffs: ["Safer recovery steps can increase maintenance duration","Faster cutovers may carry residual consistency debt"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "MongoDB",
-            "problem": "Replication staleness window"
-        },
-        {
-            "tech": "MySQL",
-            "problem": "Replica consistency lag"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "ISR and leader consistency risk"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Replica refresh divergence"
-        },
-        {
-            "tech": "DynamoDB",
-            "problem": "Eventual consistency tradeoffs"
-        }
-    ],
-    "insight": "Cassandra consistency is an operational contract, not just a CL setting. Repair discipline and failure handling determine whether theoretical guarantees hold in production."
-};
+      ],
+      comparisons: [
+        { tech: "MongoDB", problem: "Replication staleness window" },
+        { tech: "MySQL", problem: "Replica consistency lag" },
+        { tech: "Kafka", problem: "ISR and leader consistency risk" },
+        { tech: "Elasticsearch", problem: "Replica refresh divergence" },
+        { tech: "DynamoDB", problem: "Eventual consistency tradeoffs" }
+      ],
+      insight: "Cassandra consistency is an operational contract, not just a CL setting. Repair discipline and failure handling determine whether theoretical guarantees hold in production."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

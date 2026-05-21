@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Technology Benchmarks — Throughput &amp; Latency</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="index.html">✦ Learning Hub</a>
+        <button class="navbar-burger" aria-label="Open navigation menu" aria-expanded="false" data-target="docs-nav">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div id="docs-nav" class="navbar-menu">
+        <div class="navbar-end">
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link" href="#">Pages</a>
+            <div class="navbar-dropdown is-right">
+              <a class="navbar-item" href="leetcode.html">🧩 LeetCode</a>
+              <a class="navbar-item is-active" href="benchmarks.html" aria-current="page">📊 Benchmarks</a>
+              <a class="navbar-item" href="tech-issues.html">🔥 Tech Issues</a>
+              <a class="navbar-item" href="fulfillment.html">📦 Fulfillment</a>
+            </div>
+          </div>
+          <div class="navbar-item">
+            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-page-header">
+    <div class="container">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;">
+        <div>
+          <p class="docs-eyebrow">Infrastructure Benchmarks</p>
+          <h1>Technology Benchmarks</h1>
+          <p class="docs-subtitle">Reads/sec, writes/sec, and latency ranges across databases, caches, message queues, gateways, and related infrastructure. Click any column header to sort.</p>
+        </div>
+        <a class="button is-light" href="index.html" style="flex-shrink:0;margin-top:0.25rem;">← Back</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="section" id="main">
+    <div class="container">
+      <div class="docs-page-grid">
+
+        <!-- Sidebar Legend -->
+        <aside class="docs-sidebar-panel">
+          <div class="panel__body">
+
+            <p class="heading">Color Legend</p>
+
+            <div class="docs-legend-section">
+              <p class="docs-legend-title">Latency Ranges</p>
+              <div class="docs-legend-row"><span class="docs-swatch is-success"></span>Low: 0.1–10 ms</div>
+              <div class="docs-legend-row"><span class="docs-swatch is-warning"></span>Medium: 10–100 ms</div>
+              <div class="docs-legend-row"><span class="docs-swatch is-danger"></span>High: 100+ ms</div>
+            </div>
+
+            <div class="docs-legend-section">
+              <p class="docs-legend-title">Throughput Ranges</p>
+              <div class="docs-legend-row"><span class="docs-swatch is-success"></span>Excellent: 100K+</div>
+              <div class="docs-legend-row"><span class="docs-swatch is-warning"></span>Good: 10K–100K</div>
+              <div class="docs-legend-row"><span class="docs-swatch is-danger"></span>Moderate: 1K–10K</div>
+            </div>
+
+            <hr style="border-color:var(--hr-color);margin:1rem 0;">
+
+            <p class="heading">Jump to</p>
+            <nav class="menu">
+              <ul class="menu-list">
+                <li><a href="#core">Core Systems</a></li>
+                <li><a href="#gateways">API Gateways</a></li>
+                <li><a href="#balancers">Load Balancers</a></li>
+                <li><a href="#timeseries">Time Series DBs</a></li>
+                <li><a href="#vector">Vector Databases</a></li>
+              </ul>
+            </nav>
+
+          </div>
+        </aside>
+
+        <!-- Tables -->
+        <div>
+
+          <div class="docs-section" id="core">
+            <p class="docs-section-title">Core Systems</p>
+            <div class="box p-0" style="overflow:hidden;">
+              <div class="table-container">
+                <table class="table is-striped is-hoverable is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th data-sortable>Technology</th>
+                      <th data-sortable data-col-type="throughput">Writes/sec</th>
+                      <th data-sortable data-col-type="throughput">Reads/sec</th>
+                      <th data-sortable data-col-type="latency">Read Latency</th>
+                      <th data-sortable data-col-type="latency">Write Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>Redis</strong></td><td>100K – 1M+</td><td>100K – 1M+</td><td><span class="tag is-success is-light">0.1–0.5 ms</span></td><td><span class="tag is-success is-light">0.1–0.7 ms</span></td></tr>
+                    <tr><td><strong>Elasticsearch</strong></td><td>5K – 50K</td><td>10K – 100K</td><td><span class="tag is-warning is-light">5–50 ms</span></td><td><span class="tag is-warning is-light">10–100 ms</span></td></tr>
+                    <tr><td><strong>Kafka</strong></td><td>100K – 1M+</td><td>100K – 1M+</td><td><span class="tag is-warning is-light">5–20 ms</span></td><td><span class="tag is-success is-light">2–10 ms</span></td></tr>
+                    <tr><td><strong>Cassandra</strong></td><td>50K – 500K</td><td>20K – 200K</td><td><span class="tag is-warning is-light">5–20 ms</span></td><td><span class="tag is-success is-light">2–10 ms</span></td></tr>
+                    <tr><td><strong>DynamoDB</strong></td><td>100K – millions+</td><td>100K – millions+</td><td><span class="tag is-success is-light">1–10 ms</span></td><td><span class="tag is-success is-light">1–10 ms</span></td></tr>
+                    <tr><td><strong>PostgreSQL</strong></td><td>5K – 50K</td><td>10K – 100K</td><td><span class="tag is-success is-light">1–10 ms</span></td><td><span class="tag is-warning is-light">2–20 ms</span></td></tr>
+                    <tr><td><strong>Flink</strong></td><td>100K – 10M+</td><td>100K – 10M+</td><td><span class="tag is-danger is-light">10–1000 ms</span></td><td><span class="tag is-danger is-light">10–1000 ms</span></td></tr>
+                    <tr><td><strong>ZooKeeper</strong></td><td>1K – 10K</td><td>10K – 100K</td><td><span class="tag is-success is-light">1–10 ms</span></td><td><span class="tag is-warning is-light">5–20 ms</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="docs-section" id="gateways">
+            <p class="docs-section-title">API Gateways</p>
+            <div class="box p-0" style="overflow:hidden;">
+              <div class="table-container">
+                <table class="table is-striped is-hoverable is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th data-sortable>Technology</th>
+                      <th data-sortable data-col-type="throughput">Writes/sec</th>
+                      <th data-sortable data-col-type="throughput">Reads/sec</th>
+                      <th data-sortable data-col-type="latency">Read Latency</th>
+                      <th data-sortable data-col-type="latency">Write Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>Amazon API Gateway</strong></td><td>10K – 100K+</td><td>10K – 100K+</td><td><span class="tag is-warning is-light">10–50 ms</span></td><td><span class="tag is-warning is-light">10–50 ms</span></td></tr>
+                    <tr><td><strong>Kong</strong></td><td>20K – 200K</td><td>20K – 200K</td><td><span class="tag is-success is-light">1–10 ms</span></td><td><span class="tag is-success is-light">1–10 ms</span></td></tr>
+                    <tr><td><strong>NGINX</strong></td><td>50K – 500K+</td><td>50K – 500K+</td><td><span class="tag is-success is-light">0.5–5 ms</span></td><td><span class="tag is-success is-light">0.5–5 ms</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="docs-section" id="balancers">
+            <p class="docs-section-title">Load Balancers</p>
+            <div class="box p-0" style="overflow:hidden;">
+              <div class="table-container">
+                <table class="table is-striped is-hoverable is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th data-sortable>Technology</th>
+                      <th data-sortable data-col-type="throughput">Writes/sec</th>
+                      <th data-sortable data-col-type="throughput">Reads/sec</th>
+                      <th data-sortable data-col-type="latency">Read Latency</th>
+                      <th data-sortable data-col-type="latency">Write Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>HAProxy</strong></td><td>100K – 1M+</td><td>100K – 1M+</td><td><span class="tag is-success is-light">0.2–2 ms</span></td><td><span class="tag is-success is-light">0.2–2 ms</span></td></tr>
+                    <tr><td><strong>NGINX</strong></td><td>100K – 1M+</td><td>100K – 1M+</td><td><span class="tag is-success is-light">0.5–5 ms</span></td><td><span class="tag is-success is-light">0.5–5 ms</span></td></tr>
+                    <tr><td><strong>AWS ELB</strong></td><td>100K – millions+</td><td>100K – millions+</td><td><span class="tag is-warning is-light">5–20 ms</span></td><td><span class="tag is-warning is-light">5–20 ms</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="docs-section" id="timeseries">
+            <p class="docs-section-title">Time Series Databases</p>
+            <div class="box p-0" style="overflow:hidden;">
+              <div class="table-container">
+                <table class="table is-striped is-hoverable is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th data-sortable>Technology</th>
+                      <th data-sortable data-col-type="throughput">Writes/sec</th>
+                      <th data-sortable data-col-type="throughput">Reads/sec</th>
+                      <th data-sortable data-col-type="latency">Read Latency</th>
+                      <th data-sortable data-col-type="latency">Write Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>InfluxDB</strong></td><td>50K – 500K</td><td>10K – 100K</td><td><span class="tag is-warning is-light">5–50 ms</span></td><td><span class="tag is-success is-light">2–10 ms</span></td></tr>
+                    <tr><td><strong>TimescaleDB</strong></td><td>10K – 100K</td><td>10K – 100K</td><td><span class="tag is-warning is-light">5–20 ms</span></td><td><span class="tag is-warning is-light">5–20 ms</span></td></tr>
+                    <tr><td><strong>Prometheus</strong></td><td>10K – 100K</td><td>10K – 100K</td><td><span class="tag is-warning is-light">5–50 ms</span></td><td><span class="tag is-warning is-light">5–50 ms</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="docs-section" id="vector">
+            <p class="docs-section-title">Vector Databases</p>
+            <div class="box p-0" style="overflow:hidden;">
+              <div class="table-container">
+                <table class="table is-striped is-hoverable is-fullwidth">
+                  <thead>
+                    <tr>
+                      <th data-sortable>Technology</th>
+                      <th data-sortable data-col-type="throughput">Writes/sec</th>
+                      <th data-sortable data-col-type="throughput">Reads/sec</th>
+                      <th data-sortable data-col-type="latency">Read Latency</th>
+                      <th data-sortable data-col-type="latency">Write Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><strong>Pinecone</strong></td><td>10K – 100K</td><td>10K – 100K</td><td><span class="tag is-warning is-light">10–100 ms</span></td><td><span class="tag is-warning is-light">10–50 ms</span></td></tr>
+                    <tr><td><strong>Weaviate</strong></td><td>5K – 50K</td><td>5K – 50K</td><td><span class="tag is-warning is-light">10–100 ms</span></td><td><span class="tag is-warning is-light">10–50 ms</span></td></tr>
+                    <tr><td><strong>Milvus</strong></td><td>10K – 100K</td><td>10K – 100K</td><td><span class="tag is-warning is-light">5–50 ms</span></td><td><span class="tag is-warning is-light">5–20 ms</span></td></tr>
+                    <tr><td><strong>FAISS</strong></td><td>100K – 1M+</td><td>100K – 1M+</td><td><span class="tag is-success is-light">0.1–5 ms</span></td><td><span class="tag is-success is-light">0.1–5 ms</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p style="color:var(--text-secondary);">Technology benchmarks and latency comparisons</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <p style="font-size:0.82rem;color:var(--text-muted);">Last updated May 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/theme.js"></script>
+  <script>
+    // ─── Throughput tag classification ────────────────────────────────────────
+    // Thresholds from the left-pane legend:
+    //   Excellent 100K+  → is-success (green)
+    //   Good      10K–100K → is-warning (yellow)
+    //   Moderate  1K–10K  → is-danger  (red)
+    // Uses the lower bound of the range to be conservative.
+    function parseLowerBound(str) {
+      const m = str.trim().match(/^(\d+(?:\.\d+)?)\s*([KMBmillion]+)?/i);
+      if (!m) return 0;
+      let v = parseFloat(m[1]);
+      const u = (m[2] || '').toLowerCase();
+      if (u.startsWith('k')) v *= 1e3;
+      else if (u.startsWith('m')) v *= 1e6;
+      else if (u.startsWith('b')) v *= 1e9;
+      return v;
+    }
+
+    function throughputTagClass(str) {
+      const v = parseLowerBound(str);
+      if (v >= 100000) return 'is-success';
+      if (v >= 10000)  return 'is-warning';
+      return 'is-danger';
+    }
+
+    // ─── Apply throughput tags to Writes/sec and Reads/sec columns ────────────
+    function applyThroughputTags() {
+      document.querySelectorAll('table').forEach(table => {
+        // Find which column indices are throughput columns
+        const headers = Array.from(table.querySelectorAll('thead th'));
+        const throughputCols = headers
+          .map((th, i) => ({ i, type: th.getAttribute('data-col-type') }))
+          .filter(h => h.type === 'throughput')
+          .map(h => h.i);
+
+        if (!throughputCols.length) return;
+
+        table.querySelectorAll('tbody tr').forEach(row => {
+          throughputCols.forEach(colIdx => {
+            const cell = row.cells[colIdx];
+            if (!cell) return;
+            const raw = cell.textContent.trim();
+            if (!raw || cell.querySelector('span')) return; // already tagged
+            const cls = throughputTagClass(raw);
+            cell.innerHTML = '<span class="tag ' + cls + ' is-light">' + raw + '</span>';
+          });
+        });
+      });
+    }
+
+    // ─── Sort ─────────────────────────────────────────────────────────────────
+    function parseNumericValue(str) {
+      // Strip HTML tags first
+      const text = str.replace(/<[^>]+>/g, '').trim();
+      const m = text.match(/(\d+(?:\.\d+)?)\s*([KMB])?/i);
+      if (!m) return 0;
+      let v = parseFloat(m[1]);
+      const u = (m[2] || '').toUpperCase();
+      if (u === 'K') v *= 1e3;
+      else if (u === 'M') v *= 1e6;
+      else if (u === 'B') v *= 1e9;
+      if (text.toLowerCase().includes('million')) v = Math.max(v, 1e6);
+      return v;
+    }
+
+    function sortTable(table, colIdx, dir) {
+      const tbody = table.querySelector('tbody');
+      const rows  = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        const aT = a.cells[colIdx]?.textContent.trim() || '';
+        const bT = b.cells[colIdx]?.textContent.trim() || '';
+        const aN = parseNumericValue(aT), bN = parseNumericValue(bT);
+        const cmp = (aN > 0 && bN > 0) ? aN - bN : aT.localeCompare(bT);
+        return dir === 'asc' ? cmp : -cmp;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Apply throughput color tags first, then sort
+      applyThroughputTags();
+
+      document.querySelectorAll('th[data-sortable]').forEach(th => {
+        const table  = th.closest('table');
+        const colIdx = Array.from(th.parentElement.children).indexOf(th);
+        let dir = 'asc';
+
+        th.addEventListener('click', () => {
+          table.querySelectorAll('th[data-sortable]').forEach(h => {
+            h.classList.remove('sort-asc', 'sort-desc');
+          });
+          th.classList.add(dir === 'asc' ? 'sort-asc' : 'sort-desc');
+          sortTable(table, colIdx, dir);
+          dir = dir === 'asc' ? 'desc' : 'asc';
+        });
+      });
+
+      // Default: sort each table alphabetically by technology name
+      document.querySelectorAll('.table').forEach(t => sortTable(t, 0, 'asc'));
+    });
+  </script>
+</body>
+</html>

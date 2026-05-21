@@ -1,0 +1,1966 @@
+/* ==========================================================================
+   style.css — Modern Blog Theme
+   Stack: Plain HTML/CSS/JS + Bulma CSS
+   Themes: Light (default) + Dark (data-theme="dark" on <html>)
+   ========================================================================== */
+
+/* ─── Google Fonts ────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+/* ─── CSS Custom Properties (Design Tokens) ──────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-primary:      #ffffff;
+  --bg-secondary:    #f7f7fb;
+  --bg-tertiary:     #eeeef6;
+
+  /* Text */
+  --text-primary:    #1a1a2e;
+  --text-secondary:  #55556e;
+  --text-muted:      #8888a8;
+
+  /* Accent */
+  --accent:          #6c63ff;
+  --accent-hover:    #574fd6;
+  --accent-light:    #ede9ff;
+
+  /* Cards & Borders */
+  --card-bg:         #ffffff;
+  --card-border:     #e4e4ef;
+  --card-shadow:     0 2px 12px rgba(108, 99, 255, 0.07);
+  --card-shadow-hover: 0 8px 32px rgba(108, 99, 255, 0.18);
+
+  /* Tags */
+  --tag-bg:          #ede9ff;
+  --tag-text:        #6c63ff;
+
+  /* Code */
+  --code-bg:         #f0f0f8;
+  --code-text:       #4a3f8a;
+  --code-border:     #d8d4f0;
+
+  /* Navbar */
+  --nav-bg:          rgba(255, 255, 255, 0.92);
+  --nav-border:      rgba(228, 228, 239, 0.8);
+  --nav-shadow:      0 1px 0 var(--card-border);
+
+  /* Blockquote */
+  --blockquote-border: #6c63ff;
+  --blockquote-bg:   #f5f3ff;
+
+  /* HR */
+  --hr-color:        #e4e4ef;
+
+  /* Transitions */
+  --transition-speed: 0.25s;
+}
+
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-primary:      #0f0f1a;
+  --bg-secondary:    #17172a;
+  --bg-tertiary:     #1e1e34;
+
+  /* Text */
+  --text-primary:    #e8e8f0;
+  --text-secondary:  #9090b0;
+  --text-muted:      #60607a;
+
+  /* Accent */
+  --accent:          #7c73ff;
+  --accent-hover:    #9b94ff;
+  --accent-light:    #1e1e40;
+
+  /* Cards & Borders */
+  --card-bg:         #1c1c30;
+  --card-border:     #2e2e4e;
+  --card-shadow:     0 2px 12px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /* Tags */
+  --tag-bg:          #24244a;
+  --tag-text:        #9b94ff;
+
+  /* Code */
+  --code-bg:         #1e1e3a;
+  --code-text:       #b8b0ff;
+  --code-border:     #2e2e4e;
+
+  /* Navbar */
+  --nav-bg:          rgba(15, 15, 26, 0.92);
+  --nav-border:      rgba(46, 46, 78, 0.8);
+  --nav-shadow:      0 1px 0 #2e2e4e;
+
+  /* Blockquote */
+  --blockquote-border: #7c73ff;
+  --blockquote-bg:   #1a1a30;
+
+  /* HR */
+  --hr-color:        #2e2e4e;
+}
+
+/* ─── Global Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    background-color var(--transition-speed) ease,
+    color var(--transition-speed) ease;
+  min-height: 100vh;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Override Bulma's default font */
+.navbar,
+.card,
+.button,
+.title,
+.subtitle,
+.content {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Override Bulma's hardcoded .title / .subtitle colors for dark-mode support */
+.title {
+  color: var(--text-primary);
+  transition: color var(--transition-speed);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  transition: color var(--transition-speed);
+}
+
+/* ─── Reading Progress Bar ───────────────────────────────────────────────── */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  z-index: 9999;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ─── Navbar ─────────────────────────────────────────────────────────────── */
+.site-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: none;
+  transition:
+    background var(--transition-speed) ease,
+    box-shadow var(--transition-speed) ease;
+}
+
+.site-navbar.is-scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .site-navbar.is-scrolled {
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+.site-navbar .navbar-brand .navbar-item {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  padding: 0.5rem 1rem;
+  transition: color var(--transition-speed);
+}
+
+.site-navbar .navbar-brand .navbar-item:hover {
+  background: transparent;
+  color: var(--accent-hover);
+}
+
+.site-navbar .navbar-item {
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.925rem;
+  transition: color var(--transition-speed);
+  background: transparent !important;
+}
+
+.site-navbar .navbar-item:hover,
+.site-navbar .navbar-item.is-active {
+  color: var(--text-primary);
+  background: transparent !important;
+}
+
+.site-navbar .navbar-menu {
+  background: transparent;
+}
+
+.site-navbar .navbar-end {
+  align-items: center;
+}
+
+.site-navbar .navbar-burger {
+  color: var(--text-secondary);
+}
+
+.site-navbar .navbar-burger:hover {
+  color: var(--text-primary);
+  background: transparent;
+}
+
+/* Mobile navbar */
+@media screen and (max-width: 1023px) {
+  .site-navbar .navbar-menu.is-active {
+    background: var(--bg-primary);
+    border-top: 1px solid var(--card-border);
+    padding: 0.5rem 0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .site-navbar .navbar-item {
+    padding: 0.65rem 1.5rem;
+  }
+}
+
+/* ─── Theme Toggle Button ────────────────────────────────────────────────── */
+#theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--card-border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.75rem;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    color var(--transition-speed),
+    transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+#theme-toggle:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.05);
+}
+
+#theme-toggle svg {
+  display: block;
+  pointer-events: none;
+}
+
+/* ─── Hero Section ───────────────────────────────────────────────────────── */
+.site-hero {
+  background: var(--bg-primary);
+  padding: 5rem 1.5rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition-speed);
+}
+
+.site-hero::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, var(--accent-light) 0%, transparent 70%);
+  opacity: 0.6;
+  animation: hero-pulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .site-hero::before {
+  opacity: 0.25;
+}
+
+@keyframes hero-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+  50%       { transform: translateX(-50%) scale(1.08); opacity: 0.4; }
+}
+
+.site-hero .hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.site-hero .hero-title span {
+  color: var(--accent);
+}
+
+.site-hero .hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto 2.25rem;
+  line-height: 1.6;
+  position: relative;
+}
+
+.site-hero .hero-actions {
+  display: flex;
+  gap: 0.875rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.5rem;
+  background: var(--accent);
+  color: #fff !important;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(108, 99, 255, 0.35);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.5rem;
+  background: transparent;
+  color: var(--accent) !important;
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed),
+    transform 0.15s ease;
+}
+
+.btn-outline:hover {
+  background: var(--accent-light);
+  transform: translateY(-1px);
+}
+
+/* ─── Section Headers ────────────────────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--hr-color);
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.section-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+.section-link:hover {
+  color: var(--accent-hover);
+}
+
+/* ─── Category Tags / Pills ──────────────────────────────────────────────── */
+.post-tag {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed),
+    transform 0.15s ease;
+}
+
+.post-tag:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ─── Featured Post ──────────────────────────────────────────────────────── */
+.featured-post {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 3.5rem;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    box-shadow var(--transition-speed),
+    transform 0.2s ease;
+}
+
+.featured-post:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.featured-post .featured-image-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-height: 280px;
+}
+
+.featured-post .featured-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.featured-post:hover .featured-image-wrap img {
+  transform: scale(1.03);
+}
+
+.featured-post-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+.featured-post .featured-content {
+  padding: 2rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.featured-post .featured-title {
+  font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin: 0.6rem 0 0.875rem;
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+.featured-post .featured-title:hover {
+  color: var(--accent);
+}
+
+.featured-post .featured-excerpt {
+  color: var(--text-secondary);
+  font-size: 0.975rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.post-meta .author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--card-border);
+}
+
+.post-meta .meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.post-meta .author-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.post-meta .meta-details {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.read-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hr-color);
+  transition: gap 0.2s ease, color var(--transition-speed);
+}
+
+.read-link:hover {
+  color: var(--accent-hover);
+  gap: 0.6rem;
+}
+
+/* ─── Post Cards Grid ────────────────────────────────────────────────────── */
+.post-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+  text-decoration: none;
+}
+
+.post-card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-4px);
+}
+
+.post-card .card-image-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.post-card .card-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.post-card:hover .card-image-wrap img {
+  transform: scale(1.05);
+}
+
+.post-card .card-body {
+  padding: 1.25rem 1.35rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.post-card .card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.35;
+  margin: 0.5rem 0 0.5rem;
+  letter-spacing: -0.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+.post-card .card-title:hover,
+.post-card:hover .card-title {
+  color: var(--accent);
+}
+
+.post-card .card-excerpt {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.post-card .card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--hr-color);
+}
+
+.post-card .card-meta .author-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.post-card .card-meta .meta-text {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.post-card .card-meta .meta-author {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ─── Main Content Sections ──────────────────────────────────────────────── */
+.main-content {
+  background: var(--bg-primary);
+  transition: background var(--transition-speed);
+}
+
+.content-section {
+  padding: 3rem 0;
+}
+
+.content-section + .content-section {
+  padding-top: 0;
+}
+
+/* ─── Sidebar ────────────────────────────────────────────────────────────── */
+.sidebar-widget {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.sidebar-widget-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.sidebar-tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sidebar-recent-post {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hr-color);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.sidebar-recent-post:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sidebar-recent-post:hover {
+  opacity: 0.75;
+}
+
+.sidebar-recent-post img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.sidebar-recent-post .recent-info {
+  flex: 1;
+}
+
+.sidebar-recent-post .recent-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-recent-post .recent-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ─── Article Page Styles ────────────────────────────────────────────────── */
+.article-header {
+  padding: 3rem 0 2rem;
+  border-bottom: 1px solid var(--hr-color);
+  margin-bottom: 2.5rem;
+}
+
+.article-header .article-title {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  margin: 0.75rem 0 1rem;
+}
+
+.article-header .article-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.article-meta .author-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--card-border);
+}
+
+.article-meta .meta-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.article-meta .author-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.article-meta .meta-secondary {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.article-meta-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--card-border);
+}
+
+.article-cover {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--card-shadow);
+}
+
+/* ─── Article Body Typography ────────────────────────────────────────────── */
+.article-body {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+
+.article-body h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 2.5rem 0 1rem;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.article-body h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 2rem 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.article-body h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 1.5rem 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.875rem;
+}
+
+.article-body p {
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.article-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--transition-speed);
+}
+
+.article-body a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.article-body ul,
+.article-body ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-body li {
+  margin-bottom: 0.4rem;
+}
+
+.article-body blockquote {
+  border-left: 4px solid var(--blockquote-border);
+  background: var(--blockquote-bg);
+  padding: 1.1rem 1.5rem;
+  margin: 2rem 0;
+  border-radius: 0 10px 10px 0;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.article-body blockquote p {
+  margin-bottom: 0;
+}
+
+.article-body code {
+  font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  font-size: 0.875em;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  border: 1px solid var(--code-border);
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed);
+}
+
+.article-body pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 12px;
+  padding: 1.35rem 1.5rem;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.article-body pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.9rem;
+  color: var(--code-text);
+  line-height: 1.7;
+}
+
+.article-body figure {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.article-body figure img {
+  border-radius: 12px;
+  max-width: 100%;
+  box-shadow: var(--card-shadow);
+}
+
+.article-body figcaption {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+  font-style: italic;
+}
+
+.article-body hr {
+  border: none;
+  border-top: 1px solid var(--hr-color);
+  margin: 2.5rem 0;
+}
+
+/* ─── Author Bio Card ────────────────────────────────────────────────────── */
+.author-bio-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: 3rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.author-bio-card img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 3px solid var(--card-border);
+}
+
+.author-bio-card .bio-content .bio-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.author-bio-card .bio-content .bio-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.author-bio-card .bio-content .bio-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 0.875rem;
+}
+
+.bio-socials {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bio-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--card-border);
+  border-radius: 7px;
+  transition:
+    color var(--transition-speed),
+    border-color var(--transition-speed),
+    background var(--transition-speed);
+}
+
+.bio-social-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* ─── Related Posts ──────────────────────────────────────────────────────── */
+.related-posts {
+  padding: 3rem 0 2rem;
+  border-top: 1px solid var(--hr-color);
+  margin-top: 3rem;
+}
+
+.related-posts .section-title {
+  margin-bottom: 1.75rem;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+.site-footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--card-border);
+  padding: 3rem 1.5rem 2rem;
+  text-align: center;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.footer-brand {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.footer-tagline {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+}
+
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition:
+    color var(--transition-speed),
+    border-color var(--transition-speed),
+    background var(--transition-speed),
+    transform 0.15s ease;
+}
+
+.footer-social-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+.footer-divider {
+  width: 40px;
+  height: 1px;
+  background: var(--hr-color);
+  margin: 0 auto 1rem;
+}
+
+.footer-copy {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+}
+
+.footer-copy a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-back-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-top: 0.75rem;
+  transition: color var(--transition-speed);
+}
+
+.footer-back-top:hover {
+  color: var(--accent);
+}
+
+/* ─── Bulma Container Overrides ──────────────────────────────────────────── */
+.container {
+  max-width: 1160px;
+}
+
+/* ─── Pagination ─────────────────────────────────────────────────────────── */
+.pagination-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 0 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color var(--transition-speed),
+    border-color var(--transition-speed),
+    background var(--transition-speed);
+}
+
+.pagination-btn:hover,
+.pagination-btn.is-active {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.pagination-btn.is-wide {
+  width: auto;
+  padding: 0 1rem;
+}
+
+/* ─── Utilities ──────────────────────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Responsive Adjustments ─────────────────────────────────────────────── */
+@media screen and (max-width: 768px) {
+  .site-hero {
+    padding: 3.5rem 1.5rem 3rem;
+  }
+
+  .featured-post .featured-content {
+    padding: 1.5rem;
+  }
+
+  .author-bio-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .author-bio-card img {
+    margin: 0 auto;
+  }
+
+  .bio-socials {
+    justify-content: center;
+  }
+
+  .article-meta {
+    gap: 0.75rem;
+  }
+
+  .article-meta-divider {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .site-hero .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-primary,
+  .btn-outline {
+    width: 100%;
+    justify-content: center;
+    max-width: 260px;
+  }
+
+  .article-cover {
+    border-radius: 10px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Hub Pages — Bulma Component Overrides + Layout
+   These override Bulma's hard-coded colors so hub pages respect the theme
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Bulma Table ─────────────────────────────────────────────────────────── */
+.table {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed);
+}
+
+.table td,
+.table th {
+  border-color: var(--card-border);
+  color: var(--text-primary);
+  vertical-align: middle;
+  transition:
+    border-color var(--transition-speed),
+    background var(--transition-speed);
+}
+
+.table thead th {
+  background: var(--bg-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom-color: var(--card-border);
+  white-space: nowrap;
+}
+
+.table.is-striped tbody tr:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
+.table.is-hoverable tbody tr:hover {
+  background: var(--accent-light) !important;
+}
+
+.table-container {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ─── Bulma Tags (dark-mode aware) ───────────────────────────────────────── */
+.tag {
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed);
+}
+
+.tag.is-light {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.tag.is-primary.is-light {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* Success */
+.tag.is-success.is-light {
+  background: #e6f7ed;
+  color: #1a6b3c;
+}
+[data-theme="dark"] .tag.is-success.is-light {
+  background: #0d2b1b;
+  color: #48c78e;
+}
+
+/* Warning */
+.tag.is-warning.is-light {
+  background: #fef9e7;
+  color: #7a5c00;
+}
+[data-theme="dark"] .tag.is-warning.is-light {
+  background: #2b2200;
+  color: #f0d060;
+}
+
+/* Danger */
+.tag.is-danger.is-light {
+  background: #fde8e8;
+  color: #9e1c1c;
+}
+[data-theme="dark"] .tag.is-danger.is-light {
+  background: #2b0d0d;
+  color: #f87171;
+}
+
+/* ─── Bulma Message ───────────────────────────────────────────────────────── */
+.message {
+  border-radius: 10px;
+  background: var(--card-bg);
+  transition: background var(--transition-speed);
+}
+
+.message-header {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.message-body {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--card-border);
+  border-radius: 0 0 10px 10px;
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+/* is-warning header: replaced amber/orange with theme-neutral colors */
+.message.is-warning .message-header {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.message.is-info .message-header {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Tradeoffs message — neutral card-style header, no orange */
+.message.is-tradeoff .message-header {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.message .message-body ul,
+.message .message-body ol {
+  margin-top: 0.4rem;
+  padding-left: 1.25rem;
+}
+
+.message .message-body li {
+  margin-bottom: 0.3rem;
+  color: var(--text-primary);
+}
+
+/* ─── Bulma Buttons Addon Group (Layer Tabs) ─────────────────────────────── */
+.buttons.has-addons .button {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--card-border);
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.buttons.has-addons .button:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.buttons.has-addons .button.is-selected {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ─── Bulma Notification ─────────────────────────────────────────────────── */
+.notification {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed);
+}
+
+.notification.is-info.is-light {
+  background: var(--accent-light);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .notification.is-info.is-light {
+  background: var(--accent-light);
+  color: var(--accent-hover);
+}
+
+/* ─── Bulma Box ───────────────────────────────────────────────────────────── */
+.box {
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+/* ─── Bulma Input / Select ───────────────────────────────────────────────── */
+.input,
+.textarea,
+.select select {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--card-border);
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.input:focus,
+.textarea:focus,
+.select select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+  outline: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ─── Bulma Menu ──────────────────────────────────────────────────────────── */
+.menu-label {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.menu-list a {
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 0.45em 0.75em;
+  transition:
+    color var(--transition-speed),
+    background var(--transition-speed);
+}
+
+.menu-list a:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.menu-list a.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ─── Global blockquote (applies inside .content, used by doc renderer) ──── */
+/* .article-body blockquote already scoped above; this covers .content blocks  */
+.content blockquote {
+  border-left: 4px solid var(--blockquote-border);
+  background: var(--blockquote-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    color var(--transition-speed);
+}
+
+/* ─── Doc Renderer Styles (.doc, .doc-section, .panel) ───────────────────── */
+.doc {
+  padding: 0.5rem 0 2rem;
+}
+
+.doc-section {
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--hr-color);
+}
+
+.doc-section:last-child {
+  border-bottom: none;
+}
+
+.doc-section--tight {
+  padding: 1.1rem 0;
+}
+
+.panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.panel summary,
+.panel > summary {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--text-primary);
+  user-select: none;
+  list-style: none;
+  gap: 0.75rem;
+}
+
+.panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel__body {
+  padding: 1.25rem 1.5rem;
+}
+
+.panel--tight .panel__body {
+  padding: 0.85rem 1.25rem;
+}
+
+.heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+/* ─── Hub Content Panel (replaces iframe shell) ───────────────────────────── */
+.docs-content-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 300px;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+/* Neutralize the section.section wrapper the renderer adds for standalone pages */
+.docs-content-panel .section {
+  padding: 1.25rem 1.5rem;
+}
+
+.docs-content-panel .section > .container {
+  max-width: 100%;
+}
+
+/* Loading / placeholder state */
+.docs-loading-state {
+  padding: 2rem 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* ─── Hub Page Layout ─────────────────────────────────────────────────────── */
+.docs-page-header {
+  padding: 2.5rem 0 2rem;
+  border-bottom: 1px solid var(--hr-color);
+  margin-bottom: 2rem;
+  transition: border-color var(--transition-speed);
+}
+
+.docs-page-header .docs-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.docs-page-header h1 {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.6rem;
+}
+
+.docs-page-header .docs-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 640px;
+}
+
+.docs-page-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media screen and (max-width: 900px) {
+  .docs-page-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Hub Sidebar Panel ───────────────────────────────────────────────────── */
+.docs-sidebar-panel {
+  position: sticky;
+  top: 80px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.docs-sidebar-panel::-webkit-scrollbar {
+  width: 5px;
+}
+.docs-sidebar-panel::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 10px;
+}
+
+/* ─── Hub Metric Cards ────────────────────────────────────────────────────── */
+.docs-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.docs-metric-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-top: 3px solid var(--accent);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    transform 0.2s ease;
+}
+
+.docs-metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+.docs-metric-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.03em;
+}
+
+.docs-metric-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
+/* ─── Hub Metric Card — note line (used on index landing cards) ───────────── */
+.docs-metric-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  transition: color var(--transition-speed);
+}
+
+/* When docs-metric-card is used as an <a> link (index page) */
+a.docs-metric-card {
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+}
+
+/* ─── Hub Legend (Benchmarks) ─────────────────────────────────────────────── */
+.docs-legend-section {
+  margin-bottom: 1.5rem;
+}
+
+.docs-legend-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.docs-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.docs-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.docs-swatch.is-success { background: #48c78e; }
+.docs-swatch.is-warning { background: #f0d060; }
+.docs-swatch.is-danger  { background: #f87171; }
+
+/* ─── Sortable Table Columns ──────────────────────────────────────────────── */
+th[data-sortable] {
+  cursor: pointer;
+  user-select: none;
+}
+
+th[data-sortable]:hover {
+  color: var(--accent);
+}
+
+th[data-sortable]::after {
+  content: ' ↕';
+  opacity: 0.4;
+  font-size: 0.8em;
+}
+
+th[data-sortable].sort-asc::after  { content: ' ↑'; opacity: 1; }
+th[data-sortable].sort-desc::after { content: ' ↓'; opacity: 1; }
+
+/* ─── Hub Section Spacing ─────────────────────────────────────────────────── */
+.docs-section {
+  margin-bottom: 2.5rem;
+}
+
+.docs-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-light);
+}
+
+/* ─── is-tight section (LeetCode) ────────────────────────────────────────── */
+.section.is-tight {
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Bulma .footer override (hub pages) ─────────────────────────────────── */
+/* Bulma hard-codes background-color:#fafafa — override for both themes */
+.footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--hr-color);
+  color: var(--text-secondary);
+  padding: 2.5rem 1.5rem;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    color var(--transition-speed);
+}
+
+/* ─── Bulma button.is-light override ─────────────────────────────────────── */
+.button.is-light {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-color: var(--card-border);
+  transition:
+    background var(--transition-speed),
+    color var(--transition-speed),
+    border-color var(--transition-speed);
+}
+
+.button.is-light:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ─── Hub Page Header ─────────────────────────────────────────────────────── */
+/* Already defined above as .docs-page-header but ensure background is set */
+.docs-page-header {
+  background: var(--bg-primary);
+}
+
+/* ─── Navbar Active Item ──────────────────────────────────────────────────── */
+.site-navbar .navbar-item.is-active {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+/* ─── Theme toggle button (hub pages share the same js/theme.js button) ───── */
+#theme-toggle {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    color var(--transition-speed);
+  min-width: 36px;
+  min-height: 32px;
+}
+
+#theme-toggle:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+
+/* ─── Navbar Dropdown (hub pages) ───────────────────────────────────────────
+   Bulma hardcodes white backgrounds and dark text — override for both themes  */
+.site-navbar .navbar-link {
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+  font-size: 0.925rem;
+  background: transparent !important;
+  gap: 0.25rem;
+}
+
+.site-navbar .navbar-link:hover,
+.site-navbar .has-dropdown:hover .navbar-link,
+.site-navbar .has-dropdown.is-active .navbar-link {
+  color: var(--text-primary) !important;
+  background: transparent !important;
+}
+
+/* Caret arrow */
+.site-navbar .navbar-link:not(.is-arrowless)::after {
+  border-color: var(--text-muted) !important;
+}
+
+.site-navbar .has-dropdown:hover .navbar-link:not(.is-arrowless)::after {
+  border-color: var(--text-primary) !important;
+}
+
+.site-navbar .navbar-dropdown {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  border-top: 2px solid var(--accent) !important;
+  border-radius: 0 0 10px 10px !important;
+  box-shadow: var(--card-shadow-hover) !important;
+  padding: 0.35rem 0 !important;
+  min-width: 200px;
+  transition:
+    background var(--transition-speed),
+    border-color var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.site-navbar .navbar-dropdown .navbar-item {
+  color: var(--text-secondary) !important;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1.1rem;
+  background: transparent !important;
+  border-radius: 0;
+}
+
+.site-navbar .navbar-dropdown .navbar-item:hover {
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
+}
+
+.site-navbar .navbar-dropdown .navbar-item.is-active {
+  background: var(--accent) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
