@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>API Gateway — Upstream Dependency Instability</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>API Gateway — Upstream Dependency Instability</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "API Gateway — service dependency health",
-        "title": "Upstream dependency instability",
-        "description": "Guide covering backend latency propagation, timeout amplification, and retry-driven cascades."
-    },
-    "synonyms": [
-        "Backend latency",
-        "Upstream failures",
-        "Dependency timeouts",
-        "Retry storms",
-        "Tail latency amplification",
-        "Dependency flapping",
-        "Upstream saturation",
-        "Cascading errors"
-    ],
-    "questions": [
-        "Why is gateway latency high when gateway CPU is normal?",
-        "How do retries amplify upstream outages?",
-        "How do circuit breakers reduce blast radius?",
-        "What timeout strategy prevents cascading failures?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "API Gateway — service dependency health",
+        title: "Upstream dependency instability",
+        description: "Guide covering backend latency propagation, timeout amplification, and retry-driven cascades."
+      },
+      synonyms: ["Backend latency","Upstream failures","Dependency timeouts","Retry storms","Tail latency amplification","Dependency flapping","Upstream saturation","Cascading errors"],
+      questions: ["Why is gateway latency high when gateway CPU is normal?","How do retries amplify upstream outages?","How do circuit breakers reduce blast radius?","What timeout strategy prevents cascading failures?"],
+      layers: [
         {
-            "name": "Timeouts",
-            "title": "Timeout budgets and propagation",
-            "description": "Misaligned timeout budgets across layers can convert slow backends into full request failures.",
-            "symptoms": [
-                "Gateway timeout spikes",
-                "Backend still processing after client timeout",
-                "Error bursts at fixed timeout boundaries"
-            ],
-            "causes": [
-                "Gateway timeout shorter than realistic upstream latency",
-                "No end-to-end deadline propagation",
-                "Long tail dependency behavior"
-            ],
-            "effects": [
-                "Request failure inflation",
-                "Wasted backend work",
-                "Unstable client behavior"
-            ],
-            "mitigations": [
-                "Set layered timeout budgets coherently",
-                "Use deadline propagation",
-                "Tune per-route timeout by SLO class"
-            ],
-            "metrics": [
-                "Timeout rate by route",
-                "Upstream p95/p99 latency",
-                "Late response count",
-                "Request cancellation rate"
-            ],
-            "tradeoffs": [
-                "Short timeouts protect resources but may cut off recoverable calls",
-                "Long timeouts improve completion but increase queue pressure"
-            ]
+          name: "Timeouts",
+          title: "Timeout budgets and propagation",
+          description: "Misaligned timeout budgets across layers can convert slow backends into full request failures.",
+          symptoms: ["Gateway timeout spikes","Backend still processing after client timeout","Error bursts at fixed timeout boundaries"],
+          causes: ["Gateway timeout shorter than realistic upstream latency","No end-to-end deadline propagation","Long tail dependency behavior"],
+          effects: ["Request failure inflation","Wasted backend work","Unstable client behavior"],
+          mitigations: ["Set layered timeout budgets coherently","Use deadline propagation","Tune per-route timeout by SLO class"],
+          metrics: ["Timeout rate by route","Upstream p95/p99 latency","Late response count","Request cancellation rate"],
+          tradeoffs: ["Short timeouts protect resources but may cut off recoverable calls","Long timeouts improve completion but increase queue pressure"]
         },
         {
-            "name": "Retries",
-            "title": "Retry policy and amplification risk",
-            "description": "Retries can recover transient errors or amplify overload if budgets are unbounded.",
-            "symptoms": [
-                "Retry volume spikes during incidents",
-                "Amplified QPS on failing backend",
-                "Increased queue depth and latency"
-            ],
-            "causes": [
-                "Aggressive retries without jitter",
-                "Retries on non-idempotent operations",
-                "No per-client retry budget"
-            ],
-            "effects": [
-                "Cascading saturation",
-                "Prolonged incident duration",
-                "Duplicate side effects"
-            ],
-            "mitigations": [
-                "Bound retries with backoff+jitter",
-                "Retry only idempotent classes",
-                "Use global retry budgets"
-            ],
-            "metrics": [
-                "Retry rate",
-                "Retry success ratio",
-                "Amplification factor",
-                "Upstream saturation indicators"
-            ],
-            "tradeoffs": [
-                "Fewer retries reduce amplification but may lower success on transient faults",
-                "More retries improve short blips but increase overload risk"
-            ]
+          name: "Retries",
+          title: "Retry policy and amplification risk",
+          description: "Retries can recover transient errors or amplify overload if budgets are unbounded.",
+          symptoms: ["Retry volume spikes during incidents","Amplified QPS on failing backend","Increased queue depth and latency"],
+          causes: ["Aggressive retries without jitter","Retries on non-idempotent operations","No per-client retry budget"],
+          effects: ["Cascading saturation","Prolonged incident duration","Duplicate side effects"],
+          mitigations: ["Bound retries with backoff+jitter","Retry only idempotent classes","Use global retry budgets"],
+          metrics: ["Retry rate","Retry success ratio","Amplification factor","Upstream saturation indicators"],
+          tradeoffs: ["Fewer retries reduce amplification but may lower success on transient faults","More retries improve short blips but increase overload risk"]
         },
         {
-            "name": "Isolation",
-            "title": "Circuit breakers and outlier controls",
-            "description": "Isolation controls prevent one failing upstream from degrading all traffic paths.",
-            "symptoms": [
-                "All routes degraded by one backend",
-                "No quick recovery after backend failure",
-                "Queue growth across unrelated endpoints"
-            ],
-            "causes": [
-                "Missing circuit breakers",
-                "No outlier ejection",
-                "Shared worker pools without partitioning"
-            ],
-            "effects": [
-                "Cross-service blast radius",
-                "Poor fault containment",
-                "Higher error budget burn"
-            ],
-            "mitigations": [
-                "Per-upstream circuit breakers",
-                "Connection pool partitioning",
-                "Fallback/partial response paths"
-            ],
-            "metrics": [
-                "Breaker open events",
-                "Outlier ejections",
-                "Route-level error isolation",
-                "Fallback success rate"
-            ],
-            "tradeoffs": [
-                "Aggressive breakers may reject recoverable requests",
-                "Fallback paths improve availability but may reduce feature fidelity"
-            ]
+          name: "Isolation",
+          title: "Circuit breakers and outlier controls",
+          description: "Isolation controls prevent one failing upstream from degrading all traffic paths.",
+          symptoms: ["All routes degraded by one backend","No quick recovery after backend failure","Queue growth across unrelated endpoints"],
+          causes: ["Missing circuit breakers","No outlier ejection","Shared worker pools without partitioning"],
+          effects: ["Cross-service blast radius","Poor fault containment","Higher error budget burn"],
+          mitigations: ["Per-upstream circuit breakers","Connection pool partitioning","Fallback/partial response paths"],
+          metrics: ["Breaker open events","Outlier ejections","Route-level error isolation","Fallback success rate"],
+          tradeoffs: ["Aggressive breakers may reject recoverable requests","Fallback paths improve availability but may reduce feature fidelity"]
         },
         {
-            "name": "Operations",
-            "title": "Dependency-aware incident response",
-            "description": "Operational preparedness determines recovery speed during upstream instability.",
-            "symptoms": [
-                "Slow incident triage",
-                "Unclear ownership for failing dependency",
-                "Frequent manual config toggles"
-            ],
-            "causes": [
-                "No dependency map/runbook",
-                "Insufficient per-upstream observability",
-                "No pre-defined degradation modes"
-            ],
-            "effects": [
-                "Longer MTTR",
-                "Higher customer impact",
-                "Repeated incidents"
-            ],
-            "mitigations": [
-                "Maintain dependency maps and route ownership",
-                "Per-upstream dashboards and SLOs",
-                "Pre-tested degrade modes"
-            ],
-            "metrics": [
-                "MTTR by dependency incident",
-                "Incident recurrence",
-                "Route-level SLO adherence",
-                "Change success rate during incident"
-            ],
-            "tradeoffs": [
-                "More observability and runbooks require operational investment",
-                "Static degrade modes may not fit every incident type"
-            ]
+          name: "Operations",
+          title: "Dependency-aware incident response",
+          description: "Operational preparedness determines recovery speed during upstream instability.",
+          symptoms: ["Slow incident triage","Unclear ownership for failing dependency","Frequent manual config toggles"],
+          causes: ["No dependency map/runbook","Insufficient per-upstream observability","No pre-defined degradation modes"],
+          effects: ["Longer MTTR","Higher customer impact","Repeated incidents"],
+          mitigations: ["Maintain dependency maps and route ownership","Per-upstream dashboards and SLOs","Pre-tested degrade modes"],
+          metrics: ["MTTR by dependency incident","Incident recurrence","Route-level SLO adherence","Change success rate during incident"],
+          tradeoffs: ["More observability and runbooks require operational investment","Static degrade modes may not fit every incident type"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Service Mesh",
-            "problem": "Upstream outlier instability"
-        },
-        {
-            "tech": "Kubernetes",
-            "problem": "Dependency readiness coupling"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Downstream sink backpressure"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Dependency-driven query stalls"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Node-level dependency hotspots"
-        }
-    ],
-    "insight": "Gateway uptime depends heavily on dependency posture. Reliability comes from controlled degradation, not waiting for every upstream to be perfect."
-};
+      ],
+      comparisons: [
+        { tech: "Service Mesh", problem: "Upstream outlier instability" },
+        { tech: "Kubernetes", problem: "Dependency readiness coupling" },
+        { tech: "Kafka", problem: "Downstream sink backpressure" },
+        { tech: "MongoDB", problem: "Dependency-driven query stalls" },
+        { tech: "Elasticsearch", problem: "Node-level dependency hotspots" }
+      ],
+      insight: "Gateway uptime depends heavily on dependency posture. Reliability comes from controlled degradation, not waiting for every upstream to be perfect."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

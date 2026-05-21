@@ -3,351 +3,277 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>Production Issues & Resolutions — Learning Docs</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="assets/css/tokens.css" />
-  <link rel="stylesheet" href="assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="assets/css/components.css" />
-  <link rel="stylesheet" href="assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Production Issues &amp; Resolutions</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
+
+  <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
     <div class="container">
       <div class="navbar-brand">
-        <a class="navbar-item" href="index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
+        <a class="navbar-item" href="index.html">✦ Learning Hub</a>
+        <button class="navbar-burger" aria-label="Open navigation menu" aria-expanded="false" data-target="docs-nav">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
       </div>
-      <div class="navbar-menu is-active">
+      <div id="docs-nav" class="navbar-menu">
         <div class="navbar-end">
-          <a class="navbar-item" href="leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="fulfillment-load-comparison.html">Fulfillment</a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link" href="#">Pages</a>
+            <div class="navbar-dropdown is-right">
+              <a class="navbar-item" href="leetcode.html">🧩 LeetCode</a>
+              <a class="navbar-item" href="benchmarks.html">📊 Benchmarks</a>
+              <a class="navbar-item is-active" href="tech-issues.html" aria-current="page">🔥 Tech Issues</a>
+              <a class="navbar-item" href="fulfillment.html">📦 Fulfillment</a>
+            </div>
+          </div>
+          <div class="navbar-item">
+            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+          </div>
         </div>
       </div>
     </div>
   </nav>
-  <main>
-    <header class="page-header">
-      <div class="container">
-        <div class="page-header__inner">
-          <div class="page-header__meta">
-            <p class="heading">Technology Deep-Dives</p>
-            <h1 class="title">Production Issues &amp; Resolutions</h1>
-            <p class="subtitle">Twenty-eight failure domains across Kafka, MongoDB, Redis, Cassandra, Kubernetes, Elasticsearch, and API Gateway.</p>
-          </div>
-          <div class="page-header__actions">
-            <a class="button is-light" href="index.html">Back</a>
-          </div>
-        </div>
-      </div>
-    </header>
 
-    <section class="section" id="main">
-      <div class="container">
-        <div class="page-grid">
-          <aside class="sidebar">
-            <details class="panel panel--tight" open>
-              <summary class="panel__body">
-                <strong>All Topics</strong>
-                <span class="u-text-muted u-text-xs">Tap to collapse</span>
-              </summary>
-              <div class="panel__body">
-                <div class="field">
-                  <label class="is-sr-only" for="topicSearch">Search topics</label>
-                  <div class="control">
-                    <input id="topicSearch" class="input" type="search" placeholder="Search topics…" />
-                  </div>
-                </div>
-                <div id="navList"></div>
+  <div class="docs-page-header">
+    <div class="container">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;">
+        <div>
+          <p class="docs-eyebrow">Technology Deep-Dives</p>
+          <h1>Production Issues &amp; Resolutions</h1>
+          <p class="docs-subtitle">Twenty-eight failure domains across Kafka, MongoDB, Redis, Cassandra, Kubernetes, Elasticsearch, and API Gateway.</p>
+        </div>
+        <a class="button is-light" href="index.html" style="flex-shrink:0;margin-top:0.25rem;">← Back</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="section" id="main">
+    <div class="container">
+      <div class="docs-page-grid">
+
+        <!-- Sidebar -->
+        <aside class="docs-sidebar-panel">
+          <div class="panel__body">
+            <p class="heading">All Topics</p>
+            <div class="mb-3">
+              <label class="is-sr-only" for="topicSearch">Search topics</label>
+              <input id="topicSearch" class="input is-small" type="search" placeholder="Search topics…" />
+            </div>
+            <div id="navList"></div>
+          </div>
+        </aside>
+
+        <!-- Inline content — no iframe, all data pre-loaded -->
+        <div>
+          <div class="docs-content-panel">
+            <div id="root">
+              <div class="docs-loading-state" aria-live="polite">
+                Select a topic from the left to begin.
               </div>
-            </details>
-          </aside>
-
-          <div class="page-grid__content">
-            <div class="panel iframe-shell">
-              <div class="panel__body" id="loadingState" aria-live="polite">
-                <span class="u-text-muted u-text-xs">Select a topic from the left.</span>
-              </div>
-              <iframe id="contentFrame" title="Technology issue details"></iframe>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <footer class="footer">
-      <div class="container">
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <p>Twenty-eight production issue deep-dives across seven technologies</p>
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="level-item">
-              <p>Last updated May 2026</p>
-            </div>
-          </div>
-        </div>
       </div>
-    </footer>
+    </div>
   </main>
 
+  <footer class="footer">
+    <div class="container">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p style="color:var(--text-secondary);">Twenty-eight production issue deep-dives across seven technologies</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <p style="font-size:0.82rem;color:var(--text-muted);">Last updated May 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- All 28 page data objects — loaded once, zero fetch overhead -->
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/data/tech-issues-data.js"></script>
+  <script src="assets/js/tech-issue-renderer.js"></script>
   <script>
-    const contentFrame = document.getElementById('contentFrame');
-    const loadingState = document.getElementById('loadingState');
-    const navList = document.getElementById('navList');
+    const navList     = document.getElementById('navList');
     const topicSearch = document.getElementById('topicSearch');
 
     const topics = [
       {
-        category: 'Kafka',
-        type: 'Messaging',
+        category: 'Kafka', type: 'Messaging',
         issues: [
-          { title: 'Throughput imbalance', page: 'kafka-throughput.html' },
-          { title: 'Cluster coordination instability', page: 'kafka-coordination.html' },
-          { title: 'Storage and replication pressure', page: 'kafka-storage.html' },
-          { title: 'Partitioning and data distribution issues', page: 'kafka-partition.html' }
+          { title: 'Throughput imbalance',                  page: 'kafka-throughput.html' },
+          { title: 'Cluster coordination instability',      page: 'kafka-coordination.html' },
+          { title: 'Storage and replication pressure',      page: 'kafka-storage.html' },
+          { title: 'Partitioning and data distribution',    page: 'kafka-partition.html' }
         ]
       },
       {
-        category: 'MongoDB',
-        type: 'Database',
+        category: 'MongoDB', type: 'Database',
         issues: [
-          { title: 'Query performance degradation', page: 'mongodb-query.html' },
-          { title: 'Replication and consistency delays', page: 'mongodb-replication.html' },
-          { title: 'Data distribution imbalance', page: 'mongodb-distribution.html' },
-          { title: 'Resource saturation', page: 'mongodb-resources.html' }
+          { title: 'Query performance degradation',         page: 'mongodb-query.html' },
+          { title: 'Replication and consistency delays',    page: 'mongodb-replication.html' },
+          { title: 'Data distribution imbalance',          page: 'mongodb-distribution.html' },
+          { title: 'Resource saturation',                  page: 'mongodb-resources.html' }
         ]
       },
       {
-        category: 'Redis',
-        type: 'Cache',
+        category: 'Redis', type: 'Cache',
         issues: [
-          { title: 'Memory pressure', page: 'redis-memory.html' },
-          { title: 'Data access imbalance', page: 'redis-access.html' },
-          { title: 'Replication and persistence delays', page: 'redis-replication.html' },
-          { title: 'Latency and blocking operations', page: 'redis-latency.html' }
+          { title: 'Memory pressure',                      page: 'redis-memory.html' },
+          { title: 'Data access imbalance',                page: 'redis-access.html' },
+          { title: 'Replication and persistence delays',   page: 'redis-replication.html' },
+          { title: 'Latency and blocking operations',      page: 'redis-latency.html' }
         ]
       },
       {
-        category: 'Cassandra',
-        type: 'Database',
+        category: 'Cassandra', type: 'Database',
         issues: [
-          { title: 'Data distribution imbalance', page: 'cassandra-distribution.html' },
-          { title: 'Storage and compaction pressure', page: 'cassandra-compaction.html' },
-          { title: 'Consistency and repair problems', page: 'cassandra-consistency.html' },
-          { title: 'Read amplification and tombstones', page: 'cassandra-tombstones.html' }
+          { title: 'Data distribution imbalance',          page: 'cassandra-distribution.html' },
+          { title: 'Storage and compaction pressure',      page: 'cassandra-compaction.html' },
+          { title: 'Consistency and repair problems',      page: 'cassandra-consistency.html' },
+          { title: 'Read amplification and tombstones',    page: 'cassandra-tombstones.html' }
         ]
       },
       {
-        category: 'Kubernetes',
-        type: 'Orchestration',
+        category: 'Kubernetes', type: 'Orchestration',
         issues: [
-          { title: 'Resource exhaustion', page: 'kubernetes-resources.html' },
-          { title: 'Scheduling and placement failures', page: 'kubernetes-scheduling.html' },
-          { title: 'Application lifecycle instability', page: 'kubernetes-lifecycle.html' },
-          { title: 'Cluster networking problems', page: 'kubernetes-networking.html' }
+          { title: 'Resource exhaustion',                  page: 'kubernetes-resources.html' },
+          { title: 'Scheduling and placement failures',    page: 'kubernetes-scheduling.html' },
+          { title: 'Application lifecycle instability',    page: 'kubernetes-lifecycle.html' },
+          { title: 'Cluster networking problems',          page: 'kubernetes-networking.html' }
         ]
       },
       {
-        category: 'API Gateway',
-        type: 'Gateway',
+        category: 'API Gateway', type: 'Gateway',
         issues: [
-          { title: 'Traffic management and overload', page: 'api-gateway-traffic.html' },
-          { title: 'Authentication and authorization failures', page: 'api-gateway-auth.html' },
-          { title: 'Upstream dependency instability', page: 'api-gateway-upstream.html' },
-          { title: 'Connection and resource exhaustion', page: 'api-gateway-connections.html' }
+          { title: 'Traffic management and overload',      page: 'api-gateway-traffic.html' },
+          { title: 'Authentication & authorization',       page: 'api-gateway-auth.html' },
+          { title: 'Upstream dependency instability',      page: 'api-gateway-upstream.html' },
+          { title: 'Connection and resource exhaustion',   page: 'api-gateway-connections.html' }
         ]
       },
       {
-        category: 'Elasticsearch',
-        type: 'Search',
+        category: 'Elasticsearch', type: 'Search',
         issues: [
-          { title: 'Query execution pressure', page: 'elasticsearch-query.html' },
-          { title: 'Heap and memory pressure', page: 'elasticsearch-memory.html' },
-          { title: 'Shard distribution imbalance', page: 'elasticsearch-shards.html' },
-          { title: 'Indexing and merge backpressure', page: 'elasticsearch-indexing.html' }
+          { title: 'Query execution pressure',             page: 'elasticsearch-query.html' },
+          { title: 'Heap and memory pressure',             page: 'elasticsearch-memory.html' },
+          { title: 'Shard distribution imbalance',         page: 'elasticsearch-shards.html' },
+          { title: 'Indexing and merge backpressure',      page: 'elasticsearch-indexing.html' }
         ]
       }
     ];
 
-    function renderNav(filterText = '') {
+    function setActive(pageUrl) {
+      navList.querySelectorAll('a[data-page]').forEach(a => {
+        const active = a.dataset.page === pageUrl;
+        a.classList.toggle('is-active', active);
+        active ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
+      });
+    }
+
+    // Synchronous — data is already in TECH_ISSUES_DATA, zero latency
+    function loadPage(pageUrl, pushHash) {
+      const key  = pageUrl.replace('.html', '');
+      const data = TECH_ISSUES_DATA[key];
+
+      setActive(pageUrl);
+      if (pushHash !== false) {
+        history.replaceState(null, '', '#' + key);
+      }
+
+      if (!data) {
+        document.getElementById('root').innerHTML =
+          '<div class="docs-loading-state">Topic not found: ' + key + '</div>';
+        return;
+      }
+
+      renderTechIssuePage(data);
+    }
+
+    function renderNav(filter) {
       navList.innerHTML = '';
-      const needle = filterText.trim().toLowerCase();
-      const current = window.location.hash ? `${window.location.hash.substring(1)}.html` : null;
+      const needle = (filter || '').trim().toLowerCase();
+      const currentHash = window.location.hash ? window.location.hash.substring(1) + '.html' : null;
 
       topics.forEach(topic => {
-        const matchingIssues = topic.issues.filter(issue => {
-          if (!needle) return true;
-          return [topic.category, topic.type, issue.title].some(value => value.toLowerCase().includes(needle));
-        });
-        if (!matchingIssues.length) return;
+        const matches = topic.issues.filter(issue =>
+          !needle || [topic.category, topic.type, issue.title].some(v => v.toLowerCase().includes(needle))
+        );
+        if (!matches.length) return;
 
-        const section = document.createElement('div');
-        section.className = 'block';
+        const wrap = document.createElement('div');
+        wrap.className = 'mb-4';
 
         const header = document.createElement('div');
-        header.className = 'mb-2';
+        header.className = 'is-flex is-justify-content-space-between is-align-items-center mb-2';
+        header.innerHTML =
+          '<strong style="font-size:0.85rem;color:var(--text-primary);">' + topic.category + '</strong>' +
+          '<span class="tag is-light" style="font-size:0.7rem;">' + topic.type + '</span>';
 
-        const title = document.createElement('div');
-        title.className = 'level is-mobile';
+        const ul = document.createElement('ul');
+        ul.className = 'menu-list';
 
-        const titleLeft = document.createElement('div');
-        titleLeft.className = 'level-left';
-        titleLeft.innerHTML = `<div class="level-item"><strong>${topic.category}</strong></div>`;
-
-        const titleRight = document.createElement('div');
-        titleRight.className = 'level-right';
-        titleRight.innerHTML = `<div class="level-item"><span class="tag is-light">${topic.type}</span></div>`;
-
-        title.appendChild(titleLeft);
-        title.appendChild(titleRight);
-        header.appendChild(title);
-
-        const menu = document.createElement('div');
-        menu.className = 'menu';
-        const list = document.createElement('ul');
-        list.className = 'menu-list';
-
-        matchingIssues.forEach(issue => {
+        matches.forEach(issue => {
           const li = document.createElement('li');
-          const a = document.createElement('a');
-          a.href = `tech-issues/${issue.page}`;
+          const a  = document.createElement('a');
+          a.href = '#' + issue.page.replace('.html', '');
           a.textContent = issue.title;
           a.dataset.page = issue.page;
-          if (current === issue.page) {
+          a.style.fontSize = '0.82rem';
+          if (currentHash === issue.page) {
             a.classList.add('is-active');
             a.setAttribute('aria-current', 'page');
           }
           li.appendChild(a);
-          list.appendChild(li);
+          ul.appendChild(li);
         });
 
-        menu.appendChild(list);
-        section.appendChild(header);
-        section.appendChild(menu);
-        navList.appendChild(section);
+        const menu = document.createElement('nav');
+        menu.className = 'menu';
+        menu.appendChild(ul);
+
+        wrap.appendChild(header);
+        wrap.appendChild(menu);
+        navList.appendChild(wrap);
       });
     }
 
-    topicSearch.addEventListener('input', () => {
-      renderNav(topicSearch.value);
-    });
-
-    function setActive(pageUrl) {
-      navList.querySelectorAll('a[data-page]').forEach(link => {
-        const isActive = link.dataset.page === pageUrl;
-        link.classList.toggle('is-active', isActive);
-        if (isActive) link.setAttribute('aria-current', 'page');
-        else link.removeAttribute('aria-current');
-      });
-    }
-
-    function loadPage(pageUrl, { pushHash = true } = {}) {
-      loadingState.textContent = 'Loading...';
-      contentFrame.src = `tech-issues/${pageUrl}`;
-      setActive(pageUrl);
-      if (pushHash) window.location.hash = pageUrl.replace('.html', '');
-    }
-
-    // Intercept clicks for SPA behavior, but keep real href for no-JS fallback.
-    navList.addEventListener('click', (e) => {
-      const link = e.target && e.target.closest && e.target.closest('a[data-page]');
+    navList.addEventListener('click', e => {
+      const link = e.target && e.target.closest('a[data-page]');
       if (!link) return;
       e.preventDefault();
       loadPage(link.dataset.page);
     });
 
-    // Stop loading indicator when iframe loads; handle missing pages with a timeout.
-    let loadTimeout = null;
-    const resizeContentFrame = () => {
-      try {
-        const doc = contentFrame.contentDocument || contentFrame.contentWindow.document;
-        if (!doc) return;
-        const body = doc.body;
-        const html = doc.documentElement;
-        const height = Math.max(
-          body.scrollHeight, body.offsetHeight,
-          html.clientHeight, html.scrollHeight, html.offsetHeight
-        );
-        contentFrame.style.height = `${height}px`;
-        contentFrame.style.display = 'block';
-        contentFrame.style.overflow = 'visible';
-      } catch (err) {
-        // Cross-origin restrictions do not apply to local file content.
-      }
-    };
-
-    contentFrame.addEventListener('load', () => {
-      if (loadTimeout) window.clearTimeout(loadTimeout);
-      loadingState.textContent = '';
-      // One immediate resize, then poll briefly until the document height stabilizes
-      resizeContentFrame();
-      let lastHeight = null;
-      let stableCount = 0;
-      const poll = setInterval(() => {
-        try {
-          const doc = contentFrame.contentDocument || contentFrame.contentWindow.document;
-          if (!doc) return;
-          const body = doc.body;
-          const html = doc.documentElement;
-          const h = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-          if (h !== lastHeight) {
-            contentFrame.style.height = `${h}px`;
-            lastHeight = h;
-            stableCount = 0;
-          } else {
-            stableCount += 1;
-            if (stableCount >= 4) {
-              clearInterval(poll);
-            }
-          }
-        } catch (err) {
-          clearInterval(poll);
-        }
-      }, 120);
+    let searchTimeout = null;
+    topicSearch.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => renderNav(topicSearch.value), 200);
     });
 
-    window.addEventListener('resize', resizeContentFrame);
-
-    // Listen for postMessage height updates from the iframe (works for file:// in Chrome)
-    window.addEventListener('message', (e) => {
-      try {
-        if (!e.data || e.data.type !== 'tech-issue-height') return;
-        const h = Number(e.data.height);
-        if (!Number.isFinite(h)) return;
-        contentFrame.style.height = `${h}px`;
-      } catch (err) {
-        // ignore
-      }
-    }, false);
-
-    function safeLoad(pageUrl) {
-      loadPage(pageUrl, { pushHash: false });
-      if (loadTimeout) window.clearTimeout(loadTimeout);
-      loadTimeout = window.setTimeout(() => {
-        loadingState.textContent = 'Failed to load content.';
-      }, 6000);
-    }
-
-    window.addEventListener('hashchange', () => {
+    window.addEventListener('popstate', () => {
       const hash = window.location.hash.substring(1);
       if (!hash) return;
-      safeLoad(`${hash}.html`);
-      setActive(`${hash}.html`);
+      renderNav(topicSearch.value);
+      loadPage(hash + '.html', false);
     });
 
+    // ─── Bootstrap ─────────────────────────────────────────────────────────────
     renderNav();
-    const initialHash = window.location.hash.substring(1);
-    const initialPage = initialHash ? `${initialHash}.html` : 'api-gateway-traffic.html';
-    safeLoad(initialPage);
+    const initHash = window.location.hash.substring(1);
+    const initPage = initHash ? initHash + '.html' : 'kafka-throughput.html';
+    loadPage(initPage, !initHash);
   </script>
 </body>
 </html>

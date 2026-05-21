@@ -3,37 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>Redis — Memory Pressure & Eviction</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Redis — Memory Pressure &amp; Eviction</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
@@ -42,70 +20,52 @@
         title: "Memory pressure & eviction",
         description: "Staff+/Principal-level guide covering memory exhaustion, cache thrashing, eviction pressure, and resource saturation in Redis deployments."
       },
-      synonyms: [
-        "Eviction pressure",
-        "Cache thrashing",
-        "OOM pressure",
-        "Memory exhaustion",
-        "Unbounded growth",
-        "Memory fragmentation",
-        "Eviction storms",
-        "Cache miss explosion"
-      ],
-      questions: [
-        "Why is my Redis cache evicting too many keys?",
-        "How do I detect memory pressure in Redis?",
-        "What causes OOM errors in production?",
-        "Why is cache hit ratio dropping suddenly?",
-        "How do I manage TTL effectively?",
-        "What's causing memory fragmentation?",
-        "Why are evictions increasing?",
-        "How do I size Redis memory correctly?"
-      ],
+      synonyms: ["Eviction pressure","Cache thrashing","OOM pressure","Memory exhaustion","Unbounded growth","Memory fragmentation","Eviction storms","Cache miss explosion"],
+      questions: ["Why is my Redis cache evicting too many keys?","How do I detect memory pressure in Redis?","What causes OOM errors in production?","Why is cache hit ratio dropping suddenly?","How do I manage TTL effectively?","What's causing memory fragmentation?","Why are evictions increasing?","How do I size Redis memory correctly?"],
       layers: [
         {
           name: "Allocation",
           title: "Unbounded key growth & allocation",
           description: "Redis stores all data in memory without built-in limits. If application code doesn't properly manage key lifecycle or TTLs, memory grows unbounded until Redis runs out of available memory and begins evicting keys.",
-          symptoms: ["Memory usage grows linearly with time", "No plateau in memory consumption", "Evictions increasing daily", "Cache hit ratio degrading"],
-          causes: ["No TTL set on keys", "Keys inserted faster than expired", "Memory leak in application logic", "Misconfigured eviction policy"],
-          effects: ["Eviction storms when memory full", "Cache thrashing from constant evictions", "Application experiencing cache misses", "Cascading performance degradation"],
-          mitigations: ["Set appropriate TTLs on all keys", "Implement TTL renewal strategy", "Use eviction policy (LRU/LFU)", "Monitor key count and memory", "Prune keys during off-peak"],
-          metrics: ["Memory usage trend", "Eviction rate", "Keys count", "Cache hit/miss ratio", "TTL distribution"],
-          tradeoffs: ["Aggressive TTL reduces data freshness", "Manual pruning requires logic", "Eviction policies have overhead"]
+          symptoms: ["Memory usage grows linearly with time","No plateau in memory consumption","Evictions increasing daily","Cache hit ratio degrading"],
+          causes: ["No TTL set on keys","Keys inserted faster than expired","Memory leak in application logic","Misconfigured eviction policy"],
+          effects: ["Eviction storms when memory full","Cache thrashing from constant evictions","Application experiencing cache misses","Cascading performance degradation"],
+          mitigations: ["Set appropriate TTLs on all keys","Implement TTL renewal strategy","Use eviction policy (LRU/LFU)","Monitor key count and memory","Prune keys during off-peak"],
+          metrics: ["Memory usage trend","Eviction rate","Keys count","Cache hit/miss ratio","TTL distribution"],
+          tradeoffs: ["Aggressive TTL reduces data freshness","Manual pruning requires logic","Eviction policies have overhead"]
         },
         {
           name: "Eviction",
           title: "Eviction policy & cache thrashing",
           description: "When Redis reaches maxmemory, it evicts keys according to the configured policy. Under high memory pressure, eviction rate increases dramatically, causing cache thrashing where freshly-loaded data is immediately evicted.",
-          symptoms: ["High eviction rate (keys/sec)", "Cache hit ratio near zero", "Constant cache misses", "Application latency spikes"],
-          causes: ["maxmemory set too low", "Working set larger than available memory", "Inefficient eviction policy for access pattern", "Burst traffic exceeding capacity"],
-          effects: ["Severe cache hit ratio degradation", "Backend database overloaded from cache misses", "Application latency explosion", "Cascading backend failures"],
-          mitigations: ["Increase maxmemory limit", "Upgrade to larger Redis instance", "Optimize eviction policy (LRU vs LFU)", "Reduce working set size", "Implement circuit breaker"],
-          metrics: ["Eviction rate", "Cache hit ratio", "Evicted keys/sec", "Memory fragmentation", "Operations rate"],
-          tradeoffs: ["Larger memory is more expensive", "Better eviction policy adds CPU", "Reducing working set impacts features"]
+          symptoms: ["High eviction rate (keys/sec)","Cache hit ratio near zero","Constant cache misses","Application latency spikes"],
+          causes: ["maxmemory set too low","Working set larger than available memory","Inefficient eviction policy for access pattern","Burst traffic exceeding capacity"],
+          effects: ["Severe cache hit ratio degradation","Backend database overloaded from cache misses","Application latency explosion","Cascading backend failures"],
+          mitigations: ["Increase maxmemory limit","Upgrade to larger Redis instance","Optimize eviction policy (LRU vs LFU)","Reduce working set size","Implement circuit breaker"],
+          metrics: ["Eviction rate","Cache hit ratio","Evicted keys/sec","Memory fragmentation","Operations rate"],
+          tradeoffs: ["Larger memory is more expensive","Better eviction policy adds CPU","Reducing working set impacts features"]
         },
         {
           name: "Large Objects",
           title: "Large object storage & memory blast radius",
-          description: "Storing large objects in Redis (large strings, big hashes, large sorted sets) creates disproportionate memory usage and fragmentation. Each large object eviction has a significant impact on available memory.",
-          symptoms: ["Memory usage not proportional to key count", "High per-key memory overhead", "Fragmentation ratio increasing", "Evictions not freeing expected memory"],
-          causes: ["Storing serialized blobs (images, JSON)", "Large documents stored as strings", "Inefficient data structures", "Compression not enabled"],
-          effects: ["Inefficient memory utilization", "Cache thrashing from large evictions", "Memory fragmentation", "Reduced effective cache capacity"],
-          mitigations: ["Move large objects to external storage", "Store references instead of full objects", "Use compression for large strings", "Optimize data structure encoding", "Use smaller, focused keys"],
-          metrics: ["Memory per key", "Fragmentation ratio", "Encoding efficiency", "Object size distribution", "Peak memory"],
-          tradeoffs: ["External storage adds latency", "Compression uses CPU", "Smaller keys increase operation count"]
+          description: "Storing large objects in Redis (large strings, big hashes, large sorted sets) creates disproportionate memory usage and fragmentation.",
+          symptoms: ["Memory usage not proportional to key count","High per-key memory overhead","Fragmentation ratio increasing","Evictions not freeing expected memory"],
+          causes: ["Storing serialized blobs (images, JSON)","Large documents stored as strings","Inefficient data structures","Compression not enabled"],
+          effects: ["Inefficient memory utilization","Cache thrashing from large evictions","Memory fragmentation","Reduced effective cache capacity"],
+          mitigations: ["Move large objects to external storage","Store references instead of full objects","Use compression for large strings","Optimize data structure encoding","Use smaller, focused keys"],
+          metrics: ["Memory per key","Fragmentation ratio","Encoding efficiency","Object size distribution","Peak memory"],
+          tradeoffs: ["External storage adds latency","Compression uses CPU","Smaller keys increase operation count"]
         },
         {
           name: "Fragmentation",
           title: "Memory fragmentation & allocation overhead",
           description: "Redis memory fragmentation occurs when freed memory cannot be reused due to allocator limitations. High fragmentation means available memory is scattered and unusable, forcing premature eviction.",
-          symptoms: ["Fragmentation ratio > 1.5", "Memory not freed after key deletion", "Evictions occurring despite deleted keys", "Memory trending upward even with deletes"],
-          causes: ["Fragmentation from deletion patterns", "Allocator limitations", "Large object deletion creating holes", "Long-lived allocations preventing compaction"],
-          effects: ["Wasted memory due to fragmentation", "Premature eviction of useful keys", "Reduced effective cache capacity", "Application performance impact"],
-          mitigations: ["Monitor fragmentation ratio", "Restart Redis periodically", "Use jemalloc for better fragmentation", "Optimize deletion patterns", "Implement key reorganization"],
-          metrics: ["Fragmentation ratio", "Memory efficiency", "Allocated vs used memory", "Deletion rate", "Reallocations"],
-          tradeoffs: ["Restarts cause temporary unavailability", "Reorganization requires downtime", "Better allocator has memory overhead"]
+          symptoms: ["Fragmentation ratio > 1.5","Memory not freed after key deletion","Evictions occurring despite deleted keys","Memory trending upward even with deletes"],
+          causes: ["Fragmentation from deletion patterns","Allocator limitations","Large object deletion creating holes","Long-lived allocations preventing compaction"],
+          effects: ["Wasted memory due to fragmentation","Premature eviction of useful keys","Reduced effective cache capacity","Application performance impact"],
+          mitigations: ["Monitor fragmentation ratio","Restart Redis periodically","Use jemalloc for better fragmentation","Optimize deletion patterns","Implement key reorganization"],
+          metrics: ["Fragmentation ratio","Memory efficiency","Allocated vs used memory","Deletion rate","Reallocations"],
+          tradeoffs: ["Restarts cause temporary unavailability","Reorganization requires downtime","Better allocator has memory overhead"]
         }
       ],
       comparisons: [
@@ -115,11 +75,9 @@
         { tech: "Elasticsearch", problem: "JVM heap pressure" },
         { tech: "Kafka", problem: "Page cache pressure" }
       ],
-      insight: "Redis memory pressure is fundamentally about proportional capacity planning. The cache is only useful when hit ratio remains high. Once memory pressure forces evictions faster than typical query patterns, the cache becomes a liability, turning the backend database into the bottleneck. Strong Redis operators understand their working set size, access patterns, and how many keys can safely fit in memory with acceptable TTL and eviction overhead."
+      insight: "Redis memory pressure is fundamentally about proportional capacity planning. The cache is only useful when hit ratio remains high. Once memory pressure forces evictions faster than typical query patterns, the cache becomes a liability, turning the backend database into the bottleneck."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

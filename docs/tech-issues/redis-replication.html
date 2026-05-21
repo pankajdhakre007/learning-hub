@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Redis — Replication & Persistence Delays</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Redis — Replication &amp; Persistence Delays</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Redis — durability and replication",
-        "title": "Replication and persistence delays",
-        "description": "Guide covering replica lag, AOF/RDB overhead, and durability-performance tradeoffs in Redis."
-    },
-    "synonyms": [
-        "Replica lag",
-        "Persistence bottleneck",
-        "AOF fsync lag",
-        "RDB snapshot pressure",
-        "Replication backlog",
-        "Sync delay",
-        "Durability latency",
-        "Disk persistence overhead"
-    ],
-    "questions": [
-        "Why are Redis replicas lagging behind primary?",
-        "How do AOF settings impact latency?",
-        "Why do snapshots cause spikes?",
-        "How do I balance durability guarantees and speed?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Redis — durability and replication",
+        title: "Replication and persistence delays",
+        description: "Guide covering replica lag, AOF/RDB overhead, and durability-performance tradeoffs in Redis."
+      },
+      synonyms: ["Replica lag","Persistence bottleneck","AOF fsync lag","RDB snapshot pressure","Replication backlog","Sync delay","Durability latency","Disk persistence overhead"],
+      questions: ["Why are Redis replicas lagging behind primary?","How do AOF settings impact latency?","Why do snapshots cause spikes?","How do I balance durability guarantees and speed?"],
+      layers: [
         {
-            "name": "Replication",
-            "title": "Primary-to-replica stream lag",
-            "description": "Replicas can fall behind when apply speed is lower than primary mutation rate.",
-            "symptoms": [
-                "Replica offset lag grows",
-                "Read replicas return stale data",
-                "Failover readiness decreases"
-            ],
-            "causes": [
-                "High write burst rate",
-                "Replica CPU/disk bottleneck",
-                "Network jitter on replication links"
-            ],
-            "effects": [
-                "Inconsistency windows widen",
-                "Failover risk increases",
-                "Read-after-write surprises"
-            ],
-            "mitigations": [
-                "Provision replica capacity near primary",
-                "Reduce write spikes with batching",
-                "Use dedicated replication networking"
-            ],
-            "metrics": [
-                "Replication offset lag",
-                "Replica apply throughput",
-                "Replica staleness window",
-                "Replication RTT"
-            ],
-            "tradeoffs": [
-                "More replicas improve read scale but increase replication load",
-                "Batching smooths writes but changes write visibility timing"
-            ]
+          name: "Replication",
+          title: "Primary-to-replica stream lag",
+          description: "Replicas can fall behind when apply speed is lower than primary mutation rate.",
+          symptoms: ["Replica offset lag grows","Read replicas return stale data","Failover readiness decreases"],
+          causes: ["High write burst rate","Replica CPU/disk bottleneck","Network jitter on replication links"],
+          effects: ["Inconsistency windows widen","Failover risk increases","Read-after-write surprises"],
+          mitigations: ["Provision replica capacity near primary","Reduce write spikes with batching","Use dedicated replication networking"],
+          metrics: ["Replication offset lag","Replica apply throughput","Replica staleness window","Replication RTT"],
+          tradeoffs: ["More replicas improve read scale but increase replication load","Batching smooths writes but changes write visibility timing"]
         },
         {
-            "name": "AOF",
-            "title": "AOF fsync and write latency pressure",
-            "description": "AOF durability mode can dominate write latency under heavy mutation workloads.",
-            "symptoms": [
-                "Write latency spikes on fsync intervals",
-                "AOF rewrite contention",
-                "Command latency jitter"
-            ],
-            "causes": [
-                "Strict fsync policy on busy disks",
-                "Large append-only file growth",
-                "Concurrent AOF rewrite pressure"
-            ],
-            "effects": [
-                "Tail latency increase",
-                "Throughput drop during rewrite",
-                "Operational instability"
-            ],
-            "mitigations": [
-                "Tune appendfsync by criticality",
-                "Place AOF on faster storage",
-                "Schedule rewrite with headroom"
-            ],
-            "metrics": [
-                "AOF fsync latency",
-                "AOF rewrite duration",
-                "Write latency percentiles",
-                "Disk queue depth"
-            ],
-            "tradeoffs": [
-                "Stricter fsync improves durability but slows writes",
-                "Relaxed fsync lowers latency but increases loss window"
-            ]
+          name: "AOF",
+          title: "AOF fsync and write latency pressure",
+          description: "AOF durability mode can dominate write latency under heavy mutation workloads.",
+          symptoms: ["Write latency spikes on fsync intervals","AOF rewrite contention","Command latency jitter"],
+          causes: ["Strict fsync policy on busy disks","Large append-only file growth","Concurrent AOF rewrite pressure"],
+          effects: ["Tail latency increase","Throughput drop during rewrite","Operational instability"],
+          mitigations: ["Tune appendfsync by criticality","Place AOF on faster storage","Schedule rewrite with headroom"],
+          metrics: ["AOF fsync latency","AOF rewrite duration","Write latency percentiles","Disk queue depth"],
+          tradeoffs: ["Stricter fsync improves durability but slows writes","Relaxed fsync lowers latency but increases loss window"]
         },
         {
-            "name": "RDB",
-            "title": "Snapshot fork and copy-on-write overhead",
-            "description": "RDB snapshot creation can cause memory and latency disturbances during fork and write phases.",
-            "symptoms": [
-                "Latency jump during BGSAVE",
-                "Memory usage spike from copy-on-write",
-                "Short throughput dip"
-            ],
-            "causes": [
-                "Frequent snapshots",
-                "Large in-memory dataset",
-                "High write churn during snapshot"
-            ],
-            "effects": [
-                "Transient latency degradation",
-                "Memory pressure incidents",
-                "Potential eviction amplification"
-            ],
-            "mitigations": [
-                "Adjust snapshot cadence",
-                "Use replicas for persistence offload",
-                "Increase memory headroom"
-            ],
-            "metrics": [
-                "Fork time",
-                "Snapshot duration",
-                "Copy-on-write memory delta",
-                "Latency during snapshot windows"
-            ],
-            "tradeoffs": [
-                "Less frequent snapshots reduce overhead but weaken recovery point objective",
-                "Offloading persistence increases topology complexity"
-            ]
+          name: "RDB",
+          title: "Snapshot fork and copy-on-write overhead",
+          description: "RDB snapshot creation can cause memory and latency disturbances during fork and write phases.",
+          symptoms: ["Latency jump during BGSAVE","Memory usage spike from copy-on-write","Short throughput dip"],
+          causes: ["Frequent snapshots","Large in-memory dataset","High write churn during snapshot"],
+          effects: ["Transient latency degradation","Memory pressure incidents","Potential eviction amplification"],
+          mitigations: ["Adjust snapshot cadence","Use replicas for persistence offload","Increase memory headroom"],
+          metrics: ["Fork time","Snapshot duration","Copy-on-write memory delta","Latency during snapshot windows"],
+          tradeoffs: ["Less frequent snapshots reduce overhead but weaken recovery point objective","Offloading persistence increases topology complexity"]
         },
         {
-            "name": "Recovery",
-            "title": "Failover and consistency behavior",
-            "description": "Lag and persistence state influence failover correctness and recovery speed.",
-            "symptoms": [
-                "Long promotion times",
-                "Stale promotion candidate risk",
-                "Recovery uncertainty after incident"
-            ],
-            "causes": [
-                "Replica lag at failover moment",
-                "Inadequate persistence checkpoints",
-                "Insufficient failover testing"
-            ],
-            "effects": [
-                "Data freshness loss",
-                "Longer outage windows",
-                "Confidence loss in DR posture"
-            ],
-            "mitigations": [
-                "Promote lowest-lag replicas",
-                "Regular failover drills",
-                "Monitor persistence and lag SLOs"
-            ],
-            "metrics": [
-                "Failover duration",
-                "Lag at promotion",
-                "Data loss window estimate",
-                "Recovery success rate"
-            ],
-            "tradeoffs": [
-                "Frequent drills consume resources",
-                "Tighter RPO goals often increase run-time overhead"
-            ]
+          name: "Recovery",
+          title: "Failover and consistency behavior",
+          description: "Lag and persistence state influence failover correctness and recovery speed.",
+          symptoms: ["Long promotion times","Stale promotion candidate risk","Recovery uncertainty after incident"],
+          causes: ["Replica lag at failover moment","Inadequate persistence checkpoints","Insufficient failover testing"],
+          effects: ["Data freshness loss","Longer outage windows","Confidence loss in DR posture"],
+          mitigations: ["Promote lowest-lag replicas","Regular failover drills","Monitor persistence and lag SLOs"],
+          metrics: ["Failover duration","Lag at promotion","Data loss window estimate","Recovery success rate"],
+          tradeoffs: ["Frequent drills consume resources","Tighter RPO goals often increase run-time overhead"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "MongoDB",
-            "problem": "Secondary replication lag"
-        },
-        {
-            "tech": "MySQL",
-            "problem": "Replica apply delay"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Follower fetch lag"
-        },
-        {
-            "tech": "Cassandra",
-            "problem": "Repair lag debt"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Translog and flush pressure"
-        }
-    ],
-    "insight": "Redis durability and replication tuning is a risk-budget decision: lower latency and lower data-loss risk often push in opposite directions."
-};
+      ],
+      comparisons: [
+        { tech: "MongoDB", problem: "Secondary replication lag" },
+        { tech: "MySQL", problem: "Replica apply delay" },
+        { tech: "Kafka", problem: "Follower fetch lag" },
+        { tech: "Cassandra", problem: "Repair lag debt" },
+        { tech: "Elasticsearch", problem: "Translog and flush pressure" }
+      ],
+      insight: "Redis durability and replication tuning is a risk-budget decision: lower latency and lower data-loss risk often push in opposite directions."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

@@ -1,8 +1,3 @@
-if (window.self !== window.top) {
-  const topNavbar = document.querySelector('.navbar.topbar');
-  if (topNavbar) topNavbar.style.display = 'none';
-}
-
 function renderTechIssuePage(pageData) {
   const root = document.getElementById('root');
   if (!root) return;
@@ -17,6 +12,11 @@ function renderTechIssuePage(pageData) {
     if (attrs) Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
     return node;
   };
+
+  // Proper section > container wrapper so Bulma spacing / max-width apply.
+  const wrapper = el('section', { className: 'section' });
+  const container = el('div', { className: 'container' });
+  wrapper.appendChild(container);
 
   const doc = el('div', { className: 'doc' });
 
@@ -116,7 +116,7 @@ function renderTechIssuePage(pageData) {
     layer.metrics.forEach((m) => metricTags.appendChild(el('span', { className: 'tag is-primary is-light', text: m })));
     panelBody.appendChild(metricTags);
 
-    const tradeoffs = el('article', { className: 'message is-warning' });
+    const tradeoffs = el('article', { className: 'message is-tradeoff' });
     const tradeHeader = el('div', { className: 'message-header' });
     tradeHeader.appendChild(el('p', { text: 'Tradeoffs' }));
     const tradeBody = el('div', { className: 'message-body' });
@@ -195,43 +195,7 @@ function renderTechIssuePage(pageData) {
     doc.appendChild(s);
   }
 
-  root.appendChild(doc);
-}
-
-// If this script is running inside an iframe, send the document height to the parent
-function postHeightToParent() {
-  try {
-    const body = document.body;
-    const html = document.documentElement;
-    const height = Math.max(
-      body.scrollHeight, body.offsetHeight,
-      html.clientHeight, html.scrollHeight, html.offsetHeight
-    );
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: 'tech-issue-height', height }, '*');
-    }
-  } catch (err) {
-    // ignore
-  }
-}
-
-if (window.self !== window.top) {
-  // Send an initial height and then a few updates while content stabilizes
-  postHeightToParent();
-  let stable = 0;
-  const interval = setInterval(() => {
-    postHeightToParent();
-    stable += 1;
-    if (stable > 10) clearInterval(interval);
-  }, 120);
-
-  // Observe for DOM size changes and post updates
-  try {
-    const ro = new ResizeObserver(() => postHeightToParent());
-    ro.observe(document.documentElement);
-    ro.observe(document.body);
-  } catch (err) {
-    // ResizeObserver may not be available in some older environments
-  }
+  container.appendChild(doc);
+  root.appendChild(wrapper);
 }
 

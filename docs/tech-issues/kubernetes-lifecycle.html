@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Kubernetes — Application Lifecycle Instability</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kubernetes — Application Lifecycle Instability</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Kubernetes — pod lifecycle",
-        "title": "Application lifecycle instability",
-        "description": "Guide covering CrashLoopBackOff, restart storms, probe flapping, and rollout instability."
-    },
-    "synonyms": [
-        "CrashLoopBackOff",
-        "Restart storms",
-        "Probe flapping",
-        "Startup failures",
-        "Rollout instability",
-        "Readiness failures",
-        "Liveness failures",
-        "Container churn"
-    ],
-    "questions": [
-        "Why are pods repeatedly restarting?",
-        "How do probes create false-negative failures?",
-        "Why do rollouts fail under load?",
-        "How do startup and shutdown hooks influence stability?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Kubernetes — pod lifecycle",
+        title: "Application lifecycle instability",
+        description: "Guide covering CrashLoopBackOff, restart storms, probe flapping, and rollout instability."
+      },
+      synonyms: ["CrashLoopBackOff","Restart storms","Probe flapping","Startup failures","Rollout instability","Readiness failures","Liveness failures","Container churn"],
+      questions: ["Why are pods repeatedly restarting?","How do probes create false-negative failures?","Why do rollouts fail under load?","How do startup and shutdown hooks influence stability?"],
+      layers: [
         {
-            "name": "Startup",
-            "title": "Startup dependency and bootstrap failures",
-            "description": "Containers fail early when dependencies or startup budgets are misconfigured.",
-            "symptoms": [
-                "CrashLoopBackOff soon after deployment",
-                "Startup timeout events",
-                "Readiness never achieved"
-            ],
-            "causes": [
-                "Missing env/config/secret",
-                "Dependency unavailable at boot",
-                "Insufficient startupProbe windows"
-            ],
-            "effects": [
-                "Service unavailability windows",
-                "Rollout rollback triggers",
-                "Increased alert noise"
-            ],
-            "mitigations": [
-                "Harden startup checks",
-                "Use startupProbe appropriately",
-                "Fail fast with actionable logs"
-            ],
-            "metrics": [
-                "Startup duration",
-                "CrashLoopBackOff count",
-                "First readiness time",
-                "Deployment failure rate"
-            ],
-            "tradeoffs": [
-                "Longer startup windows reduce false kills but delay bad-pod detection",
-                "Strict startup checks improve safety but can slow recovery"
-            ]
+          name: "Startup",
+          title: "Startup dependency and bootstrap failures",
+          description: "Containers fail early when dependencies or startup budgets are misconfigured.",
+          symptoms: ["CrashLoopBackOff soon after deployment","Startup timeout events","Readiness never achieved"],
+          causes: ["Missing env/config/secret","Dependency unavailable at boot","Insufficient startupProbe windows"],
+          effects: ["Service unavailability windows","Rollout rollback triggers","Increased alert noise"],
+          mitigations: ["Harden startup checks","Use startupProbe appropriately","Fail fast with actionable logs"],
+          metrics: ["Startup duration","CrashLoopBackOff count","First readiness time","Deployment failure rate"],
+          tradeoffs: ["Longer startup windows reduce false kills but delay bad-pod detection","Strict startup checks improve safety but can slow recovery"]
         },
         {
-            "name": "Probes",
-            "title": "Probe strategy and false failure loops",
-            "description": "Liveness/readiness probes can destabilize healthy pods if thresholds are unrealistic.",
-            "symptoms": [
-                "Probe failures under transient load",
-                "Pods restart despite healthy process",
-                "Traffic flaps between replicas"
-            ],
-            "causes": [
-                "Probe timeout too low",
-                "Probe endpoint dependent on slow downstreams",
-                "No separation of liveness vs readiness behavior"
-            ],
-            "effects": [
-                "Unnecessary restarts",
-                "Reduced effective capacity",
-                "Tail latency spikes"
-            ],
-            "mitigations": [
-                "Set probe budgets from real latency data",
-                "Keep liveness simple and local",
-                "Use readiness to gate traffic safely"
-            ],
-            "metrics": [
-                "Probe failure rate",
-                "Restart count",
-                "Ready replicas over time",
-                "Traffic failover frequency"
-            ],
-            "tradeoffs": [
-                "Conservative probes improve stability but detect true failures slower",
-                "Aggressive probes detect faster but increase false-positive restarts"
-            ]
+          name: "Probes",
+          title: "Probe strategy and false failure loops",
+          description: "Liveness/readiness probes can destabilize healthy pods if thresholds are unrealistic.",
+          symptoms: ["Probe failures under transient load","Pods restart despite healthy process","Traffic flaps between replicas"],
+          causes: ["Probe timeout too low","Probe endpoint dependent on slow downstreams","No separation of liveness vs readiness behavior"],
+          effects: ["Unnecessary restarts","Reduced effective capacity","Tail latency spikes"],
+          mitigations: ["Set probe budgets from real latency data","Keep liveness simple and local","Use readiness to gate traffic safely"],
+          metrics: ["Probe failure rate","Restart count","Ready replicas over time","Traffic failover frequency"],
+          tradeoffs: ["Conservative probes improve stability but detect true failures slower","Aggressive probes detect faster but increase false-positive restarts"]
         },
         {
-            "name": "Rollouts",
-            "title": "Deployment and rollout turbulence",
-            "description": "Rollout parameters can overload systems or trigger churn during updates.",
-            "symptoms": [
-                "Rollout stalls",
-                "Error spikes during deployment",
-                "Replica oscillation"
-            ],
-            "causes": [
-                "MaxUnavailable too high for workload",
-                "No canary stage",
-                "Incompatible schema/config rollout order"
-            ],
-            "effects": [
-                "User-visible incidents during releases",
-                "Rollback churn",
-                "Degraded SLOs"
-            ],
-            "mitigations": [
-                "Use canary and progressive delivery",
-                "Tune surge/unavailable values",
-                "Enforce backward-compatible rollout sequencing"
-            ],
-            "metrics": [
-                "Rollout duration",
-                "Error rate during deploy",
-                "Rollback frequency",
-                "Replica stability"
-            ],
-            "tradeoffs": [
-                "Safer rollouts reduce risk but slow delivery",
-                "Faster rollouts shorten lead time but raise blast radius"
-            ]
+          name: "Rollouts",
+          title: "Deployment and rollout turbulence",
+          description: "Rollout parameters can overload systems or trigger churn during updates.",
+          symptoms: ["Rollout stalls","Error spikes during deployment","Replica oscillation"],
+          causes: ["MaxUnavailable too high for workload","No canary stage","Incompatible schema/config rollout order"],
+          effects: ["User-visible incidents during releases","Rollback churn","Degraded SLOs"],
+          mitigations: ["Use canary and progressive delivery","Tune surge/unavailable values","Enforce backward-compatible rollout sequencing"],
+          metrics: ["Rollout duration","Error rate during deploy","Rollback frequency","Replica stability"],
+          tradeoffs: ["Safer rollouts reduce risk but slow delivery","Faster rollouts shorten lead time but raise blast radius"]
         },
         {
-            "name": "Runtime",
-            "title": "Runtime resilience and shutdown behavior",
-            "description": "Graceful termination and runtime backpressure handling determine whether lifecycle events are smooth.",
-            "symptoms": [
-                "Dropped in-flight requests on restart",
-                "Long tail during termination",
-                "Connection reset spikes"
-            ],
-            "causes": [
-                "No preStop handling",
-                "Termination grace too short",
-                "No drain strategy for background workers"
-            ],
-            "effects": [
-                "Request failures during scale/down",
-                "State inconsistency",
-                "Operational fragility"
-            ],
-            "mitigations": [
-                "Implement graceful drain and preStop hooks",
-                "Set realistic termination grace",
-                "Test scale and restart behavior regularly"
-            ],
-            "metrics": [
-                "Termination duration",
-                "In-flight request loss",
-                "Scale event error rate",
-                "Graceful shutdown success rate"
-            ],
-            "tradeoffs": [
-                "Longer grace periods reduce drop risk but slow autoscaling response",
-                "More drain logic increases application complexity"
-            ]
+          name: "Runtime",
+          title: "Runtime resilience and shutdown behavior",
+          description: "Graceful termination and runtime backpressure handling determine whether lifecycle events are smooth.",
+          symptoms: ["Dropped in-flight requests on restart","Long tail during termination","Connection reset spikes"],
+          causes: ["No preStop handling","Termination grace too short","No drain strategy for background workers"],
+          effects: ["Request failures during scale/down","State inconsistency","Operational fragility"],
+          mitigations: ["Implement graceful drain and preStop hooks","Set realistic termination grace","Test scale and restart behavior regularly"],
+          metrics: ["Termination duration","In-flight request loss","Scale event error rate","Graceful shutdown success rate"],
+          tradeoffs: ["Longer grace periods reduce drop risk but slow autoscaling response","More drain logic increases application complexity"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Systemd",
-            "problem": "Service restart loops"
-        },
-        {
-            "tech": "Nomad",
-            "problem": "Task restart instability"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Consumer churn and lag spikes"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Election instability during process churn"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Canary rollout regressions"
-        }
-    ],
-    "insight": "Lifecycle instability is usually a control-loop issue: probes, rollout policy, and app behavior must agree on what healthy means under load."
-};
+      ],
+      comparisons: [
+        { tech: "Systemd", problem: "Service restart loops" },
+        { tech: "Nomad", problem: "Task restart instability" },
+        { tech: "Kafka", problem: "Consumer churn and lag spikes" },
+        { tech: "MongoDB", problem: "Election instability during process churn" },
+        { tech: "API Gateway", problem: "Canary rollout regressions" }
+      ],
+      insight: "Lifecycle instability is usually a control-loop issue: probes, rollout policy, and app behavior must agree on what healthy means under load."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

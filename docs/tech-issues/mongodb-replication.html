@@ -3,37 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>MongoDB — Replication & Consistency Delays</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>MongoDB — Replication &amp; Consistency Delays</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
@@ -42,70 +20,52 @@
         title: "Replication & consistency delays",
         description: "Staff+/Principal-level guide covering secondary lag, oplog replication bottlenecks, replication throughput imbalance, and consistency guarantees in MongoDB replica sets."
       },
-      synonyms: [
-        "Secondary lag",
-        "Replica lag",
-        "Replication backlog",
-        "Replication delay",
-        "Oplog lag",
-        "Write-after-read inconsistency",
-        "Stale secondary reads",
-        "Replication sync delay"
-      ],
-      questions: [
-        "Why are secondaries lagging behind the primary?",
-        "How do I debug oplog replication delays?",
-        "What causes read-after-write inconsistency?",
-        "Why is replication falling behind after traffic spikes?",
-        "How does oplog sizing affect replication?",
-        "What causes failover delays in MongoDB?",
-        "Why are secondary reads returning stale data?",
-        "How do I detect replication bottlenecks?"
-      ],
+      synonyms: ["Secondary lag","Replica lag","Replication backlog","Replication delay","Oplog lag","Write-after-read inconsistency","Stale secondary reads","Replication sync delay"],
+      questions: ["Why are secondaries lagging behind the primary?","How do I debug oplog replication delays?","What causes read-after-write inconsistency?","Why is replication falling behind after traffic spikes?","How does oplog sizing affect replication?","What causes failover delays in MongoDB?","Why are secondary reads returning stale data?","How do I detect replication bottlenecks?"],
       layers: [
         {
           name: "Oplog",
           title: "Oplog application & replication pipeline",
-          description: "MongoDB replication uses an oplog (operations log) that the primary writes to and secondaries continuously apply. When secondaries cannot keep up with oplog application, replica lag accumulates, causing read-after-write inconsistency and failover delays.",
-          symptoms: ["Increasing seconds of lag on secondaries", "Stale reads from secondaries", "Delayed failover due to lag", "Oplog application thread falling behind"],
-          causes: ["Write throughput exceeds secondary disk IO capacity", "Large individual operations blocking oplog thread", "Replication lag from secondary disk saturation", "CPU contention on secondary processing oplog"],
-          effects: ["Read-after-write inconsistency", "Delayed failover readiness", "Potential data loss if primary fails", "Increased inconsistency window"],
-          mitigations: ["Increase secondary disk throughput (SSD)", "Reduce write throughput with batching", "Scale secondaries to match primary capacity", "Use better network for replication", "Optimize oplog processing"],
-          metrics: ["Seconds of replication lag", "Oplog application rate", "Oplog entries queued", "Secondary replication thread latency", "Disk IO wait on secondary"],
-          tradeoffs: ["More secondaries increase replication overhead", "Larger oplog consumes more disk space", "Faster replication requires better hardware"]
+          description: "MongoDB replication uses an oplog (operations log) that the primary writes to and secondaries continuously apply. When secondaries cannot keep up with oplog application, replica lag accumulates.",
+          symptoms: ["Increasing seconds of lag on secondaries","Stale reads from secondaries","Delayed failover due to lag","Oplog application thread falling behind"],
+          causes: ["Write throughput exceeds secondary disk IO capacity","Large individual operations blocking oplog thread","Replication lag from secondary disk saturation","CPU contention on secondary processing oplog"],
+          effects: ["Read-after-write inconsistency","Delayed failover readiness","Potential data loss if primary fails","Increased inconsistency window"],
+          mitigations: ["Increase secondary disk throughput (SSD)","Reduce write throughput with batching","Scale secondaries to match primary capacity","Use better network for replication","Optimize oplog processing"],
+          metrics: ["Seconds of replication lag","Oplog application rate","Oplog entries queued","Secondary replication thread latency","Disk IO wait on secondary"],
+          tradeoffs: ["More secondaries increase replication overhead","Larger oplog consumes more disk space","Faster replication requires better hardware"]
         },
         {
           name: "Network",
           title: "Network replication delays",
-          description: "Replication data must traverse the network from primary to each secondary. Network latency, packet loss, and bandwidth limitations can significantly delay oplog application, especially across availability zones or regions.",
-          symptoms: ["Consistent replication lag across all secondaries", "Lag increases during high-throughput periods", "Cross-AZ replication significantly lagging", "Network packet loss visible in metrics"],
-          causes: ["High network latency between data centers", "Insufficient replication bandwidth", "Packet retransmissions on replication traffic", "Network congestion from other workloads"],
-          effects: ["Slow oplog application on all replicas", "Delayed failover readiness", "Increased window of potential data inconsistency", "Cascading lag propagation"],
-          mitigations: ["Use dedicated replication network", "Increase network bandwidth allocation", "Optimize replication batch size", "Use compression for replication traffic", "Reduce cross-AZ replication load"],
-          metrics: ["Network latency to secondaries", "Replication bandwidth utilization", "Packet loss on replication links", "RTT to replicas", "Network throughput"],
-          tradeoffs: ["Compression increases CPU usage", "Larger batches reduce latency but increase memory", "Dedicated network requires infrastructure cost"]
+          description: "Replication data must traverse the network from primary to each secondary. Network latency, packet loss, and bandwidth limitations can significantly delay oplog application.",
+          symptoms: ["Consistent replication lag across all secondaries","Lag increases during high-throughput periods","Cross-AZ replication significantly lagging","Network packet loss visible in metrics"],
+          causes: ["High network latency between data centers","Insufficient replication bandwidth","Packet retransmissions on replication traffic","Network congestion from other workloads"],
+          effects: ["Slow oplog application on all replicas","Delayed failover readiness","Increased window of potential data inconsistency","Cascading lag propagation"],
+          mitigations: ["Use dedicated replication network","Increase network bandwidth allocation","Optimize replication batch size","Use compression for replication traffic","Reduce cross-AZ replication load"],
+          metrics: ["Network latency to secondaries","Replication bandwidth utilization","Packet loss on replication links","RTT to replicas","Network throughput"],
+          tradeoffs: ["Compression increases CPU usage","Larger batches reduce latency but increase memory","Dedicated network requires infrastructure cost"]
         },
         {
           name: "Disk",
           title: "Secondary disk saturation & write pressure",
           description: "Secondaries continuously write oplog entries and apply operations to their data files. When secondary disk throughput is lower than primary write throughput, the oplog application thread falls behind.",
-          symptoms: ["Replication lag growing over time", "IO wait on secondary disks", "Slow disk writes visible in profiling", "Lag spikes during compaction on secondary"],
-          causes: ["Secondary using slower disks than primary", "Heavy disk compaction competing with replication", "Too many partitions or collections competing for IO", "Background operations (indexing, garbage collection)"],
-          effects: ["Oplog application lag accumulation", "Delayed replica availability for reads", "Cascading lag if secondary becomes primary", "Data inconsistency window increases"],
-          mitigations: ["Upgrade secondary disk to match primary", "Schedule compaction during low-traffic periods", "Separate replication IO from application IO", "Increase background task parallelism", "Use better storage technology"],
-          metrics: ["Secondary disk throughput", "IO wait percentage", "Flush latency", "Compaction frequency", "Oplog apply latency"],
-          tradeoffs: ["SSD upgrade is expensive", "Scheduling compaction reduces availability", "Separating IO requires infrastructure changes"]
+          symptoms: ["Replication lag growing over time","IO wait on secondary disks","Slow disk writes visible in profiling","Lag spikes during compaction on secondary"],
+          causes: ["Secondary using slower disks than primary","Heavy disk compaction competing with replication","Too many partitions or collections competing for IO","Background operations (indexing, garbage collection)"],
+          effects: ["Oplog application lag accumulation","Delayed replica availability for reads","Cascading lag if secondary becomes primary","Data inconsistency window increases"],
+          mitigations: ["Upgrade secondary disk to match primary","Schedule compaction during low-traffic periods","Separate replication IO from application IO","Increase background task parallelism","Use better storage technology"],
+          metrics: ["Secondary disk throughput","IO wait percentage","Flush latency","Compaction frequency","Oplog apply latency"],
+          tradeoffs: ["SSD upgrade is expensive","Scheduling compaction reduces availability","Separating IO requires infrastructure changes"]
         },
         {
           name: "CPU",
           title: "CPU contention & oplog processing",
           description: "Applying oplog entries requires parsing operations, updating data structures, and maintaining consistency. Heavy write workloads or complex operations can cause CPU contention on the oplog application thread.",
-          symptoms: ["High CPU usage during replication", "Oplog application thread at 100% CPU", "Lag increases despite sufficient disk/network", "Lag varies with query complexity"],
-          causes: ["Complex write operations requiring heavy computation", "Thousands of writes per second to process", "Background queries competing for CPU", "Index updates during replication"],
-          effects: ["Oplog application cannot keep up", "Replication lag growth", "Slower failover readiness", "Cascading failures if lag triggers priority change"],
-          mitigations: ["Increase CPU resources on secondaries", "Batch writes into fewer operations", "Reduce concurrent background operations", "Optimize operation complexity", "Use faster CPUs"],
-          metrics: ["CPU utilization on oplog thread", "Context switch rate", "Instructions per operation", "Background CPU contention", "Operation complexity metrics"],
-          tradeoffs: ["CPU upgrade is expensive", "Batching increases latency", "Reducing operations changes application behavior"]
+          symptoms: ["High CPU usage during replication","Oplog application thread at 100% CPU","Lag increases despite sufficient disk/network","Lag varies with query complexity"],
+          causes: ["Complex write operations requiring heavy computation","Thousands of writes per second to process","Background queries competing for CPU","Index updates during replication"],
+          effects: ["Oplog application cannot keep up","Replication lag growth","Slower failover readiness","Cascading failures if lag triggers priority change"],
+          mitigations: ["Increase CPU resources on secondaries","Batch writes into fewer operations","Reduce concurrent background operations","Optimize operation complexity","Use faster CPUs"],
+          metrics: ["CPU utilization on oplog thread","Context switch rate","Instructions per operation","Background CPU contention","Operation complexity metrics"],
+          tradeoffs: ["CPU upgrade is expensive","Batching increases latency","Reducing operations changes application behavior"]
         }
       ],
       comparisons: [
@@ -115,11 +75,9 @@
         { tech: "MySQL", problem: "Binlog replication lag" },
         { tech: "AWS RDS", problem: "Replica sync lag" }
       ],
-      insight: "MongoDB replication is fundamentally about throughput matching: the primary writes to the oplog at rate X, and secondaries must apply those operations at rate ≥ X. When any layer (network, disk, or CPU) cannot match the write throughput, lag accumulates. Understanding replication lag requires understanding your entire stack's bottleneck—it's rarely the replication protocol itself."
+      insight: "MongoDB replication is fundamentally about throughput matching: the primary writes to the oplog at rate X, and secondaries must apply those operations at rate >= X. When any layer (network, disk, or CPU) cannot match the write throughput, lag accumulates."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

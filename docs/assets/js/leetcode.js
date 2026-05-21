@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   const content = document.getElementById('content');
   const filters = Array.from(document.querySelectorAll('[data-difficulty]'));
   const searchInput = document.getElementById('searchInput');
@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const totals = {
     categories: document.getElementById('categoryCount'),
     count: document.getElementById('questionCount'),
+    easy: document.getElementById('easyCount'),
     medium: document.getElementById('mediumCount'),
     hard: document.getElementById('hardCount'),
   };
@@ -28,23 +29,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
   }
 
-  let roadmap;
-  try {
-    // Prefer in-page data to keep this usable when opened via file:// (fetch is blocked in many browsers).
-    roadmap = window.LEETCODE_ROADMAP;
-    if (!roadmap) {
-      const res = await fetch('assets/data/leetcode-roadmap.json', { cache: 'force-cache' });
-      if (!res.ok) throw new Error(`Failed to load roadmap: ${res.status}`);
-      roadmap = await res.json();
-    }
-  } catch (err) {
+  // Data is pre-loaded via <script src="data/leetcode-roadmap.js"> — no fetch needed.
+  // This site is designed to work on file:// protocol where fetch() is blocked.
+  const roadmap = window.LEETCODE_ROADMAP;
+  if (!roadmap) {
     content.innerHTML = `
       <div class="notification is-danger is-light">
-        Failed to load the LeetCode roadmap data.
+        Failed to load the LeetCode roadmap data. Ensure
+        <code>data/leetcode-roadmap.js</code> is included before this script.
       </div>
     `;
-    // eslint-disable-next-line no-console
-    console.error(err);
     return;
   }
 
@@ -76,6 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     content.innerHTML = '';
 
     let total = 0;
+    let easy = 0;
     let medium = 0;
     let hard = 0;
 
@@ -92,8 +87,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!filtered.length) return;
 
       total += filtered.length;
+      easy   += filtered.filter(([, difficulty]) => difficulty === 'Easy').length;
       medium += filtered.filter(([, difficulty]) => difficulty === 'Medium').length;
-      hard += filtered.filter(([, difficulty]) => difficulty === 'Hard').length;
+      hard   += filtered.filter(([, difficulty]) => difficulty === 'Hard').length;
 
       const section = document.createElement('div');
       section.className = 'section is-tight';
@@ -182,6 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     totals.categories.textContent = Object.keys(roadmap).length;
     totals.count.textContent = total;
+    totals.easy.textContent = easy;
     totals.medium.textContent = medium;
     totals.hard.textContent = hard;
   }

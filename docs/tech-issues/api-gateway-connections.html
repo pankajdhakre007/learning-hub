@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>API Gateway — Connection & Resource Exhaustion</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>API Gateway — Connection &amp; Resource Exhaustion</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "API Gateway — runtime resource limits",
-        "title": "Connection and resource exhaustion",
-        "description": "Guide covering connection pool depletion, socket saturation, FD limits, and thread/resource starvation at the gateway."
-    },
-    "synonyms": [
-        "Connection pool exhaustion",
-        "Socket saturation",
-        "FD exhaustion",
-        "Thread starvation",
-        "Ephemeral port exhaustion",
-        "Keepalive depletion",
-        "Accept queue overflow",
-        "Resource ceiling breach"
-    ],
-    "questions": [
-        "Why does gateway error rate jump at high QPS despite healthy backends?",
-        "How do connection pools become bottlenecks?",
-        "How do keepalive settings impact socket exhaustion?",
-        "How do OS limits trigger gateway failures?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "API Gateway — runtime resource limits",
+        title: "Connection and resource exhaustion",
+        description: "Guide covering connection pool depletion, socket saturation, FD limits, and thread/resource starvation at the gateway."
+      },
+      synonyms: ["Connection pool exhaustion","Socket saturation","FD exhaustion","Thread starvation","Ephemeral port exhaustion","Keepalive depletion","Accept queue overflow","Resource ceiling breach"],
+      questions: ["Why does gateway error rate jump at high QPS despite healthy backends?","How do connection pools become bottlenecks?","How do keepalive settings impact socket exhaustion?","How do OS limits trigger gateway failures?"],
+      layers: [
         {
-            "name": "Connections",
-            "title": "Upstream/downstream connection pool pressure",
-            "description": "Pool limits and reuse behavior determine effective throughput and latency.",
-            "symptoms": [
-                "Pool utilization near 100%",
-                "Queueing for pooled connections",
-                "Increased connection timeout errors"
-            ],
-            "causes": [
-                "Pool size too small",
-                "Slow upstream responses holding connections",
-                "Poor keepalive tuning"
-            ],
-            "effects": [
-                "Latency inflation",
-                "Request drops",
-                "Throughput ceiling"
-            ],
-            "mitigations": [
-                "Tune pool sizes per route",
-                "Reduce connection hold time via timeout alignment",
-                "Enable effective keepalive reuse"
-            ],
-            "metrics": [
-                "Pool utilization",
-                "Connection wait time",
-                "Connection timeout rate",
-                "Request throughput"
-            ],
-            "tradeoffs": [
-                "Larger pools improve concurrency but increase memory/socket footprint",
-                "Aggressive timeouts reduce hold time but can increase failure rate"
-            ]
+          name: "Connections",
+          title: "Upstream/downstream connection pool pressure",
+          description: "Pool limits and reuse behavior determine effective throughput and latency.",
+          symptoms: ["Pool utilization near 100%","Queueing for pooled connections","Increased connection timeout errors"],
+          causes: ["Pool size too small","Slow upstream responses holding connections","Poor keepalive tuning"],
+          effects: ["Latency inflation","Request drops","Throughput ceiling"],
+          mitigations: ["Tune pool sizes per route","Reduce connection hold time via timeout alignment","Enable effective keepalive reuse"],
+          metrics: ["Pool utilization","Connection wait time","Connection timeout rate","Request throughput"],
+          tradeoffs: ["Larger pools improve concurrency but increase memory/socket footprint","Aggressive timeouts reduce hold time but can increase failure rate"]
         },
         {
-            "name": "Sockets",
-            "title": "Socket lifecycle and port exhaustion",
-            "description": "High churn in short-lived connections can exhaust ephemeral ports and kernel socket resources.",
-            "symptoms": [
-                "Connection reset spikes",
-                "Cannot assign requested address errors",
-                "Short-lived connection bursts"
-            ],
-            "causes": [
-                "No reuse/keepalive",
-                "Retry storms creating connection churn",
-                "Kernel networking limits too low"
-            ],
-            "effects": [
-                "Intermittent hard failures",
-                "Unpredictable latency",
-                "Regional edge instability"
-            ],
-            "mitigations": [
-                "Increase reuse and keepalive efficiency",
-                "Tune kernel network limits",
-                "Cap retry-driven churn"
-            ],
-            "metrics": [
-                "New connections/sec",
-                "TIME_WAIT count",
-                "Reset rate",
-                "Port exhaustion events"
-            ],
-            "tradeoffs": [
-                "Long keepalive improves reuse but may hold idle resources",
-                "Kernel limit increases require careful capacity planning"
-            ]
+          name: "Sockets",
+          title: "Socket lifecycle and port exhaustion",
+          description: "High churn in short-lived connections can exhaust ephemeral ports and kernel socket resources.",
+          symptoms: ["Connection reset spikes","Cannot assign requested address errors","Short-lived connection bursts"],
+          causes: ["No reuse/keepalive","Retry storms creating connection churn","Kernel networking limits too low"],
+          effects: ["Intermittent hard failures","Unpredictable latency","Regional edge instability"],
+          mitigations: ["Increase reuse and keepalive efficiency","Tune kernel network limits","Cap retry-driven churn"],
+          metrics: ["New connections/sec","TIME_WAIT count","Reset rate","Port exhaustion events"],
+          tradeoffs: ["Long keepalive improves reuse but may hold idle resources","Kernel limit increases require careful capacity planning"]
         },
         {
-            "name": "Process",
-            "title": "FD, thread, and memory ceilings",
-            "description": "Runtime process limits can cap gateway capacity before CPU saturates.",
-            "symptoms": [
-                "Too many open files errors",
-                "Thread pool queue saturation",
-                "Memory pressure under peak load"
-            ],
-            "causes": [
-                "Low ulimit values",
-                "Oversized worker concurrency",
-                "Insufficient memory headroom"
-            ],
-            "effects": [
-                "Request rejection",
-                "Latency spikes",
-                "Crash/restart risk"
-            ],
-            "mitigations": [
-                "Set safe FD/thread limits",
-                "Right-size worker model",
-                "Load-test for ceiling validation"
-            ],
-            "metrics": [
-                "FD usage vs limit",
-                "Thread queue depth",
-                "Memory RSS",
-                "Error rates under peak"
-            ],
-            "tradeoffs": [
-                "Higher limits increase blast radius if leaks exist",
-                "Conservative limits improve safety but cap peak capacity"
-            ]
+          name: "Process",
+          title: "FD, thread, and memory ceilings",
+          description: "Runtime process limits can cap gateway capacity before CPU saturates.",
+          symptoms: ["Too many open files errors","Thread pool queue saturation","Memory pressure under peak load"],
+          causes: ["Low ulimit values","Oversized worker concurrency","Insufficient memory headroom"],
+          effects: ["Request rejection","Latency spikes","Crash/restart risk"],
+          mitigations: ["Set safe FD/thread limits","Right-size worker model","Load-test for ceiling validation"],
+          metrics: ["FD usage vs limit","Thread queue depth","Memory RSS","Error rates under peak"],
+          tradeoffs: ["Higher limits increase blast radius if leaks exist","Conservative limits improve safety but cap peak capacity"]
         },
         {
-            "name": "Resilience",
-            "title": "Guardrails and overload behavior",
-            "description": "Overload handling should fail gracefully rather than cascading into full outages.",
-            "symptoms": [
-                "Sharp failure cliffs at load threshold",
-                "Retries worsen incident",
-                "Recovery lags after load subsides"
-            ],
-            "causes": [
-                "No load shedding policy",
-                "Unbounded queues",
-                "No per-client quotas"
-            ],
-            "effects": [
-                "Wider outage blast radius",
-                "Longer recovery time",
-                "Client retry storms"
-            ],
-            "mitigations": [
-                "Implement bounded queues and load shedding",
-                "Per-client quotas",
-                "Brownout/degrade modes for non-critical paths"
-            ],
-            "metrics": [
-                "Load shed rate",
-                "Queue depth at saturation",
-                "Recovery time",
-                "Client-level fairness metrics"
-            ],
-            "tradeoffs": [
-                "Shedding protects platform but rejects traffic",
-                "Fairness controls add policy complexity"
-            ]
+          name: "Resilience",
+          title: "Guardrails and overload behavior",
+          description: "Overload handling should fail gracefully rather than cascading into full outages.",
+          symptoms: ["Sharp failure cliffs at load threshold","Retries worsen incident","Recovery lags after load subsides"],
+          causes: ["No load shedding policy","Unbounded queues","No per-client quotas"],
+          effects: ["Wider outage blast radius","Longer recovery time","Client retry storms"],
+          mitigations: ["Implement bounded queues and load shedding","Per-client quotas","Brownout/degrade modes for non-critical paths"],
+          metrics: ["Load shed rate","Queue depth at saturation","Recovery time","Client-level fairness metrics"],
+          tradeoffs: ["Shedding protects platform but rejects traffic","Fairness controls add policy complexity"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Nginx",
-            "problem": "Worker and FD saturation"
-        },
-        {
-            "tech": "Envoy",
-            "problem": "Connection pool overflow"
-        },
-        {
-            "tech": "Kubernetes",
-            "problem": "Node resource exhaustion"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Broker network saturation"
-        },
-        {
-            "tech": "Redis",
-            "problem": "Client connection pressure"
-        }
-    ],
-    "insight": "Edge reliability depends on resource ceilings as much as business logic. Exhaustion incidents are preventable with realistic limits, graceful overload controls, and traffic discipline."
-};
+      ],
+      comparisons: [
+        { tech: "Nginx", problem: "Worker and FD saturation" },
+        { tech: "Envoy", problem: "Connection pool overflow" },
+        { tech: "Kubernetes", problem: "Node resource exhaustion" },
+        { tech: "Kafka", problem: "Broker network saturation" },
+        { tech: "Redis", problem: "Client connection pressure" }
+      ],
+      insight: "Edge reliability depends on resource ceilings as much as business logic. Exhaustion incidents are preventable with realistic limits, graceful overload controls, and traffic discipline."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

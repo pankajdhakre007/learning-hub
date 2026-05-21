@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Kubernetes — Cluster Networking Problems</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kubernetes — Cluster Networking Problems</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Kubernetes — service connectivity",
-        "title": "Cluster networking problems",
-        "description": "Guide covering service discovery failures, DNS instability, CNI issues, and policy-driven connectivity outages."
-    },
-    "synonyms": [
-        "Service discovery failures",
-        "DNS issues",
-        "CNI problems",
-        "Pod connectivity failures",
-        "Network policy blocks",
-        "Service routing failures",
-        "East-west traffic instability",
-        "kube-proxy issues"
-    ],
-    "questions": [
-        "Why can pods not reach services intermittently?",
-        "How do CoreDNS failures manifest in apps?",
-        "What CNI conditions create packet loss spikes?",
-        "How do network policies accidentally block production traffic?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Kubernetes — service connectivity",
+        title: "Cluster networking problems",
+        description: "Guide covering service discovery failures, DNS instability, CNI issues, and policy-driven connectivity outages."
+      },
+      synonyms: ["Service discovery failures","DNS issues","CNI problems","Pod connectivity failures","Network policy blocks","Service routing failures","East-west traffic instability","kube-proxy issues"],
+      questions: ["Why can pods not reach services intermittently?","How do CoreDNS failures manifest in apps?","What CNI conditions create packet loss spikes?","How do network policies accidentally block production traffic?"],
+      layers: [
         {
-            "name": "DNS",
-            "title": "DNS resolution path instability",
-            "description": "CoreDNS and upstream resolver issues can break service discovery at scale.",
-            "symptoms": [
-                "Intermittent NXDOMAIN/timeouts",
-                "Application retries on DNS lookups",
-                "Latency spikes on first calls"
-            ],
-            "causes": [
-                "CoreDNS overload",
-                "DNS cache inefficiency",
-                "Upstream resolver instability"
-            ],
-            "effects": [
-                "Service-to-service failures",
-                "Connection storm behavior",
-                "Request latency inflation"
-            ],
-            "mitigations": [
-                "Scale CoreDNS and tune cache",
-                "Reduce unnecessary DNS churn",
-                "Monitor resolver dependency health"
-            ],
-            "metrics": [
-                "DNS query latency",
-                "DNS error rate",
-                "CoreDNS CPU/memory",
-                "Query volume"
-            ],
-            "tradeoffs": [
-                "Larger DNS cache improves latency but can serve stale records",
-                "More replicas improve resilience but add overhead"
-            ]
+          name: "DNS",
+          title: "DNS resolution path instability",
+          description: "CoreDNS and upstream resolver issues can break service discovery at scale.",
+          symptoms: ["Intermittent NXDOMAIN/timeouts","Application retries on DNS lookups","Latency spikes on first calls"],
+          causes: ["CoreDNS overload","DNS cache inefficiency","Upstream resolver instability"],
+          effects: ["Service-to-service failures","Connection storm behavior","Request latency inflation"],
+          mitigations: ["Scale CoreDNS and tune cache","Reduce unnecessary DNS churn","Monitor resolver dependency health"],
+          metrics: ["DNS query latency","DNS error rate","CoreDNS CPU/memory","Query volume"],
+          tradeoffs: ["Larger DNS cache improves latency but can serve stale records","More replicas improve resilience but add overhead"]
         },
         {
-            "name": "Service Mesh",
-            "title": "Service routing and kube-proxy behavior",
-            "description": "Service routing layers can create drops/timeouts if rules or conntrack are stressed.",
-            "symptoms": [
-                "Timeouts to ClusterIP services",
-                "Uneven service reachability",
-                "Node-specific connectivity issues"
-            ],
-            "causes": [
-                "Conntrack table pressure",
-                "kube-proxy rule churn",
-                "Overlay/underlay mismatch"
-            ],
-            "effects": [
-                "Partial outages",
-                "Regional incident patterns",
-                "Difficult debugging under load"
-            ],
-            "mitigations": [
-                "Tune conntrack and node networking",
-                "Reduce churn in service endpoints",
-                "Validate kube-proxy mode and limits"
-            ],
-            "metrics": [
-                "Service timeout rate",
-                "Conntrack utilization",
-                "Endpoint update rate",
-                "Node-to-node packet loss"
-            ],
-            "tradeoffs": [
-                "Higher conntrack limits require memory",
-                "More stable endpoints can slow rollout responsiveness"
-            ]
+          name: "Service Mesh",
+          title: "Service routing and kube-proxy behavior",
+          description: "Service routing layers can create drops/timeouts if rules or conntrack are stressed.",
+          symptoms: ["Timeouts to ClusterIP services","Uneven service reachability","Node-specific connectivity issues"],
+          causes: ["Conntrack table pressure","kube-proxy rule churn","Overlay/underlay mismatch"],
+          effects: ["Partial outages","Regional incident patterns","Difficult debugging under load"],
+          mitigations: ["Tune conntrack and node networking","Reduce churn in service endpoints","Validate kube-proxy mode and limits"],
+          metrics: ["Service timeout rate","Conntrack utilization","Endpoint update rate","Node-to-node packet loss"],
+          tradeoffs: ["Higher conntrack limits require memory","More stable endpoints can slow rollout responsiveness"]
         },
         {
-            "name": "CNI",
-            "title": "CNI dataplane and packet path failures",
-            "description": "CNI plugin behavior and node networking health are core to pod connectivity.",
-            "symptoms": [
-                "Packet drops between pods",
-                "High retransmits",
-                "Cross-node latency spikes"
-            ],
-            "causes": [
-                "CNI plugin bugs/misconfig",
-                "MTU mismatch",
-                "Node NIC saturation"
-            ],
-            "effects": [
-                "Application-level retries",
-                "Throughput collapse on affected paths",
-                "SLO degradation"
-            ],
-            "mitigations": [
-                "Standardize MTU and routing",
-                "Upgrade and validate CNI versions",
-                "Capacity-plan node networking"
-            ],
-            "metrics": [
-                "Packet drop rate",
-                "Retransmit rate",
-                "Pod-to-pod RTT",
-                "Node NIC utilization"
-            ],
-            "tradeoffs": [
-                "Safer CNI upgrades require staged rollout effort",
-                "Conservative MTU improves compatibility but may reduce throughput"
-            ]
+          name: "CNI",
+          title: "CNI dataplane and packet path failures",
+          description: "CNI plugin behavior and node networking health are core to pod connectivity.",
+          symptoms: ["Packet drops between pods","High retransmits","Cross-node latency spikes"],
+          causes: ["CNI plugin bugs/misconfig","MTU mismatch","Node NIC saturation"],
+          effects: ["Application-level retries","Throughput collapse on affected paths","SLO degradation"],
+          mitigations: ["Standardize MTU and routing","Upgrade and validate CNI versions","Capacity-plan node networking"],
+          metrics: ["Packet drop rate","Retransmit rate","Pod-to-pod RTT","Node NIC utilization"],
+          tradeoffs: ["Safer CNI upgrades require staged rollout effort","Conservative MTU improves compatibility but may reduce throughput"]
         },
         {
-            "name": "Policy",
-            "title": "Network policy and access control regressions",
-            "description": "Policy changes can unintentionally block required paths and create silent outages.",
-            "symptoms": [
-                "Sudden traffic denial after policy deploy",
-                "Only some namespaces affected",
-                "Health checks fail without app changes"
-            ],
-            "causes": [
-                "Overly broad deny rules",
-                "Missing allow for dependency path",
-                "Policy drift across environments"
-            ],
-            "effects": [
-                "Hidden partial outages",
-                "Operational confusion",
-                "Emergency rollbacks"
-            ],
-            "mitigations": [
-                "Policy dry-run/canary process",
-                "Contract tests for critical traffic paths",
-                "Versioned policy governance"
-            ],
-            "metrics": [
-                "Denied flow count",
-                "Policy rollout failure rate",
-                "Mean time to restore connectivity",
-                "Policy drift incidents"
-            ],
-            "tradeoffs": [
-                "Strict policies improve security but raise operational complexity",
-                "Broader allow rules reduce outages but widen attack surface"
-            ]
+          name: "Policy",
+          title: "Network policy and access control regressions",
+          description: "Policy changes can unintentionally block required paths and create silent outages.",
+          symptoms: ["Sudden traffic denial after policy deploy","Only some namespaces affected","Health checks fail without app changes"],
+          causes: ["Overly broad deny rules","Missing allow for dependency path","Policy drift across environments"],
+          effects: ["Hidden partial outages","Operational confusion","Emergency rollbacks"],
+          mitigations: ["Policy dry-run/canary process","Contract tests for critical traffic paths","Versioned policy governance"],
+          metrics: ["Denied flow count","Policy rollout failure rate","Mean time to restore connectivity","Policy drift incidents"],
+          tradeoffs: ["Strict policies improve security but raise operational complexity","Broader allow rules reduce outages but widen attack surface"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Service Mesh",
-            "problem": "Control/data plane mismatch"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Upstream connectivity instability"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Broker interconnect latency spikes"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Replica sync delay due to network jitter"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Cross-node transport instability"
-        }
-    ],
-    "insight": "Kubernetes networking incidents are often layered failures. DNS, routing, dataplane, and policy must all be healthy for simple service calls to succeed."
-};
+      ],
+      comparisons: [
+        { tech: "Service Mesh", problem: "Control/data plane mismatch" },
+        { tech: "API Gateway", problem: "Upstream connectivity instability" },
+        { tech: "Kafka", problem: "Broker interconnect latency spikes" },
+        { tech: "MongoDB", problem: "Replica sync delay due to network jitter" },
+        { tech: "Elasticsearch", problem: "Cross-node transport instability" }
+      ],
+      insight: "Kubernetes networking incidents are often layered failures. DNS, routing, dataplane, and policy must all be healthy for simple service calls to succeed."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Cassandra — Read Amplification & Tombstones</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Cassandra — Read Amplification &amp; Tombstones</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Cassandra — delete-heavy workloads",
-        "title": "Read amplification and tombstones",
-        "description": "Guide covering tombstone-heavy reads, timeout risk, and modeling patterns that reduce scan amplification."
-    },
-    "synonyms": [
-        "Tombstone explosion",
-        "Slow reads",
-        "Read amplification",
-        "Tombstone scan overhead",
-        "Delete-heavy degradation",
-        "TTL debt",
-        "Range scan blowup",
-        "Read timeout pressure"
-    ],
-    "questions": [
-        "Why do reads time out on tombstone-heavy partitions?",
-        "How do TTL and deletes impact query latency?",
-        "How can I detect tombstone hotspots?",
-        "Which schema changes reduce tombstone overhead?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Cassandra — delete-heavy workloads",
+        title: "Read amplification and tombstones",
+        description: "Guide covering tombstone-heavy reads, timeout risk, and modeling patterns that reduce scan amplification."
+      },
+      synonyms: ["Tombstone explosion","Slow reads","Read amplification","Tombstone scan overhead","Delete-heavy degradation","TTL debt","Range scan blowup","Read timeout pressure"],
+      questions: ["Why do reads time out on tombstone-heavy partitions?","How do TTL and deletes impact query latency?","How can I detect tombstone hotspots?","Which schema changes reduce tombstone overhead?"],
+      layers: [
         {
-            "name": "Modeling",
-            "title": "Schema and delete pattern drivers",
-            "description": "Data model and delete/TTL behavior determine tombstone volume and persistence.",
-            "symptoms": [
-                "High tombstones per partition",
-                "Latency growth over data age",
-                "Frequent read timeouts on specific tables"
-            ],
-            "causes": [
-                "Delete-heavy workflows",
-                "Broad TTL on high-churn tables",
-                "Very wide partitions"
-            ],
-            "effects": [
-                "Read amplification",
-                "Increased CPU and IO",
-                "Query instability"
-            ],
-            "mitigations": [
-                "Model for bounded partition size",
-                "Use targeted TTL/deletes",
-                "Avoid unnecessary tombstone generation"
-            ],
-            "metrics": [
-                "Tombstones per read",
-                "Partition width",
-                "Timeouts by table",
-                "Read latency trend"
-            ],
-            "tradeoffs": [
-                "Data-model refactors are expensive",
-                "Reducing TTL may increase retained data volume"
-            ]
+          name: "Modeling",
+          title: "Schema and delete pattern drivers",
+          description: "Data model and delete/TTL behavior determine tombstone volume and persistence.",
+          symptoms: ["High tombstones per partition","Latency growth over data age","Frequent read timeouts on specific tables"],
+          causes: ["Delete-heavy workflows","Broad TTL on high-churn tables","Very wide partitions"],
+          effects: ["Read amplification","Increased CPU and IO","Query instability"],
+          mitigations: ["Model for bounded partition size","Use targeted TTL/deletes","Avoid unnecessary tombstone generation"],
+          metrics: ["Tombstones per read","Partition width","Timeouts by table","Read latency trend"],
+          tradeoffs: ["Data-model refactors are expensive","Reducing TTL may increase retained data volume"]
         },
         {
-            "name": "Read Path",
-            "title": "Merge and scan overhead during reads",
-            "description": "Reads merge data across SSTables and skip tombstones, raising cost significantly.",
-            "symptoms": [
-                "High read latency with moderate traffic",
-                "Large SSTable fan-in for reads",
-                "Increased CPU on read-heavy nodes"
-            ],
-            "causes": [
-                "Too many SSTables touched per query",
-                "Inefficient range scans",
-                "Unbounded query patterns"
-            ],
-            "effects": [
-                "Tail-latency spikes",
-                "User-visible timeouts",
-                "Lower cluster throughput"
-            ],
-            "mitigations": [
-                "Constrain query ranges",
-                "Improve partition key/selectivity",
-                "Tune compaction to reduce SSTable fan-in"
-            ],
-            "metrics": [
-                "SSTables per read",
-                "Read CPU time",
-                "P99 read latency",
-                "Timeout rate"
-            ],
-            "tradeoffs": [
-                "Narrower queries may require more requests",
-                "Compaction tuning may increase background IO"
-            ]
+          name: "Read Path",
+          title: "Merge and scan overhead during reads",
+          description: "Reads merge data across SSTables and skip tombstones, raising cost significantly.",
+          symptoms: ["High read latency with moderate traffic","Large SSTable fan-in for reads","Increased CPU on read-heavy nodes"],
+          causes: ["Too many SSTables touched per query","Inefficient range scans","Unbounded query patterns"],
+          effects: ["Tail-latency spikes","User-visible timeouts","Lower cluster throughput"],
+          mitigations: ["Constrain query ranges","Improve partition key/selectivity","Tune compaction to reduce SSTable fan-in"],
+          metrics: ["SSTables per read","Read CPU time","P99 read latency","Timeout rate"],
+          tradeoffs: ["Narrower queries may require more requests","Compaction tuning may increase background IO"]
         },
         {
-            "name": "Compaction",
-            "title": "Tombstone purge timing and backlog",
-            "description": "Tombstones are only purged during compaction after grace conditions, so backlog can persist.",
-            "symptoms": [
-                "Tombstones linger for long periods",
-                "Compaction cannot keep up",
-                "Performance stays degraded despite deletes"
-            ],
-            "causes": [
-                "Slow compaction cadence",
-                "Large datasets with limited IO",
-                "Misaligned gc_grace_seconds and repair practices"
-            ],
-            "effects": [
-                "Persistent read overhead",
-                "Operational complexity",
-                "Long-lived performance debt"
-            ],
-            "mitigations": [
-                "Align repair cadence and grace settings safely",
-                "Increase compaction capacity",
-                "Prioritize affected keyspaces"
-            ],
-            "metrics": [
-                "Tombstone purge rate",
-                "Compaction backlog",
-                "Age of tombstones",
-                "Repair cadence adherence"
-            ],
-            "tradeoffs": [
-                "Aggressive purge settings can risk data resurrection if repairs are weak",
-                "More compaction capacity increases cost"
-            ]
+          name: "Compaction",
+          title: "Tombstone purge timing and backlog",
+          description: "Tombstones are only purged during compaction after grace conditions, so backlog can persist.",
+          symptoms: ["Tombstones linger for long periods","Compaction cannot keep up","Performance stays degraded despite deletes"],
+          causes: ["Slow compaction cadence","Large datasets with limited IO","Misaligned gc_grace_seconds and repair practices"],
+          effects: ["Persistent read overhead","Operational complexity","Long-lived performance debt"],
+          mitigations: ["Align repair cadence and grace settings safely","Increase compaction capacity","Prioritize affected keyspaces"],
+          metrics: ["Tombstone purge rate","Compaction backlog","Age of tombstones","Repair cadence adherence"],
+          tradeoffs: ["Aggressive purge settings can risk data resurrection if repairs are weak","More compaction capacity increases cost"]
         },
         {
-            "name": "Operations",
-            "title": "Detection and guardrails",
-            "description": "Continuous detection prevents tombstone debt from silently accumulating.",
-            "symptoms": [
-                "Late detection after user complaints",
-                "Repeated incidents on same tables",
-                "Unclear ownership of schema fixes"
-            ],
-            "causes": [
-                "No tombstone SLO alerts",
-                "Insufficient table-level observability",
-                "Reactive operational process"
-            ],
-            "effects": [
-                "Recurring outages",
-                "Unplanned schema migrations",
-                "Higher toil"
-            ],
-            "mitigations": [
-                "Alert on tombstones/read thresholds",
-                "Table-level ownership and review",
-                "Pre-production load testing on delete patterns"
-            ],
-            "metrics": [
-                "Incidents per quarter",
-                "Threshold breach frequency",
-                "Mean time to detect",
-                "Schema review compliance"
-            ],
-            "tradeoffs": [
-                "More guardrails slow schema changes",
-                "Extra telemetry adds operational overhead"
-            ]
+          name: "Operations",
+          title: "Detection and guardrails",
+          description: "Continuous detection prevents tombstone debt from silently accumulating.",
+          symptoms: ["Late detection after user complaints","Repeated incidents on same tables","Unclear ownership of schema fixes"],
+          causes: ["No tombstone SLO alerts","Insufficient table-level observability","Reactive operational process"],
+          effects: ["Recurring outages","Unplanned schema migrations","Higher toil"],
+          mitigations: ["Alert on tombstones/read thresholds","Table-level ownership and review","Pre-production load testing on delete patterns"],
+          metrics: ["Incidents per quarter","Threshold breach frequency","Mean time to detect","Schema review compliance"],
+          tradeoffs: ["More guardrails slow schema changes","Extra telemetry adds operational overhead"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "PostgreSQL",
-            "problem": "Bloat and vacuum debt"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Deleted-doc merge debt"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Fragmentation and scan overhead"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Log compaction lag"
-        },
-        {
-            "tech": "Redis",
-            "problem": "Key churn and eviction pressure"
-        }
-    ],
-    "insight": "Tombstone incidents are usually model-plus-maintenance problems. If delete behavior and compaction/repair cadence are misaligned, read paths eventually become unstable."
-};
+      ],
+      comparisons: [
+        { tech: "PostgreSQL", problem: "Bloat and vacuum debt" },
+        { tech: "Elasticsearch", problem: "Deleted-doc merge debt" },
+        { tech: "MongoDB", problem: "Fragmentation and scan overhead" },
+        { tech: "Kafka", problem: "Log compaction lag" },
+        { tech: "Redis", problem: "Key churn and eviction pressure" }
+      ],
+      insight: "Tombstone incidents are usually model-plus-maintenance problems. If delete behavior and compaction/repair cadence are misaligned, read paths eventually become unstable."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

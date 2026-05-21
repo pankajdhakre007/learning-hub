@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Cassandra — Storage & Compaction Pressure</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Cassandra — Storage &amp; Compaction Pressure</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Cassandra — storage engine",
-        "title": "Storage and compaction pressure",
-        "description": "Guide covering compaction storms, SSTable proliferation, and disk IO contention in Cassandra."
-    },
-    "synonyms": [
-        "Compaction storms",
-        "SSTable pressure",
-        "Compaction backlog",
-        "Write amplification",
-        "Storage saturation",
-        "Flush pressure",
-        "Disk amplification",
-        "Compaction debt"
-    ],
-    "questions": [
-        "Why does Cassandra latency spike during compaction?",
-        "How does compaction strategy change performance behavior?",
-        "What causes compaction backlog to persist?",
-        "How do I tune storage pressure without data risk?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Cassandra — storage engine",
+        title: "Storage and compaction pressure",
+        description: "Guide covering compaction storms, SSTable proliferation, and disk IO contention in Cassandra."
+      },
+      synonyms: ["Compaction storms","SSTable pressure","Compaction backlog","Write amplification","Storage saturation","Flush pressure","Disk amplification","Compaction debt"],
+      questions: ["Why does Cassandra latency spike during compaction?","How does compaction strategy change performance behavior?","What causes compaction backlog to persist?","How do I tune storage pressure without data risk?"],
+      layers: [
         {
-            "name": "Write Path",
-            "title": "Memtable flush and SSTable growth",
-            "description": "Write-heavy workloads create many SSTables that must later be compacted.",
-            "symptoms": [
-                "SSTable count rises rapidly",
-                "Flush frequency increases",
-                "Write latency volatility"
-            ],
-            "causes": [
-                "High write rate",
-                "Small memtables",
-                "Poor table design for write patterns"
-            ],
-            "effects": [
-                "Read amplification",
-                "Higher disk seeks",
-                "Compaction debt buildup"
-            ],
-            "mitigations": [
-                "Tune memtable and flush thresholds",
-                "Right-size table model and partition width",
-                "Avoid pathological write bursts"
-            ],
-            "metrics": [
-                "SSTable count",
-                "Flush latency",
-                "Write latency",
-                "Pending flush tasks"
-            ],
-            "tradeoffs": [
-                "Larger memtables improve write efficiency but increase memory demand",
-                "Aggressive flushing lowers memory risk but increases IO churn"
-            ]
+          name: "Write Path",
+          title: "Memtable flush and SSTable growth",
+          description: "Write-heavy workloads create many SSTables that must later be compacted.",
+          symptoms: ["SSTable count rises rapidly","Flush frequency increases","Write latency volatility"],
+          causes: ["High write rate","Small memtables","Poor table design for write patterns"],
+          effects: ["Read amplification","Higher disk seeks","Compaction debt buildup"],
+          mitigations: ["Tune memtable and flush thresholds","Right-size table model and partition width","Avoid pathological write bursts"],
+          metrics: ["SSTable count","Flush latency","Write latency","Pending flush tasks"],
+          tradeoffs: ["Larger memtables improve write efficiency but increase memory demand","Aggressive flushing lowers memory risk but increases IO churn"]
         },
         {
-            "name": "Compaction",
-            "title": "Compaction strategy and backlog behavior",
-            "description": "Compaction strategy determines merge frequency, IO cost, and read amplification profile.",
-            "symptoms": [
-                "Pending compactions grow",
-                "Periodic IO spikes",
-                "Read latency degrades over time"
-            ],
-            "causes": [
-                "Mismatched compaction strategy",
-                "Insufficient disk throughput",
-                "Uneven table-level workload"
-            ],
-            "effects": [
-                "Compaction storms",
-                "Longer repair windows",
-                "Node instability under load"
-            ],
-            "mitigations": [
-                "Use strategy aligned with access patterns",
-                "Set compaction throughput limits sanely",
-                "Isolate hot tables with focused tuning"
-            ],
-            "metrics": [
-                "Pending compaction tasks",
-                "Compaction throughput",
-                "Read latency during compaction",
-                "Disk utilization"
-            ],
-            "tradeoffs": [
-                "Higher compaction throughput speeds recovery but competes with foreground traffic",
-                "Conservative compaction protects latency but extends debt period"
-            ]
+          name: "Compaction",
+          title: "Compaction strategy and backlog behavior",
+          description: "Compaction strategy determines merge frequency, IO cost, and read amplification profile.",
+          symptoms: ["Pending compactions grow","Periodic IO spikes","Read latency degrades over time"],
+          causes: ["Mismatched compaction strategy","Insufficient disk throughput","Uneven table-level workload"],
+          effects: ["Compaction storms","Longer repair windows","Node instability under load"],
+          mitigations: ["Use strategy aligned with access patterns","Set compaction throughput limits sanely","Isolate hot tables with focused tuning"],
+          metrics: ["Pending compaction tasks","Compaction throughput","Read latency during compaction","Disk utilization"],
+          tradeoffs: ["Higher compaction throughput speeds recovery but competes with foreground traffic","Conservative compaction protects latency but extends debt period"]
         },
         {
-            "name": "Disk",
-            "title": "Disk IO contention across workloads",
-            "description": "Foreground reads/writes and background compaction compete for the same disks.",
-            "symptoms": [
-                "High IO wait",
-                "Queue depth spikes",
-                "Read and write latencies degrade together"
-            ],
-            "causes": [
-                "Shared storage bottleneck",
-                "Insufficient IOPS headroom",
-                "Concurrent repair and compaction"
-            ],
-            "effects": [
-                "Throughput collapse under peaks",
-                "Timeout increases",
-                "Reduced cluster resilience"
-            ],
-            "mitigations": [
-                "Use faster disks and balanced node capacity",
-                "Separate maintenance windows",
-                "Throttle background tasks"
-            ],
-            "metrics": [
-                "Disk IO wait",
-                "Queue depth",
-                "Timeout rate",
-                "Node-level latency"
-            ],
-            "tradeoffs": [
-                "Throttling maintenance improves foreground latency but prolongs maintenance completion",
-                "Upgrading storage increases cost"
-            ]
+          name: "Disk",
+          title: "Disk IO contention across workloads",
+          description: "Foreground reads/writes and background compaction compete for the same disks.",
+          symptoms: ["High IO wait","Queue depth spikes","Read and write latencies degrade together"],
+          causes: ["Shared storage bottleneck","Insufficient IOPS headroom","Concurrent repair and compaction"],
+          effects: ["Throughput collapse under peaks","Timeout increases","Reduced cluster resilience"],
+          mitigations: ["Use faster disks and balanced node capacity","Separate maintenance windows","Throttle background tasks"],
+          metrics: ["Disk IO wait","Queue depth","Timeout rate","Node-level latency"],
+          tradeoffs: ["Throttling maintenance improves foreground latency but prolongs maintenance completion","Upgrading storage increases cost"]
         },
         {
-            "name": "Operations",
-            "title": "Operational controls and prevention",
-            "description": "Sustained compaction health requires proactive controls, not incident-only tuning.",
-            "symptoms": [
-                "Recurring compaction incidents",
-                "Unpredictable performance after scaling events",
-                "Backlog returns quickly after cleanup"
-            ],
-            "causes": [
-                "No table-level SLOs",
-                "Insufficient forecasting of growth",
-                "Reactive-only operations"
-            ],
-            "effects": [
-                "Frequent firefighting",
-                "Missed performance objectives",
-                "Higher operational risk"
-            ],
-            "mitigations": [
-                "Track table growth and compaction budgets",
-                "Automate backlog alerts",
-                "Capacity plan for steady-state + peak"
-            ],
-            "metrics": [
-                "Backlog trend",
-                "Growth rate by table",
-                "Incident frequency",
-                "Time-to-recover"
-            ],
-            "tradeoffs": [
-                "More proactive controls require observability investment",
-                "Over-provisioning reduces risk but raises baseline cost"
-            ]
+          name: "Operations",
+          title: "Operational controls and prevention",
+          description: "Sustained compaction health requires proactive controls, not incident-only tuning.",
+          symptoms: ["Recurring compaction incidents","Unpredictable performance after scaling events","Backlog returns quickly after cleanup"],
+          causes: ["No table-level SLOs","Insufficient forecasting of growth","Reactive-only operations"],
+          effects: ["Frequent firefighting","Missed performance objectives","Higher operational risk"],
+          mitigations: ["Track table growth and compaction budgets","Automate backlog alerts","Capacity plan for steady-state + peak"],
+          metrics: ["Backlog trend","Growth rate by table","Incident frequency","Time-to-recover"],
+          tradeoffs: ["More proactive controls require observability investment","Over-provisioning reduces risk but raises baseline cost"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Elasticsearch",
-            "problem": "Segment merge pressure"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Log retention and IO pressure"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Checkpoint and disk saturation"
-        },
-        {
-            "tech": "PostgreSQL",
-            "problem": "Vacuum/maintenance IO contention"
-        },
-        {
-            "tech": "Redis",
-            "problem": "Persistence-induced latency spikes"
-        }
-    ],
-    "insight": "Cassandra compaction problems are debt problems: if background merge debt grows faster than it is paid down, the cluster eventually becomes unstable."
-};
+      ],
+      comparisons: [
+        { tech: "Elasticsearch", problem: "Segment merge pressure" },
+        { tech: "Kafka", problem: "Log retention and IO pressure" },
+        { tech: "MongoDB", problem: "Checkpoint and disk saturation" },
+        { tech: "PostgreSQL", problem: "Vacuum/maintenance IO contention" },
+        { tech: "Redis", problem: "Persistence-induced latency spikes" }
+      ],
+      insight: "Cassandra compaction problems are debt problems: if background merge debt grows faster than it is paid down, the cluster eventually becomes unstable."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

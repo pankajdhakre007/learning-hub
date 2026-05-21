@@ -3,114 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-  <title>Kafka — Storage & Replication Pressure</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kafka — Storage &amp; Replication Pressure</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
-    // Data configuration - reusable for different topics
     const pageData = {
       header: {
         eyebrow: "Kafka — distributed systems",
         title: "Storage & replication pressure",
         description: "Staff+/Principal-level guide covering disk throughput bottlenecks, replication lag, ISR shrink, segment management pressure, and storage-bound scalability failures."
       },
-      synonyms: [
-        "Replication lag",
-        "ISR shrink",
-        "Under replicated partitions",
-        "Broker saturation",
-        "Disk pressure",
-        "IO saturation",
-        "Replication bottleneck",
-        "Replica fetch lag",
-        "Storage bottleneck",
-        "Disk throughput exhaustion",
-        "Broker IO pressure",
-        "Kafka disk saturation"
-      ],
-      questions: [
-        "Why do Kafka partitions become under replicated?",
-        "How would you debug ISR shrink in Kafka?",
-        "Why does producer latency increase even though consumers are healthy?",
-        "How does disk saturation impact Kafka throughput?",
-        "What causes Kafka replication lag?",
-        "Why does Kafka performance degrade during retention spikes?",
-        "How does replication factor affect Kafka scalability?",
-        "What happens when follower brokers cannot keep up?"
-      ],
+      synonyms: ["Replication lag","ISR shrink","Under replicated partitions","Broker saturation","Disk pressure","IO saturation","Replication bottleneck","Replica fetch lag","Storage bottleneck","Disk throughput exhaustion","Broker IO pressure","Kafka disk saturation"],
+      questions: ["Why do Kafka partitions become under replicated?","How would you debug ISR shrink in Kafka?","Why does producer latency increase even though consumers are healthy?","How does disk saturation impact Kafka throughput?","What causes Kafka replication lag?","Why does Kafka performance degrade during retention spikes?","How does replication factor affect Kafka scalability?","What happens when follower brokers cannot keep up?"],
       layers: [
         {
           name: "Broker Disk",
           title: "Broker disk layer pressure",
           description: "Kafka relies heavily on fast sequential disk IO. Every broker continuously appends logs, flushes segments, serves reads, and performs replication writes. When disk throughput becomes saturated, broker responsiveness degrades rapidly, especially in high-throughput clusters and large retention systems.",
-          symptoms: ["Increased producer latency from slow persistence", "Followers fall behind leaders (ISR shrink)", "Broker request queue grows continuously", "Disk utilization near 100% with IO wait spikes", "Consumer fetch latency increases"],
-          causes: ["Insufficient disk throughput for traffic (HDDs with SSD-scale traffic)", "Large message sizes (10MB+ payloads)", "Excessive retention (90+ days on high-throughput topics)", "Excessive partition count (too many open file handles)", "Broker hotspotting with many hot partitions"],
-          effects: ["Producer timeout failures and slow acknowledgements", "Replication instability and followers lagging", "ISR shrinks, reducing fault tolerance", "Consumer lag from delayed fetch responses", "Cluster-wide cascading instability"],
-          mitigations: ["Upgrade to SSD/NVMe storage", "Reduce message sizes and move blobs externally", "Rebalance partitions to avoid hotspotting", "Reduce retention for ultra-hot topics", "Tune segment.bytes and retention.bytes", "Increase broker count to spread load"],
-          metrics: ["Disk utilization", "IO wait", "Log flush latency", "Request queue size", "Bytes in/out", "Under replicated partitions"],
-          tradeoffs: ["More brokers increase operational complexity", "Lower retention reduces replay capability", "Larger segment sizes slow recovery and compaction"]
+          symptoms: ["Increased producer latency from slow persistence","Followers fall behind leaders (ISR shrink)","Broker request queue grows continuously","Disk utilization near 100% with IO wait spikes","Consumer fetch latency increases"],
+          causes: ["Insufficient disk throughput for traffic (HDDs with SSD-scale traffic)","Large message sizes (10MB+ payloads)","Excessive retention (90+ days on high-throughput topics)","Excessive partition count (too many open file handles)","Broker hotspotting with many hot partitions"],
+          effects: ["Producer timeout failures and slow acknowledgements","Replication instability and followers lagging","ISR shrinks, reducing fault tolerance","Consumer lag from delayed fetch responses","Cluster-wide cascading instability"],
+          mitigations: ["Upgrade to SSD/NVMe storage","Reduce message sizes and move blobs externally","Rebalance partitions to avoid hotspotting","Reduce retention for ultra-hot topics","Tune segment.bytes and retention.bytes","Increase broker count to spread load"],
+          metrics: ["Disk utilization","IO wait","Log flush latency","Request queue size","Bytes in/out","Under replicated partitions"],
+          tradeoffs: ["More brokers increase operational complexity","Lower retention reduces replay capability","Larger segment sizes slow recovery and compaction"]
         },
         {
           name: "Replication",
           title: "Replica synchronization pressure",
-          description: "Followers continuously fetch data from leaders via replication pipelines. If replication throughput cannot keep up with leader writes, followers lag behind, ISR shrinks, and replication instability appears. This is critical for fault tolerance and durability guarantees.",
-          symptoms: ["Replica fetch lag growing", "Under replicated partitions increasing", "Fluctuating ISR counts", "Producer ack delays for acks=all", "Follower disks struggling with write rate"],
-          causes: ["Slow follower disks unable to persist replicated data", "Network bottlenecks between brokers", "Overloaded brokers handling too many replicas", "Cross-AZ latency amplifying replication time", "Excessive replication factor for topology"],
-          effects: ["Weaker fault tolerance with smaller ISR", "Increased write latency for durability", "Leader election instability", "Risk of unclean elections and data loss", "Cascading failures across cluster"],
-          mitigations: ["Faster replication network paths", "Reduce broker imbalance and hotspotting", "Tune replica.fetch.max.bytes for optimal throughput", "Reduce replication factor where appropriate", "Separate replication traffic from client traffic"],
-          metrics: ["Replica fetch lag", "ISR size per partition", "Replication fetch rate", "Network latency between brokers", "Follower disk write latency"],
-          tradeoffs: ["Lower replication factor reduces durability", "Dedicated replication bandwidth increases complexity", "Tuning fetch sizes impacts memory usage"]
+          description: "Followers continuously fetch data from leaders via replication pipelines. If replication throughput cannot keep up with leader writes, followers lag behind, ISR shrinks, and replication instability appears.",
+          symptoms: ["Replica fetch lag growing","Under replicated partitions increasing","Fluctuating ISR counts","Producer ack delays for acks=all","Follower disks struggling with write rate"],
+          causes: ["Slow follower disks unable to persist replicated data","Network bottlenecks between brokers","Overloaded brokers handling too many replicas","Cross-AZ latency amplifying replication time","Excessive replication factor for topology"],
+          effects: ["Weaker fault tolerance with smaller ISR","Increased write latency for durability","Leader election instability","Risk of unclean elections and data loss","Cascading failures across cluster"],
+          mitigations: ["Faster replication network paths","Reduce broker imbalance and hotspotting","Tune replica.fetch.max.bytes for optimal throughput","Reduce replication factor where appropriate","Separate replication traffic from client traffic"],
+          metrics: ["Replica fetch lag","ISR size per partition","Replication fetch rate","Network latency between brokers","Follower disk write latency"],
+          tradeoffs: ["Lower replication factor reduces durability","Dedicated replication bandwidth increases complexity","Tuning fetch sizes impacts memory usage"]
         },
         {
           name: "Retention",
           title: "Retention & segment management pressure",
-          description: "Kafka continuously rolls segments, deletes old segments, and compacts logs. Heavy retention activity creates significant storage housekeeping pressure that competes with replication and client fetch operations, creating IO amplification.",
-          symptoms: ["Disk IO spikes during cleanup periods", "Periodic broker slowdowns at scheduled compaction times", "Compaction backlog accumulating", "Page cache churn from excessive IO", "Broker unresponsiveness during retention enforcement"],
-          causes: ["Excessive retention windows (90+ days on high-throughput topics)", "Compacted topics under heavy message churn", "Extremely small segment sizes creating many files", "Too many partitions with retention overhead", "Inefficient deletion policies"],
-          effects: ["IO amplification and storage fragmentation", "Slower replication as disk becomes saturated", "Increased broker instability and latency variance", "Page cache inefficiency", "Cascading failures during housekeeping"],
-          mitigations: ["Optimize retention windows to minimum viable", "Tune compaction policies for topic patterns", "Increase segment sizes (segment.ms and segment.bytes)", "Reduce unnecessary partition count", "Use log retention policies effectively"],
-          metrics: ["Segment deletion rate", "Compaction lag", "Disk throughput during cleanup", "Page cache hit ratio", "GC pause times"],
-          tradeoffs: ["Longer retention increases storage costs", "Smaller segments improve recovery speed but increase overhead", "Aggressive compaction impacts memory"]
+          description: "Kafka continuously rolls segments, deletes old segments, and compacts logs. Heavy retention activity creates significant storage housekeeping pressure that competes with replication and client fetch operations.",
+          symptoms: ["Disk IO spikes during cleanup periods","Periodic broker slowdowns at scheduled compaction times","Compaction backlog accumulating","Page cache churn from excessive IO","Broker unresponsiveness during retention enforcement"],
+          causes: ["Excessive retention windows (90+ days on high-throughput topics)","Compacted topics under heavy message churn","Extremely small segment sizes creating many files","Too many partitions with retention overhead","Inefficient deletion policies"],
+          effects: ["IO amplification and storage fragmentation","Slower replication as disk becomes saturated","Increased broker instability and latency variance","Page cache inefficiency","Cascading failures during housekeeping"],
+          mitigations: ["Optimize retention windows to minimum viable","Tune compaction policies for topic patterns","Increase segment sizes (segment.ms and segment.bytes)","Reduce unnecessary partition count","Use log retention policies effectively"],
+          metrics: ["Segment deletion rate","Compaction lag","Disk throughput during cleanup","Page cache hit ratio","GC pause times"],
+          tradeoffs: ["Longer retention increases storage costs","Smaller segments improve recovery speed but increase overhead","Aggressive compaction impacts memory"]
         },
         {
           name: "Network",
           title: "Network replication pressure",
-          description: "Replication itself consumes significant network bandwidth. Heavy replication traffic can saturate network interfaces, cross-AZ bandwidth, and inter-broker communication links, creating latency and packet loss that amplifies replication lag.",
-          symptoms: ["Replication fetch lag despite healthy disks", "Packet retransmissions visible in network metrics", "NIC saturation on broker NICs", "Increased request latency across cluster", "Cross-AZ replication severely lagging"],
-          causes: ["Large message payloads amplifying network traffic", "Excessive replication factor creating too many replicas", "Cross-region replication over high-latency links", "Burst traffic overwhelming network capacity", "Inadequate bandwidth provisioning"],
-          effects: ["Replication slowdown despite fast local disks", "ISR instability from replication delays", "Producer latency spikes for acks=all", "Leader flapping from connectivity issues", "Network-induced cascading failures"],
-          mitigations: ["Enable compression (snappy, lz4, zstd)", "Better networking infrastructure (higher throughput)", "Traffic balancing and rate limiting", "Dedicated replication bandwidth allocation", "Reduce payload sizes where possible"],
-          metrics: ["Replication fetch lag", "Network saturation per NIC", "Packet retransmissions", "Cross-region latency", "Bytes sent/received"],
-          tradeoffs: ["Compression increases CPU usage", "Dedicated bandwidth increases infrastructure cost", "Reducing replication factor reduces durability"]
+          description: "Replication itself consumes significant network bandwidth. Heavy replication traffic can saturate network interfaces, cross-AZ bandwidth, and inter-broker communication links.",
+          symptoms: ["Replication fetch lag despite healthy disks","Packet retransmissions visible in network metrics","NIC saturation on broker NICs","Increased request latency across cluster","Cross-AZ replication severely lagging"],
+          causes: ["Large message payloads amplifying network traffic","Excessive replication factor creating too many replicas","Cross-region replication over high-latency links","Burst traffic overwhelming network capacity","Inadequate bandwidth provisioning"],
+          effects: ["Replication slowdown despite fast local disks","ISR instability from replication delays","Producer latency spikes for acks=all","Leader flapping from connectivity issues","Network-induced cascading failures"],
+          mitigations: ["Enable compression (snappy, lz4, zstd)","Better networking infrastructure (higher throughput)","Traffic balancing and rate limiting","Dedicated replication bandwidth allocation","Reduce payload sizes where possible"],
+          metrics: ["Replication fetch lag","Network saturation per NIC","Packet retransmissions","Cross-region latency","Bytes sent/received"],
+          tradeoffs: ["Compression increases CPU usage","Dedicated bandwidth increases infrastructure cost","Reducing replication factor reduces durability"]
         }
       ],
       comparisons: [
@@ -122,9 +77,7 @@
       ],
       insight: "Distributed systems frequently become IO-bound long before they become CPU-bound. Kafka scalability is fundamentally constrained by storage throughput, replication efficiency, and balanced IO distribution. Strong Kafka engineering is often storage engineering disguised as streaming infrastructure."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

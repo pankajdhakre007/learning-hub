@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Kubernetes — Scheduling & Placement Failures</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kubernetes — Scheduling &amp; Placement Failures</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Kubernetes — workload placement",
-        "title": "Scheduling and placement failures",
-        "description": "Guide covering Pending pods, placement deadlocks, and resource-fit failures in Kubernetes clusters."
-    },
-    "synonyms": [
-        "Pending pods",
-        "Scheduling starvation",
-        "Unschedulable pods",
-        "Placement failures",
-        "Affinity deadlock",
-        "Taint mismatch",
-        "Bin-packing failure",
-        "Capacity fit issues"
-    ],
-    "questions": [
-        "Why are pods stuck in Pending state?",
-        "How do affinity and anti-affinity create deadlocks?",
-        "Why does autoscaler fail to place some workloads?",
-        "How do taints and tolerations break expected placement?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Kubernetes — workload placement",
+        title: "Scheduling and placement failures",
+        description: "Guide covering Pending pods, placement deadlocks, and resource-fit failures in Kubernetes clusters."
+      },
+      synonyms: ["Pending pods","Scheduling starvation","Unschedulable pods","Placement failures","Affinity deadlock","Taint mismatch","Bin-packing failure","Capacity fit issues"],
+      questions: ["Why are pods stuck in Pending state?","How do affinity and anti-affinity create deadlocks?","Why does autoscaler fail to place some workloads?","How do taints and tolerations break expected placement?"],
+      layers: [
         {
-            "name": "Capacity",
-            "title": "Requests and node-fit constraints",
-            "description": "Pods are unschedulable when requests cannot be satisfied by current node inventory.",
-            "symptoms": [
-                "Pending pods age increases",
-                "Insufficient CPU/memory events",
-                "Low deployment progress"
-            ],
-            "causes": [
-                "Oversized requests",
-                "Fragmented node capacity",
-                "No suitable instance types"
-            ],
-            "effects": [
-                "Release delays",
-                "Service capacity shortfall",
-                "SLO risk under demand"
-            ],
-            "mitigations": [
-                "Right-size requests",
-                "Introduce shape-diverse node pools",
-                "Use VPA/HPA with guardrails"
-            ],
-            "metrics": [
-                "Pending pod count/age",
-                "FailedScheduling events",
-                "Node allocatable vs requested",
-                "Deployment progress rate"
-            ],
-            "tradeoffs": [
-                "Smaller requests improve placement but can increase runtime contention",
-                "More node types improve fit but increase fleet complexity"
-            ]
+          name: "Capacity",
+          title: "Requests and node-fit constraints",
+          description: "Pods are unschedulable when requests cannot be satisfied by current node inventory.",
+          symptoms: ["Pending pods age increases","Insufficient CPU/memory events","Low deployment progress"],
+          causes: ["Oversized requests","Fragmented node capacity","No suitable instance types"],
+          effects: ["Release delays","Service capacity shortfall","SLO risk under demand"],
+          mitigations: ["Right-size requests","Introduce shape-diverse node pools","Use VPA/HPA with guardrails"],
+          metrics: ["Pending pod count/age","FailedScheduling events","Node allocatable vs requested","Deployment progress rate"],
+          tradeoffs: ["Smaller requests improve placement but can increase runtime contention","More node types improve fit but increase fleet complexity"]
         },
         {
-            "name": "Policies",
-            "title": "Affinity, anti-affinity, and topology constraints",
-            "description": "Strict placement rules can unintentionally make workloads impossible to place.",
-            "symptoms": [
-                "Pods fail due to affinity conflicts",
-                "Zone spread constraints unmet",
-                "Deadlock during rolling updates"
-            ],
-            "causes": [
-                "Over-constrained anti-affinity",
-                "Rigid topology spread constraints",
-                "Misaligned labels/selectors"
-            ],
-            "effects": [
-                "Stalled rollouts",
-                "Capacity underutilization",
-                "Reduced resilience"
-            ],
-            "mitigations": [
-                "Relax non-critical hard constraints",
-                "Validate policies in staging",
-                "Use topology spread pragmatically"
-            ],
-            "metrics": [
-                "Constraint-related scheduling failures",
-                "Zone balance ratio",
-                "Rollout stall duration",
-                "Policy conflict count"
-            ],
-            "tradeoffs": [
-                "Relaxed constraints improve availability but may reduce fault isolation",
-                "Hard constraints increase safety but reduce schedulability"
-            ]
+          name: "Policies",
+          title: "Affinity, anti-affinity, and topology constraints",
+          description: "Strict placement rules can unintentionally make workloads impossible to place.",
+          symptoms: ["Pods fail due to affinity conflicts","Zone spread constraints unmet","Deadlock during rolling updates"],
+          causes: ["Over-constrained anti-affinity","Rigid topology spread constraints","Misaligned labels/selectors"],
+          effects: ["Stalled rollouts","Capacity underutilization","Reduced resilience"],
+          mitigations: ["Relax non-critical hard constraints","Validate policies in staging","Use topology spread pragmatically"],
+          metrics: ["Constraint-related scheduling failures","Zone balance ratio","Rollout stall duration","Policy conflict count"],
+          tradeoffs: ["Relaxed constraints improve availability but may reduce fault isolation","Hard constraints increase safety but reduce schedulability"]
         },
         {
-            "name": "Node Rules",
-            "title": "Taints, tolerations, and selectors mismatch",
-            "description": "Workloads can become stranded if tolerations/selectors do not match available nodes.",
-            "symptoms": [
-                "Pods eligible for zero nodes",
-                "Specialized pools underutilized",
-                "Unexpected pending during node pool changes"
-            ],
-            "causes": [
-                "Missing tolerations",
-                "Incorrect node selectors",
-                "Drift in labels/taints"
-            ],
-            "effects": [
-                "Critical workloads blocked",
-                "Inefficient capacity usage",
-                "Incident during failover events"
-            ],
-            "mitigations": [
-                "Automate policy validation",
-                "Standardize node labels/taints",
-                "Use admission checks for required tolerations"
-            ],
-            "metrics": [
-                "Eligible nodes per pod",
-                "Taint mismatch events",
-                "Node pool utilization",
-                "Policy drift count"
-            ],
-            "tradeoffs": [
-                "More strict validation may block deployments early",
-                "Looser selectors can weaken workload isolation"
-            ]
+          name: "Node Rules",
+          title: "Taints, tolerations, and selectors mismatch",
+          description: "Workloads can become stranded if tolerations/selectors do not match available nodes.",
+          symptoms: ["Pods eligible for zero nodes","Specialized pools underutilized","Unexpected pending during node pool changes"],
+          causes: ["Missing tolerations","Incorrect node selectors","Drift in labels/taints"],
+          effects: ["Critical workloads blocked","Inefficient capacity usage","Incident during failover events"],
+          mitigations: ["Automate policy validation","Standardize node labels/taints","Use admission checks for required tolerations"],
+          metrics: ["Eligible nodes per pod","Taint mismatch events","Node pool utilization","Policy drift count"],
+          tradeoffs: ["More strict validation may block deployments early","Looser selectors can weaken workload isolation"]
         },
         {
-            "name": "Autoscaling",
-            "title": "Autoscaler reaction and provisioning lag",
-            "description": "Cluster autoscaler may react too slowly or not at all for certain constraint patterns.",
-            "symptoms": [
-                "Pending persists despite autoscaler activity",
-                "Scale-up loops without placement success",
-                "Burst demand misses"
-            ],
-            "causes": [
-                "Node group maxed out",
-                "Unsupported constraints for available node groups",
-                "Cloud provisioning delays"
-            ],
-            "effects": [
-                "Extended under-capacity periods",
-                "User-facing degradation",
-                "Manual intervention toil"
-            ],
-            "mitigations": [
-                "Tune autoscaler profiles",
-                "Add fallback node groups",
-                "Pre-scale for predictable surges"
-            ],
-            "metrics": [
-                "Scale-up latency",
-                "Pending after scale events",
-                "Provisioning failure rate",
-                "Capacity headroom"
-            ],
-            "tradeoffs": [
-                "Pre-scaling improves reliability but costs more",
-                "Broad fallback pools improve placement but may dilute workload affinity"
-            ]
+          name: "Autoscaling",
+          title: "Autoscaler reaction and provisioning lag",
+          description: "Cluster autoscaler may react too slowly or not at all for certain constraint patterns.",
+          symptoms: ["Pending persists despite autoscaler activity","Scale-up loops without placement success","Burst demand misses"],
+          causes: ["Node group maxed out","Unsupported constraints for available node groups","Cloud provisioning delays"],
+          effects: ["Extended under-capacity periods","User-facing degradation","Manual intervention toil"],
+          mitigations: ["Tune autoscaler profiles","Add fallback node groups","Pre-scale for predictable surges"],
+          metrics: ["Scale-up latency","Pending after scale events","Provisioning failure rate","Capacity headroom"],
+          tradeoffs: ["Pre-scaling improves reliability but costs more","Broad fallback pools improve placement but may dilute workload affinity"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "YARN",
-            "problem": "Container placement starvation"
-        },
-        {
-            "tech": "Mesos",
-            "problem": "Offer mismatch and scheduling stalls"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Partition assignment imbalance"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Route saturation due to placement skew"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Shard allocation constraints"
-        }
-    ],
-    "insight": "Scheduling failures are usually policy-plus-capacity mismatches. Good clusters pair realistic requests with constraints that reflect reliability goals, not perfection."
-};
+      ],
+      comparisons: [
+        { tech: "YARN", problem: "Container placement starvation" },
+        { tech: "Mesos", problem: "Offer mismatch and scheduling stalls" },
+        { tech: "Kafka", problem: "Partition assignment imbalance" },
+        { tech: "API Gateway", problem: "Route saturation due to placement skew" },
+        { tech: "Elasticsearch", problem: "Shard allocation constraints" }
+      ],
+      insight: "Scheduling failures are usually policy-plus-capacity mismatches. Good clusters pair realistic requests with constraints that reflect reliability goals, not perfection."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

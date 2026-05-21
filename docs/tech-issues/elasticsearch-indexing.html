@@ -3,227 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Elasticsearch — Indexing & Merge Backpressure</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Elasticsearch — Indexing &amp; Merge Backpressure</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
-    "header": {
-        "eyebrow": "Elasticsearch — write path performance",
-        "title": "Indexing and merge backpressure",
-        "description": "Guide covering indexing lag, merge backlog, refresh pressure, and write/search contention."
-    },
-    "synonyms": [
-        "Indexing lag",
-        "Merge pressure",
-        "Segment merge backlog",
-        "Write backpressure",
-        "Refresh pressure",
-        "Bulk indexing bottleneck",
-        "Translog pressure",
-        "Ingest saturation"
-    ],
-    "questions": [
-        "Why does indexing throughput drop under sustained writes?",
-        "How do merges impact search latency?",
-        "Why are bulk requests timing out?",
-        "How do refresh settings affect write performance?"
-    ],
-    "layers": [
+      header: {
+        eyebrow: "Elasticsearch — write path performance",
+        title: "Indexing and merge backpressure",
+        description: "Guide covering indexing lag, merge backlog, refresh pressure, and write/search contention."
+      },
+      synonyms: ["Indexing lag","Merge pressure","Segment merge backlog","Write backpressure","Refresh pressure","Bulk indexing bottleneck","Translog pressure","Ingest saturation"],
+      questions: ["Why does indexing throughput drop under sustained writes?","How do merges impact search latency?","Why are bulk requests timing out?","How do refresh settings affect write performance?"],
+      layers: [
         {
-            "name": "Ingest",
-            "title": "Bulk ingest throughput and rejection behavior",
-            "description": "Ingest pipelines and write thread pools can saturate under high sustained volume.",
-            "symptoms": [
-                "Bulk request rejections",
-                "Indexing queue growth",
-                "Ingest latency spike"
-            ],
-            "causes": [
-                "Bulk size too large",
-                "Insufficient ingest node capacity",
-                "Pipeline processor overhead"
-            ],
-            "effects": [
-                "Delayed data availability",
-                "Error retries and amplification",
-                "Write-path instability"
-            ],
-            "mitigations": [
-                "Tune bulk size/concurrency",
-                "Scale ingest capacity",
-                "Optimize expensive ingest processors"
-            ],
-            "metrics": [
-                "Indexing throughput",
-                "Bulk rejection rate",
-                "Ingest latency",
-                "Thread pool queue depth"
-            ],
-            "tradeoffs": [
-                "Higher concurrency improves throughput but increases contention",
-                "Lighter pipelines improve speed but may reduce transformation fidelity"
-            ]
+          name: "Ingest",
+          title: "Bulk ingest throughput and rejection behavior",
+          description: "Ingest pipelines and write thread pools can saturate under high sustained volume.",
+          symptoms: ["Bulk request rejections","Indexing queue growth","Ingest latency spike"],
+          causes: ["Bulk size too large","Insufficient ingest node capacity","Pipeline processor overhead"],
+          effects: ["Delayed data availability","Error retries and amplification","Write-path instability"],
+          mitigations: ["Tune bulk size/concurrency","Scale ingest capacity","Optimize expensive ingest processors"],
+          metrics: ["Indexing throughput","Bulk rejection rate","Ingest latency","Thread pool queue depth"],
+          tradeoffs: ["Higher concurrency improves throughput but increases contention","Lighter pipelines improve speed but may reduce transformation fidelity"]
         },
         {
-            "name": "Refresh",
-            "title": "Refresh interval and visibility pressure",
-            "description": "Frequent refreshes improve freshness but reduce indexing efficiency.",
-            "symptoms": [
-                "Lower indexing throughput with tight refresh intervals",
-                "CPU and IO churn",
-                "Search/index interference"
-            ],
-            "causes": [
-                "Very low refresh interval on heavy-write indices",
-                "High shard count with frequent refresh",
-                "Concurrent search load"
-            ],
-            "effects": [
-                "Write throughput ceiling",
-                "Latency volatility",
-                "Increased resource consumption"
-            ],
-            "mitigations": [
-                "Use larger refresh interval for heavy ingest periods",
-                "Separate hot-write and hot-search indices when possible",
-                "Align freshness goals with business need"
-            ],
-            "metrics": [
-                "Refresh time",
-                "Refresh frequency",
-                "Indexing throughput vs refresh setting",
-                "Search latency impact"
-            ],
-            "tradeoffs": [
-                "Longer refresh improves throughput but delays document visibility",
-                "Short refresh improves freshness but raises overhead"
-            ]
+          name: "Refresh",
+          title: "Refresh interval and visibility pressure",
+          description: "Frequent refreshes improve freshness but reduce indexing efficiency.",
+          symptoms: ["Lower indexing throughput with tight refresh intervals","CPU and IO churn","Search/index interference"],
+          causes: ["Very low refresh interval on heavy-write indices","High shard count with frequent refresh","Concurrent search load"],
+          effects: ["Write throughput ceiling","Latency volatility","Increased resource consumption"],
+          mitigations: ["Use larger refresh interval for heavy ingest periods","Separate hot-write and hot-search indices when possible","Align freshness goals with business need"],
+          metrics: ["Refresh time","Refresh frequency","Indexing throughput vs refresh setting","Search latency impact"],
+          tradeoffs: ["Longer refresh improves throughput but delays document visibility","Short refresh improves freshness but raises overhead"]
         },
         {
-            "name": "Merge",
-            "title": "Segment merge backlog and IO contention",
-            "description": "Segment merges are essential but can saturate IO and throttle indexing/search.",
-            "symptoms": [
-                "Pending merges accumulate",
-                "Merge time spikes",
-                "Node IO wait increases"
-            ],
-            "causes": [
-                "High segment creation rate",
-                "Underpowered storage",
-                "Concurrent heavy indexing and querying"
-            ],
-            "effects": [
-                "Indexing slowdown",
-                "Search latency spikes",
-                "Cluster instability during peaks"
-            ],
-            "mitigations": [
-                "Tune merge policy and throttles",
-                "Use faster storage for hot nodes",
-                "Stagger heavy indexing jobs"
-            ],
-            "metrics": [
-                "Pending merge count",
-                "Merge time",
-                "Disk IO wait",
-                "Indexing latency"
-            ],
-            "tradeoffs": [
-                "Higher merge throughput reduces backlog but can hurt foreground traffic",
-                "Lower merge pressure protects latency but extends indexing debt"
-            ]
+          name: "Merge",
+          title: "Segment merge backlog and IO contention",
+          description: "Segment merges are essential but can saturate IO and throttle indexing/search.",
+          symptoms: ["Pending merges accumulate","Merge time spikes","Node IO wait increases"],
+          causes: ["High segment creation rate","Underpowered storage","Concurrent heavy indexing and querying"],
+          effects: ["Indexing slowdown","Search latency spikes","Cluster instability during peaks"],
+          mitigations: ["Tune merge policy and throttles","Use faster storage for hot nodes","Stagger heavy indexing jobs"],
+          metrics: ["Pending merge count","Merge time","Disk IO wait","Indexing latency"],
+          tradeoffs: ["Higher merge throughput reduces backlog but can hurt foreground traffic","Lower merge pressure protects latency but extends indexing debt"]
         },
         {
-            "name": "Operations",
-            "title": "Backpressure-aware operating model",
-            "description": "Operational workflows should manage ingest surges before they trigger sustained write debt.",
-            "symptoms": [
-                "Frequent ingest incidents during batch windows",
-                "Recovery takes long after traffic peaks",
-                "Repeated emergency tuning changes"
-            ],
-            "causes": [
-                "No ingestion guardrails",
-                "No staged batch ingestion",
-                "Insufficient capacity planning for peak writes"
-            ],
-            "effects": [
-                "Burned error budgets",
-                "Operational churn",
-                "Unpredictable search freshness"
-            ],
-            "mitigations": [
-                "Define ingestion SLOs and cutoffs",
-                "Use scheduled/staggered bulk jobs",
-                "Pre-scale for known indexing events"
-            ],
-            "metrics": [
-                "Ingest incident count",
-                "Time-to-recover from backlog",
-                "SLO compliance for freshness",
-                "Capacity headroom during peak"
-            ],
-            "tradeoffs": [
-                "Guardrails can throttle business throughput during peaks",
-                "Peak headroom adds infrastructure cost"
-            ]
+          name: "Operations",
+          title: "Backpressure-aware operating model",
+          description: "Operational workflows should manage ingest surges before they trigger sustained write debt.",
+          symptoms: ["Frequent ingest incidents during batch windows","Recovery takes long after traffic peaks","Repeated emergency tuning changes"],
+          causes: ["No ingestion guardrails","No staged batch ingestion","Insufficient capacity planning for peak writes"],
+          effects: ["Burned error budgets","Operational churn","Unpredictable search freshness"],
+          mitigations: ["Define ingestion SLOs and cutoffs","Use scheduled/staggered bulk jobs","Pre-scale for known indexing events"],
+          metrics: ["Ingest incident count","Time-to-recover from backlog","SLO compliance for freshness","Capacity headroom during peak"],
+          tradeoffs: ["Guardrails can throttle business throughput during peaks","Peak headroom adds infrastructure cost"]
         }
-    ],
-    "comparisons": [
-        {
-            "tech": "Cassandra",
-            "problem": "Compaction backlog under write load"
-        },
-        {
-            "tech": "Kafka",
-            "problem": "Log IO pressure under sustained writes"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Checkpoint/write pressure"
-        },
-        {
-            "tech": "PostgreSQL",
-            "problem": "Write amplification under heavy updates"
-        },
-        {
-            "tech": "Redis",
-            "problem": "AOF persistence pressure"
-        }
-    ],
-    "insight": "Indexing reliability in Elasticsearch is debt management: ingest creates segment debt, and merges repay it. Stability depends on matching creation and repayment rates."
-};
+      ],
+      comparisons: [
+        { tech: "Cassandra", problem: "Compaction backlog under write load" },
+        { tech: "Kafka", problem: "Log IO pressure under sustained writes" },
+        { tech: "MongoDB", problem: "Checkpoint/write pressure" },
+        { tech: "PostgreSQL", problem: "Write amplification under heavy updates" },
+        { tech: "Redis", problem: "AOF persistence pressure" }
+      ],
+      insight: "Indexing reliability in Elasticsearch is debt management: ingest creates segment debt, and merges repay it. Stability depends on matching creation and repayment rates."
+    };
     renderTechIssuePage(pageData);
   </script>
 </body>

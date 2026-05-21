@@ -3,37 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <title>MongoDB — Query Performance Degradation</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
@@ -42,70 +20,52 @@
         title: "Query performance degradation",
         description: "Staff+/Principal-level guide covering slow queries, collection scans, index misses, aggregation bottlenecks, and query execution pressure across MongoDB deployments."
       },
-      synonyms: [
-        "Slow queries",
-        "Query latency",
-        "Collection scans",
-        "Query execution bottlenecks",
-        "Index misses",
-        "Query planner issues",
-        "Inefficient query design",
-        "Aggregation pipeline bottlenecks"
-      ],
-      questions: [
-        "Why is my MongoDB query suddenly slow?",
-        "How do I detect full collection scans?",
-        "Why is CPU spiking for specific queries?",
-        "How do I optimize aggregation pipelines?",
-        "What causes query planner regressions?",
-        "How do I identify missing indexes?",
-        "Why are my dashboards responding slowly?",
-        "How do I debug large document scans?"
-      ],
+      synonyms: ["Slow queries","Query latency","Collection scans","Query execution bottlenecks","Index misses","Query planner issues","Inefficient query design","Aggregation pipeline bottlenecks"],
+      questions: ["Why is my MongoDB query suddenly slow?","How do I detect full collection scans?","Why is CPU spiking for specific queries?","How do I optimize aggregation pipelines?","What causes query planner regressions?","How do I identify missing indexes?","Why are my dashboards responding slowly?","How do I debug large document scans?"],
       layers: [
         {
           name: "Index Layer",
           title: "Index & query planning layer",
           description: "MongoDB queries rely on index selection for performance. Poor index design, missing indexes, or query planner regressions cause the database to perform full collection scans, resulting in high CPU and latency.",
-          symptoms: ["Full collection scans visible in explain output", "High CPU usage for specific queries", "Slow dashboard APIs", "Query timeout spikes", "Increasing query latency"],
-          causes: ["Missing indexes on frequently queried fields", "Low-cardinality indexes on high-cardinality data", "Query planner choosing suboptimal indexes", "Sparse or partial indexes not matching query patterns"],
-          effects: ["Collection-wide scanning overhead", "CPU saturation on mongod process", "Memory pressure from scanning documents", "Slow application response times", "Cascading slowdowns in dependent services"],
-          mitigations: ["Add missing indexes on frequently queried fields", "Analyze query patterns with explain() and indexStats", "Rebuild fragmented indexes", "Use covered queries when possible", "Optimize index selectivity"],
-          metrics: ["Execution stage in explain output", "Docs scanned vs docs returned", "CPU usage per query", "Query latency percentiles", "Cache hit ratio"],
-          tradeoffs: ["More indexes increase write latency", "Index maintenance adds overhead", "Memory usage increases with index count"]
+          symptoms: ["Full collection scans visible in explain output","High CPU usage for specific queries","Slow dashboard APIs","Query timeout spikes","Increasing query latency"],
+          causes: ["Missing indexes on frequently queried fields","Low-cardinality indexes on high-cardinality data","Query planner choosing suboptimal indexes","Sparse or partial indexes not matching query patterns"],
+          effects: ["Collection-wide scanning overhead","CPU saturation on mongod process","Memory pressure from scanning documents","Slow application response times","Cascading slowdowns in dependent services"],
+          mitigations: ["Add missing indexes on frequently queried fields","Analyze query patterns with explain() and indexStats","Rebuild fragmented indexes","Use covered queries when possible","Optimize index selectivity"],
+          metrics: ["Execution stage in explain output","Docs scanned vs docs returned","CPU usage per query","Query latency percentiles","Cache hit ratio"],
+          tradeoffs: ["More indexes increase write latency","Index maintenance adds overhead","Memory usage increases with index count"]
         },
         {
           name: "Aggregation",
           title: "Aggregation pipeline bottlenecks",
           description: "Aggregation pipelines can become CPU-intensive and memory-constrained when stages execute in the wrong order, lack indexes, or operate on large datasets without proper filtering.",
-          symptoms: ["Aggregation queries timeout", "High memory usage during aggregation", "CPU spikes during pipeline execution", "Slow dashboard computations"],
-          causes: ["$lookup operations on large collections without indexes", "$group stages without pre-filtering", "Expensive string operations in pipelines", "Sorting large result sets in memory"],
-          effects: ["CPU exhaustion during aggregation", "Memory pressure and potential OOMKills", "Slow analytics queries", "Increased latency for all users"],
-          mitigations: ["Push $match stages early to filter documents", "Use $allowDiskUse for large sorts and groups", "Avoid $lookup on non-indexed fields", "Optimize expression complexity", "Use $project to reduce document size"],
-          metrics: ["Pipeline execution time", "Memory used during aggregation", "Stages causing slowdown", "Network bytes out", "CPU time per stage"],
-          tradeoffs: ["$allowDiskUse impacts performance vs memory", "Complex projections reduce memory but add CPU", "Early filtering reduces throughput but improves latency"]
+          symptoms: ["Aggregation queries timeout","High memory usage during aggregation","CPU spikes during pipeline execution","Slow dashboard computations"],
+          causes: ["$lookup operations on large collections without indexes","$group stages without pre-filtering","Expensive string operations in pipelines","Sorting large result sets in memory"],
+          effects: ["CPU exhaustion during aggregation","Memory pressure and potential OOMKills","Slow analytics queries","Increased latency for all users"],
+          mitigations: ["Push $match stages early to filter documents","Use $allowDiskUse for large sorts and groups","Avoid $lookup on non-indexed fields","Optimize expression complexity","Use $project to reduce document size"],
+          metrics: ["Pipeline execution time","Memory used during aggregation","Stages causing slowdown","Network bytes out","CPU time per stage"],
+          tradeoffs: ["$allowDiskUse impacts performance vs memory","Complex projections reduce memory but add CPU","Early filtering reduces throughput but improves latency"]
         },
         {
           name: "Large Scans",
           title: "Large document & collection scanning",
           description: "Scanning large documents or entire collections without proper filtering causes severe performance degradation. MongoDB must load each document into memory, parse it, and apply filters.",
-          symptoms: ["Query latency increases with collection size", "Memory usage spikes during queries", "Slow response times for range queries", "OOMKill on aggregation operations"],
-          causes: ["Queries scanning entire collections without index support", "Large document sizes (>16MB) being scanned", "Pagination without proper indexing", "Time-series data without time-range filtering"],
-          effects: ["Linear latency degradation with data growth", "Memory exhaustion on secondary reads", "Impact on other queries sharing resources", "Cascading slowdowns across application"],
-          mitigations: ["Add indexes to support range queries", "Use pagination with indexed sort fields", "Implement time-range filtering for time-series data", "Archive old data to reduce active collection size", "Use projection to fetch only needed fields"],
-          metrics: ["Bytes scanned per query", "Documents scanned ratio", "Memory usage during query", "Query execution time", "Collection size trends"],
-          tradeoffs: ["Pagination adds complexity to application code", "Data archival reduces feature scope", "Projection limits available fields in queries"]
+          symptoms: ["Query latency increases with collection size","Memory usage spikes during queries","Slow response times for range queries","OOMKill on aggregation operations"],
+          causes: ["Queries scanning entire collections without index support","Large document sizes (>16MB) being scanned","Pagination without proper indexing","Time-series data without time-range filtering"],
+          effects: ["Linear latency degradation with data growth","Memory exhaustion on secondary reads","Impact on other queries sharing resources","Cascading slowdowns across application"],
+          mitigations: ["Add indexes to support range queries","Use pagination with indexed sort fields","Implement time-range filtering for time-series data","Archive old data to reduce active collection size","Use projection to fetch only needed fields"],
+          metrics: ["Bytes scanned per query","Documents scanned ratio","Memory usage during query","Query execution time","Collection size trends"],
+          tradeoffs: ["Pagination adds complexity to application code","Data archival reduces feature scope","Projection limits available fields in queries"]
         },
         {
           name: "Execution",
           title: "Query execution pressure & contention",
           description: "Query execution pressure occurs when too many concurrent queries compete for resources, causing contention, lock delays, and cascading latency increases.",
-          symptoms: ["Increased query latency under load", "Lock waits visible in profiling", "Queued operations in currentOp", "Uneven query latency distribution"],
-          causes: ["Too many concurrent queries on same collection", "Write-heavy workloads blocking reads", "Long-running queries holding locks", "Inefficient queries running at scale"],
-          effects: ["Query queue buildup", "Latency tail increases dramatically", "Timeout failures under load", "Application cascading failures"],
-          mitigations: ["Increase replica set size for read scaling", "Use connection pooling with appropriate limits", "Kill long-running queries proactively", "Scale horizontally with sharding", "Use read preferences to distribute read load"],
-          metrics: ["Queue length", "Lock wait time", "Concurrent operations", "Average query latency", "95th/99th percentile latency"],
-          tradeoffs: ["More replicas increase replication overhead", "Sharding adds complexity and routing overhead", "Connection limits reduce throughput"]
+          symptoms: ["Increased query latency under load","Lock waits visible in profiling","Queued operations in currentOp","Uneven query latency distribution"],
+          causes: ["Too many concurrent queries on same collection","Write-heavy workloads blocking reads","Long-running queries holding locks","Inefficient queries running at scale"],
+          effects: ["Query queue buildup","Latency tail increases dramatically","Timeout failures under load","Application cascading failures"],
+          mitigations: ["Increase replica set size for read scaling","Use connection pooling with appropriate limits","Kill long-running queries proactively","Scale horizontally with sharding","Use read preferences to distribute read load"],
+          metrics: ["Queue length","Lock wait time","Concurrent operations","Average query latency","95th/99th percentile latency"],
+          tradeoffs: ["More replicas increase replication overhead","Sharding adds complexity and routing overhead","Connection limits reduce throughput"]
         }
       ],
       comparisons: [
@@ -115,11 +75,9 @@
         { tech: "Redis", problem: "Scan command blocking" },
         { tech: "DynamoDB", problem: "Index scan pressure" }
       ],
-      insight: "MongoDB query performance is fundamentally determined by index selectivity and execution planning. Strong engineers optimize not just for single queries, but for query patterns and resource contention under load. Query analysis becomes system design: understanding access patterns, building appropriate indexes, and designing schemas that support efficient queries at scale."
+      insight: "MongoDB query performance is fundamentally determined by index selectivity and execution planning. Strong engineers optimize not just for single queries, but for query patterns and resource contention under load."
     };
-
     renderTechIssuePage(pageData);
   </script>
-
 </body>
 </html>

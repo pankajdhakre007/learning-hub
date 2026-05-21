@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>LeetCode — Algorithm Problems by Category</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="index.html">✦ Learning Hub</a>
+        <button class="navbar-burger" aria-label="Open navigation menu" aria-expanded="false" data-target="docs-nav">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div id="docs-nav" class="navbar-menu">
+        <div class="navbar-end">
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link" href="#">Pages</a>
+            <div class="navbar-dropdown is-right">
+              <a class="navbar-item is-active" href="leetcode.html" aria-current="page">🧩 LeetCode</a>
+              <a class="navbar-item" href="benchmarks.html">📊 Benchmarks</a>
+              <a class="navbar-item" href="tech-issues.html">🔥 Tech Issues</a>
+              <a class="navbar-item" href="fulfillment.html">📦 Fulfillment</a>
+            </div>
+          </div>
+          <div class="navbar-item">
+            <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-page-header">
+    <div class="container">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;">
+        <div>
+          <p class="docs-eyebrow">Algorithm Practice</p>
+          <h1>Algorithm Problems by Category</h1>
+          <p class="docs-subtitle">Senior-track problems across arrays, trees, graphs, and dynamic programming.</p>
+        </div>
+        <a class="button is-light" href="index.html" style="flex-shrink:0;margin-top:0.25rem;">← Back</a>
+      </div>
+    </div>
+  </div>
+
+  <main class="section" id="main">
+    <div class="container">
+
+      <!-- Stats Row -->
+      <div class="docs-metrics-row">
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Categories</p>
+          <p class="docs-metric-value" id="categoryCount">15</p>
+        </div>
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Total Questions</p>
+          <p class="docs-metric-value" id="questionCount">0</p>
+        </div>
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Easy</p>
+          <p class="docs-metric-value" id="easyCount">0</p>
+        </div>
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Medium</p>
+          <p class="docs-metric-value" id="mediumCount">0</p>
+        </div>
+        <div class="docs-metric-card">
+          <p class="docs-metric-label">Hard</p>
+          <p class="docs-metric-value" id="hardCount">0</p>
+        </div>
+      </div>
+
+      <div class="docs-page-grid">
+
+        <!-- Sidebar Categories -->
+        <aside class="docs-sidebar-panel">
+          <div class="panel__body">
+            <p class="heading">Categories</p>
+            <nav class="menu" id="categoryNav" aria-label="Problem categories"></nav>
+          </div>
+        </aside>
+
+        <!-- Content -->
+        <div>
+          <!-- Search + Filter -->
+          <div class="box mb-4">
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">
+              <div style="flex:1;min-width:180px;">
+                <label class="is-sr-only" for="searchInput">Search problems</label>
+                <input id="searchInput" class="input" type="search" placeholder="Search problem, pattern, category…" />
+              </div>
+              <div class="buttons has-addons" style="margin:0;">
+                <button class="button is-selected" data-difficulty="All" aria-pressed="true" type="button">All</button>
+                <button class="button is-success" data-difficulty="Easy" aria-pressed="false" type="button">Easy</button>
+                <button class="button is-warning" data-difficulty="Medium" aria-pressed="false" type="button">Medium</button>
+                <button class="button is-danger" data-difficulty="Hard" aria-pressed="false" type="button">Hard</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic problem tables -->
+          <div id="content"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item">
+            <p style="color:var(--text-secondary);">Algorithm practice for senior engineering interviews</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item">
+            <p style="font-size:0.82rem;color:var(--text-muted);">Last updated May 2026</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/data/leetcode-roadmap.js"></script>
+  <script src="assets/js/leetcode.js"></script>
+</body>
+</html>

@@ -3,37 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="preconnect" href="https://rsms.me" />
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-
-    <title>Kafka — Cluster Coordination Instability</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
-  <link rel="stylesheet" href="../assets/css/tokens.css" />
-  <link rel="stylesheet" href="../assets/css/bulma-overrides.css" />
-  <link rel="stylesheet" href="../assets/css/components.css" />
-  <link rel="stylesheet" href="../assets/css/utilities.css" />
+  <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <title>Kafka — Cluster Coordination Instability</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <nav class="navbar topbar" role="navigation" aria-label="Primary">
-    <div class="container">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="../index.html">
-          <span class="brand-mark"><span class="brand-dot" aria-hidden="true"></span><strong>Learning Hub</strong></span>
-        </a>
-      </div>
-      <div class="navbar-menu is-active">
-        <div class="navbar-end">
-          <a class="navbar-item" href="../leetcode-questions.html">LeetCode</a>
-          <a class="navbar-item" href="../technology-comparison.html">Benchmarks</a>
-          <a class="navbar-item" href="../tech-issues.html" aria-current="page">Tech Issues</a>
-          <a class="navbar-item" href="../fulfillment-load-comparison.html">Fulfillment</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <main class="section">
-    <div class="container" id="root"></div>
-  </main>
+  <div id="root"></div>
+  <script src="../assets/js/theme.js"></script>
   <script src="../assets/js/tech-issue-renderer.js"></script>
   <script>
     const pageData = {
@@ -201,26 +179,11 @@
         }
     ],
     "comparisons": [
-        {
-            "tech": "Kubernetes",
-            "problem": "Control-plane scheduling churn"
-        },
-        {
-            "tech": "Zookeeper/etcd",
-            "problem": "Coordination hot spots"
-        },
-        {
-            "tech": "API Gateway",
-            "problem": "Config rollout instability"
-        },
-        {
-            "tech": "MongoDB",
-            "problem": "Replica state flapping"
-        },
-        {
-            "tech": "Elasticsearch",
-            "problem": "Shard relocation churn"
-        }
+        { "tech": "Kubernetes", "problem": "Control-plane scheduling churn" },
+        { "tech": "Zookeeper/etcd", "problem": "Coordination hot spots" },
+        { "tech": "API Gateway", "problem": "Config rollout instability" },
+        { "tech": "MongoDB", "problem": "Replica state flapping" },
+        { "tech": "Elasticsearch", "problem": "Shard relocation churn" }
     ],
     "insight": "Kafka coordination issues are usually churn problems, not raw capacity problems. Reducing membership and topology volatility is often the fastest path to stability."
 };
