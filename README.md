@@ -51,7 +51,3 @@ Metrics include Writes/sec, Reads/sec, Write Latency, and Read Latency with colo
 Infrastructure load reference comparing **Regular Day** vs. **Black Friday / Cyber Monday** peak traffic:
 - Order volume, API RPS, DB write rates, cache hit ratios
 - Helps size systems and set realistic SLO targets for high-traffic events
-
----
-
-🌀 Magic applied with [Wibey JetBrains Plugin](https://wibey.walmart.com/code) 🪄
