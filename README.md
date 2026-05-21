@@ -4,7 +4,7 @@ A personal senior engineering interview preparation site — curated playbooks, 
 
 ## 🌐 Website
 
-**[https://pankajdhakre007.github.io/learning/](https://pankajdhakre007.github.io/learning/)**
+**[https://pankajdhakre007.github.io/learning-hub/](https://pankajdhakre007.github.io/learning-hub/)**
 
 ---
 
